@@ -69,6 +69,7 @@
 #include "../Mod/RuleItem.h"
 #include "../Mod/AlienDeployment.h"
 #include "../Mod/Armor.h"
+#include "../Mod/RuleInventory.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/SavedBattleGame.h"
 #include "../Savegame/Tile.h"
@@ -2246,7 +2247,7 @@ void BattlescapeState::btnLeftReloadClick(Action *)
 {
 	if (playableUnitSelected() && _save->getSelectedUnit()->checkAmmo()) // Removed "STR_LEFT_HAND"
 	{
-		_game->getResourcePack()->getSound("BATTLE.CAT", 17)->play();
+		_game->getMod()->getSound("BATTLE.CAT", 17)->play();
 		updateSoldierInfo();
 	}
 }
@@ -2259,7 +2260,7 @@ void BattlescapeState::btnRightReloadClick(Action *)
 {
 	if (playableUnitSelected() && _save->getSelectedUnit()->checkAmmo()) // Removed "STR_RIGHT_HAND"
 	{
-		_game->getResourcePack()->getSound("BATTLE.CAT", 17)->play();
+		_game->getMod()->getSound("BATTLE.CAT", 17)->play();
 		updateSoldierInfo();
 	}
 }

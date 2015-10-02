@@ -62,3 +62,16 @@ extraSprites:
     subY: 3
     files:
       0: Resources/UI/globe_ufo.png
+  - type: ICONS.PCK
+    singleImage: true
+    width: 960
+    height: 600
+    files:
+      0: Resources/HD/UI/UI.png
+  - type: BIGOBS.PCK
+    width: 1408
+    height: 588
+    subX: 64
+    subY: 98
+    files:
+      57: Resources/HD/BigObs/bigobs.png

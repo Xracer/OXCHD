@@ -22,6 +22,8 @@
 #include "../Engine/FileMap.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/CrossPlatform.h"
+
 #include "../Engine/Screen.h"
 #include "../Engine/Palette.h"
 #include "../Engine/Surface.h"
@@ -31,6 +33,11 @@
 #include "../Engine/InteractiveSurface.h"
 #include "../Engine/Sound.h"
 #include "../Engine/SurfaceSet.h"
+#include "../Interface/Text.h"
+#include "../Interface/BattlescapeButton.h"
+#include "../Interface/Text.h"
+#include "../Interface/BattlescapeButton.h"
+#include "../Interface/Bar.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Tile.h"
 #include "../Savegame/SavedBattleGame.h"
@@ -49,9 +56,9 @@
 namespace OpenXcom
 {
 
-static const int _templateBtnX = 288;
-static const int _createTemplateBtnY = 90;
-static const int _applyTemplateBtnY  = 113;
+static const int _templateBtnX = 924;
+static const int _createTemplateBtnY = 392;
+static const int _applyTemplateBtnY  = 417;
 
 /**
  * Initializes all the elements in the Inventory screen.
@@ -76,28 +83,112 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	}
 
 	// Create objects
-	_bg = new Surface(320, 200, 0, 0);
-	_soldier = new Surface(320, 200, 0, 0);
-	_txtName = new Text(210, 17, 28, 6);
-	_txtTus = new Text(40, 9, 245, 24);
-	_txtWeight = new Text(70, 9, 245, 24);
-	_txtFAcc = new Text(40, 9, 245, 32);
-	_txtReact = new Text(40, 9, 245, 40);
-	_txtPSkill = new Text(40, 9, 245, 48);
-	_txtPStr = new Text(40, 9, 245, 56);
-	_txtItem = new Text(160, 9, 128, 140);
-	_txtAmmo = new Text(66, 24, 254, 64);
-	_btnOk = new BattlescapeButton(35, 22, 237, 1);
-	_btnPrev = new BattlescapeButton(23, 22, 273, 1);
-	_btnNext = new BattlescapeButton(23, 22, 297, 1);
-	_btnUnload = new BattlescapeButton(32, 25, 288, 32);
-	_btnGround = new BattlescapeButton(32, 15, 289, 137);
-	_btnRank = new BattlescapeButton(26, 23, 0, 0);
+	_bg = new Surface(960, 600, 0, 0);
+	_soldier = new Surface(121, 215, 109, 85);
+
+	_rank = new Surface(26, 23, 5, 5); //added for the rank icon
+	_txtName = new Text(400, 17, 40, 10);
+	_txtWeight = new Text(70, 9, 400, 52);
+	_txtFAcc = new Text(40, 9, 400, 60);
+	_txtReact = new Text(40, 9, 400, 68);
+	_txtPSkill = new Text(40, 9, 400, 76);
+	_txtPStr = new Text(40, 9, 400, 84);
+	_txtItem = new Text(160, 9, 8, 310);
+	_txtAmmo = new Text(80, 24, 8, 432);
+	_btnOk = new BattlescapeButton(35, 22, 890, 5);
+	_btnPrev = new BattlescapeButton(23, 22, 866, 5);
+	_btnNext = new BattlescapeButton(23, 22, 926, 5);
+	_btnUnload = new BattlescapeButton(32, 25, 8, 280);
+	_btnGround = new BattlescapeButton(32, 15, 924, 442);
+//	_btnRank = new BattlescapeButton(26, 23, 0, 0);
 	_btnCreateTemplate = new BattlescapeButton(32, 22, _templateBtnX, _createTemplateBtnY);
 	_btnApplyTemplate = new BattlescapeButton(32, 22, _templateBtnX, _applyTemplateBtnY);
-	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 272, 88);
-	_inv = new Inventory(_game, 320, 200, 0, 0, _parent == 0);
+	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 8, 325);
+	_inv = new Inventory(_game, 960, 600, 0, 0, _parent == 0);
+	_txtRank = new Text(100, 10, 40, 38); // added
+	_txtMissions = new Text(100, 10, 145, 38); // added
+	_txtKills = new Text(100, 10, 250, 38); // added
+	_txtStatus = new Text(100, 10, 355, 38); // added
+	_txtCraft = new Text(150, 10, 460, 38); // added
+	_txtArmor = new Text(150, 10, 565, 38); // added
 
+	_txtTimeUnits = new Text(120, 9, 546, 100);
+	_numTimeUnits = new Text(18, 9, 662, 100);
+	_barTimeUnits = new Bar(200, 8, 680, 100);
+
+	_txtEnergy = new Text(120, 9, 546, 113);
+	_numEnergy = new Text(18, 9, 662, 113);
+	_barEnergy = new Bar(200, 8, 680, 113);
+
+	_txtHealth = new Text(120, 9, 546, 126);
+	_numHealth = new Text(18, 9, 662, 126);
+	_barHealth = new Bar(200, 8, 680, 126);
+
+	_txtFatalWounds = new Text(120, 9, 546, 139);
+	_numFatalWounds = new Text(18, 9, 662, 139);
+	_barFatalWounds = new Bar(200, 8, 680, 139);
+
+	_txtBravery = new Text(120, 9, 546, 152);
+	_numBravery = new Text(18, 9, 662, 152);
+	_barBravery = new Bar(200, 8, 680, 152);
+
+	_txtMorale = new Text(120, 9, 546, 165);
+	_numMorale = new Text(18, 9, 662, 165);
+	_barMorale = new Bar(200, 8, 680, 165);
+
+	_txtReactions = new Text(120, 9, 546, 178);
+	_numReactions = new Text(18, 9, 662, 178);
+	_barReactions = new Bar(200, 8, 680, 178);
+
+	_txtFiring = new Text(120, 9, 546, 191);
+	_numFiring = new Text(18, 9, 662, 191);
+	_barFiring = new Bar(200, 8, 680, 191);
+
+	_txtThrowing = new Text(120, 9, 546, 204);
+	_numThrowing = new Text(18, 9, 662, 204);
+	_barThrowing = new Bar(200, 8, 680, 204);
+
+	_txtMelee = new Text(120, 9, 546, 217);
+	_numMelee = new Text(18, 9, 662, 217);
+	_barMelee = new Bar(200, 8, 680, 217);
+
+	_txtStrength = new Text(120, 9, 546, 230);
+	_numStrength = new Text(18, 9, 662, 230);
+	_barStrength = new Bar(200, 8, 680, 230);
+
+	_txtPsiStrength = new Text(120, 9, 546, 243);
+	_numPsiStrength = new Text(18, 9, 662, 243);
+	_barPsiStrength = new Bar(200, 8, 680, 243);
+
+	_txtPsiSkill = new Text(120, 9, 546, 256);
+	_numPsiSkill = new Text(18, 9, 662, 256);
+	_barPsiSkill = new Bar(200, 8, 680, 256);
+
+	_txtFrontArmor = new Text(120, 9, 546, 282);
+	_numFrontArmor = new Text(18, 9, 662, 282);
+	_barFrontArmor = new Bar(200, 8, 680, 282);
+
+	_txtLeftArmor = new Text(120, 9, 546, 295);
+	_numLeftArmor = new Text(18, 9, 662, 295);
+	_barLeftArmor = new Bar(200, 8, 680, 295);
+
+	_txtRightArmor = new Text(120, 9, 546, 308);
+	_numRightArmor = new Text(18, 9, 662, 308);
+	_barRightArmor = new Bar(200, 8, 680, 308);
+
+	_txtRearArmor = new Text(120, 9, 546, 321);
+	_numRearArmor = new Text(18, 9, 662, 321);
+	_barRearArmor = new Bar(200, 8, 680, 321);
+
+	_txtUnderArmor = new Text(120, 9, 546, 321);
+	_numUnderArmor = new Text(18, 9, 662, 321);
+	_barUnderArmor = new Bar(200, 8, 680, 321);
+
+	if (!_mindProbe)
+	{
+		_btnPrev = new BattlescapeButton(14, 18, 2, 2);
+		_btnNext = new BattlescapeButton(14, 18, 304, 2);
+	}
 	// Set palette
 	setPalette("PAL_BATTLESCAPE");
 
@@ -107,6 +198,7 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_game->getMod()->getSurface("TAC01.SCR")->blit(_bg);
 
 	add(_soldier);
+	add(_rank, "rank", "inventory", _bg);
 	add(_txtName, "textName", "inventory", _bg);
 	add(_txtTus, "textTUs", "inventory", _bg);
 	add(_txtWeight, "textWeight", "inventory", _bg);
@@ -127,7 +219,114 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	add(_selAmmo);
 	add(_inv);
 
-	// move the TU display down to make room for the weight display
+	// Objects for information under name field
+	add(_txtRank); 
+	add(_txtCraft); 
+	add(_txtMissions); 
+	add(_txtKills); 
+	add(_txtStatus); 
+	add(_txtArmor); 
+
+
+	//Adding all Items for Soldier Info
+	add(_txtTimeUnits);
+	add(_numTimeUnits);
+	add(_barTimeUnits, "barTUs", "stats", 0);
+
+	add(_txtEnergy);
+	add(_numEnergy);
+	add(_barEnergy, "barEnergy", "stats", 0);
+
+	add(_txtHealth);
+	add(_numHealth);
+	add(_barHealth, "barHealth", "stats", 0);
+
+
+
+	add(_txtFatalWounds);
+	add(_numFatalWounds);
+	add(_barFatalWounds, "barWounds", "stats", 0);
+
+
+	add(_txtBravery);
+	add(_numBravery);
+	add(_barBravery, "barBravery", "stats", 0);
+
+
+	add(_txtMorale);
+	add(_numMorale);
+	add(_barMorale, "barMorale", "stats", 0);
+
+
+	add(_txtReactions);
+	add(_numReactions);
+	add(_barReactions, "barReactions", "stats", 0);
+
+
+	add(_txtFiring);
+	add(_numFiring);
+	add(_barFiring, "barFiring", "stats", 0);
+
+
+	add(_txtThrowing);
+	add(_numThrowing);
+	add(_barThrowing, "barThrowing", "stats", 0);
+
+
+	add(_txtMelee);
+	add(_numMelee);
+	add(_barMelee, "barMelee", "stats", 0);
+
+	add(_txtStrength);
+	add(_numStrength);
+	add(_barStrength, "barStrength", "stats", 0);
+
+	add(_txtPsiStrength);
+	add(_numPsiStrength);
+	add(_barPsiStrength, "barPsiStrength", "stats", 0);
+
+	add(_txtPsiSkill);
+	add(_numPsiSkill);
+	add(_barPsiSkill, "barPsiSkill", "stats", 0);
+
+	add(_txtFrontArmor);
+	add(_numFrontArmor);
+	add(_barFrontArmor, "barFrontArmor", "stats", 0);
+
+	add(_txtLeftArmor);
+	add(_numLeftArmor);
+	add(_barLeftArmor, "barLeftArmor", "stats", 0);
+
+	add(_txtRightArmor);
+	add(_numRightArmor);
+	add(_barRightArmor, "barRightArmor", "stats", 0);
+
+	add(_txtRearArmor);
+	add(_numRearArmor);
+	add(_barRearArmor, "barRearArmor", "stats", 0);
+
+	add(_txtUnderArmor);
+	add(_numUnderArmor);
+	add(_barUnderArmor, "barUnderArmor", "stats", 0);
+
+	//centerAllSurfaces();
+
+	// Set up objects
+	_game->getResourcePack()->getSurface("HDTAC01.PNG")->blit(_bg);
+
+	_txtName->setColor(Palette::blockOffset(4));
+	_txtName->setBig();
+	_txtName->setHighContrast(true);
+
+	_txtItem->setHighContrast(true);
+
+	_txtAmmo->setColor(Palette::blockOffset(4));
+	_txtAmmo->setSecondaryColor(Palette::blockOffset(1));
+	_txtAmmo->setAlign(ALIGN_LEFT);
+	_txtAmmo->setHighContrast(true);
+	
+
+/**	// move the TU display down to make room for the weight display
 	if (Options::showMoreStatsInInventoryView)
 	{
 		_txtTus->setY(_txtTus->getY() + 8);
@@ -155,7 +354,7 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_txtItem->setHighContrast(true);
 
 	_txtAmmo->setAlign(ALIGN_CENTER);
-	_txtAmmo->setHighContrast(true);
+	_txtAmmo->setHighContrast(true);  **/
 
 	_btnOk->onMouseClick((ActionHandler)&InventoryState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&InventoryState::btnOkClick, Options::keyCancel);
@@ -186,10 +385,10 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_btnGround->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
 	_btnGround->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
 
-	_btnRank->onMouseClick((ActionHandler)&InventoryState::btnRankClick);
+/**	_btnRank->onMouseClick((ActionHandler)&InventoryState::btnRankClick);
 	_btnRank->setTooltip("STR_UNIT_STATS");
 	_btnRank->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
-	_btnRank->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
+	_btnRank->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut); **/
 
 	_btnCreateTemplate->onMouseClick((ActionHandler)&InventoryState::btnCreateTemplateClick);
 	_btnCreateTemplate->onKeyboardPress((ActionHandler)&InventoryState::btnCreateTemplateClick, Options::keyInvCreateTemplate);
@@ -204,6 +403,176 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_btnApplyTemplate->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
 	_btnApplyTemplate->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
 
+	Uint8 color = _game->getRuleset()->getInterface("stats")->getElement("text")->color;
+	Uint8 color2 = _game->getRuleset()->getInterface("stats")->getElement("text")->color2;
+
+	_txtTimeUnits->setColor(color);
+	_txtTimeUnits->setHighContrast(true);
+	_txtTimeUnits->setText(tr("STR_TIME_UNITS"));
+
+	_numTimeUnits->setColor(color2);
+	_numTimeUnits->setHighContrast(true);
+
+	_barTimeUnits->setScale(1.0);
+
+	_txtEnergy->setColor(color);
+	_txtEnergy->setHighContrast(true);
+	_txtEnergy->setText(tr("STR_ENERGY"));
+
+	_numEnergy->setColor(color2);
+	_numEnergy->setHighContrast(true);
+
+	_barEnergy->setScale(1.0);
+
+	_txtHealth->setColor(color);
+	_txtHealth->setHighContrast(true);
+	_txtHealth->setText(tr("STR_HEALTH"));
+
+	_numHealth->setColor(color2);
+	_numHealth->setHighContrast(true);
+
+	_barHealth->setScale(1.0);
+
+	_txtFatalWounds->setColor(color);
+	_txtFatalWounds->setHighContrast(true);
+	_txtFatalWounds->setText(tr("STR_FATAL_WOUNDS"));
+
+	_numFatalWounds->setColor(color2);
+	_numFatalWounds->setHighContrast(true);
+
+	_barFatalWounds->setScale(1.0);
+
+	_txtBravery->setColor(color);
+	_txtBravery->setHighContrast(true);
+	_txtBravery->setText(tr("STR_BRAVERY"));
+
+	_numBravery->setColor(color2);
+	_numBravery->setHighContrast(true);
+
+	_barBravery->setScale(1.0);
+
+	_txtMorale->setColor(color);
+	_txtMorale->setHighContrast(true);
+	_txtMorale->setText(tr("STR_MORALE"));
+
+	_numMorale->setColor(color2);
+	_numMorale->setHighContrast(true);
+
+	_barMorale->setScale(1.0);
+
+	_txtReactions->setColor(color);
+	_txtReactions->setHighContrast(true);
+	_txtReactions->setText(tr("STR_REACTIONS"));
+
+	_numReactions->setColor(color2);
+	_numReactions->setHighContrast(true);
+
+	_barReactions->setScale(1.0);
+
+	_txtFiring->setColor(color);
+	_txtFiring->setHighContrast(true);
+	_txtFiring->setText(tr("STR_FIRING_ACCURACY"));
+
+	_numFiring->setColor(color2);
+	_numFiring->setHighContrast(true);
+
+	_barFiring->setScale(1.0);
+
+	_txtThrowing->setColor(color);
+	_txtThrowing->setHighContrast(true);
+	_txtThrowing->setText(tr("STR_THROWING_ACCURACY"));
+
+	_numThrowing->setColor(color2);
+	_numThrowing->setHighContrast(true);
+
+	_barThrowing->setScale(1.0);
+
+	_txtMelee->setColor(color);
+	_txtMelee->setHighContrast(true);
+	_txtMelee->setText(tr("STR_MELEE_ACCURACY"));
+
+	_numMelee->setColor(color2);
+	_numMelee->setHighContrast(true);
+
+	_barMelee->setScale(1.0);
+
+	_txtStrength->setColor(color);
+	_txtStrength->setHighContrast(true);
+	_txtStrength->setText(tr("STR_STRENGTH"));
+
+	_numStrength->setColor(color2);
+	_numStrength->setHighContrast(true);
+
+	_barStrength->setScale(1.0);
+
+	_txtPsiStrength->setColor(color);
+	_txtPsiStrength->setHighContrast(true);
+	_txtPsiStrength->setText(tr("STR_PSIONIC_STRENGTH"));
+
+	_numPsiStrength->setColor(color2);
+	_numPsiStrength->setHighContrast(true);
+
+	_barPsiStrength->setScale(1.0);
+
+	_txtPsiSkill->setColor(color);
+	_txtPsiSkill->setHighContrast(true);
+	_txtPsiSkill->setText(tr("STR_PSIONIC_SKILL"));
+
+	_numPsiSkill->setColor(color2);
+	_numPsiSkill->setHighContrast(true);
+
+	_barPsiSkill->setScale(1.0);
+
+	_txtFrontArmor->setColor(color);
+	_txtFrontArmor->setHighContrast(true);
+	_txtFrontArmor->setText(tr("STR_FRONT_ARMOR_UC"));
+
+	_numFrontArmor->setColor(color2);
+	_numFrontArmor->setHighContrast(true);
+
+	_barFrontArmor->setScale(1.0);
+
+	_txtLeftArmor->setColor(color);
+	_txtLeftArmor->setHighContrast(true);
+	_txtLeftArmor->setText(tr("STR_LEFT_ARMOR_UC"));
+
+	_numLeftArmor->setColor(color2);
+	_numLeftArmor->setHighContrast(true);
+
+	_barLeftArmor->setScale(1.0);
+
+	_txtRightArmor->setColor(color);
+	_txtRightArmor->setHighContrast(true);
+	_txtRightArmor->setText(tr("STR_RIGHT_ARMOR_UC"));
+
+	_numRightArmor->setColor(color2);
+	_numRightArmor->setHighContrast(true);
+
+	_barRightArmor->setScale(1.0);
+
+	_txtRearArmor->setColor(color);
+	_txtRearArmor->setHighContrast(true);
+	_txtRearArmor->setText(tr("STR_REAR_ARMOR_UC"));
+
+	_numRearArmor->setColor(color2);
+	_numRearArmor->setHighContrast(true);
+
+	_barRearArmor->setScale(1.0);
+
+	_txtUnderArmor->setColor(color);
+	_txtUnderArmor->setHighContrast(true);
+	_txtUnderArmor->setText(tr("STR_UNDER_ARMOR_UC"));
+
+	_numUnderArmor->setColor(color2);
+	_numUnderArmor->setHighContrast(true);
+
+	_barUnderArmor->setScale(1.0);
+
+	if (!_mindProbe)
+	{
+		_btnPrev = new BattlescapeButton(14, 18, 2, 2);
+		_btnNext = new BattlescapeButton(14, 18, 304, 2);
+	}
 
 	// only use copy/paste buttons in setup (i.e. non-tu) mode
 	if (_tu)
@@ -223,12 +592,38 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_inv->onMouseOver((ActionHandler)&InventoryState::invMouseOver);
 	_inv->onMouseOut((ActionHandler)&InventoryState::invMouseOut);
 
-	_txtTus->setVisible(_tu);
+/**	_txtTus->setVisible(_tu);
 	_txtWeight->setVisible(Options::showMoreStatsInInventoryView);
 	_txtFAcc->setVisible(Options::showMoreStatsInInventoryView && !_tu);
 	_txtReact->setVisible(Options::showMoreStatsInInventoryView && !_tu);
 	_txtPSkill->setVisible(Options::showMoreStatsInInventoryView && !_tu);
-	_txtPStr->setVisible(Options::showMoreStatsInInventoryView && !_tu);
+	_txtPStr->setVisible(Options::showMoreStatsInInventoryView && !_tu); *//
+	_currentTooltip = "";
+
+	//Setup object for the top row labels of stats
+	_txtRank->setColor(color);
+	_txtRank->setSecondaryColor(color2);
+	_txtRank->setHighContrast(true);
+
+	_txtCraft->setColor(color);
+	_txtCraft->setSecondaryColor(color2);
+	_txtCraft->setHighContrast(true);
+
+	_txtMissions->setColor(color);
+	_txtMissions->setSecondaryColor(color2);
+	_txtMissions->setHighContrast(true);
+
+	_txtKills->setColor(color);
+	_txtKills->setSecondaryColor(color2);
+	_txtKills->setHighContrast(true);
+
+	_txtStatus->setColor(color);
+	_txtStatus->setSecondaryColor(color2);
+	_txtStatus->setHighContrast(true);
+
+	_txtArmor->setColor(color);
+	_txtArmor->setSecondaryColor(color2);
+	_txtArmor->setHighContrast(true);
 }
 
 static void _clearInventoryTemplate(std::vector<EquipmentLayoutItem*> &inventoryTemplate)
@@ -363,6 +758,25 @@ void InventoryState::updateStats()
 {
 	BattleUnit *unit = _battleGame->getSelectedUnit();
 
+	// Adding info menu  
+	_txtRank->setText(tr("STR_RANK_").arg(tr(unit->getRankString())));
+	_txtCraft->setText(tr("STR_CRAFT_").arg(unit->getGeoscapeSoldier()->getCraftString(_game->getLanguage())));
+	_txtMissions->setText(tr("STR_MISSIONS").arg(unit->getGeoscapeSoldier()->getMissions()));
+	_txtKills->setText(tr("STR_KILLS").arg(unit->getGeoscapeSoldier()->getKills()));
+
+	// Adding text for all bars
+	std::wostringstream ss;
+	ss << unit->getTimeUnits();
+	_numTimeUnits->setText(ss.str());
+	_barTimeUnits->setMax(unit->getStats()->tu);
+	_barTimeUnits->setValue(unit->getTimeUnits());
+
+	ss.str(L"");
+	// aliens have their rank in their "name", soldiers don't
+	if (unit->getType() == "SOLDIER")
+	{
+		ss << tr(unit->getRankString());
+		ss << " ";
 	_txtTus->setText(tr("STR_TIME_UNITS_SHORT").arg(unit->getTimeUnits()));
 
 	int weight = unit->getCarriedWeight(_inv->getSelectedItem());
@@ -375,7 +789,82 @@ void InventoryState::updateStats()
 	{
 		_txtWeight->setSecondaryColor(_game->getMod()->getInterface("inventory")->getElement("weight")->color);
 	}
+	ss << unit->getName(_game->getLanguage(), BattlescapeGame::_debugPlay);
+	_txtName->setBig();
+	_txtName->setText(ss.str());
 
+	ss.str(L"");
+	ss << unit->getEnergy();
+	_numEnergy->setText(ss.str());
+	_barEnergy->setMax(unit->getStats()->stamina);
+	_barEnergy->setValue(unit->getEnergy());
+
+	ss.str(L"");
+	ss << unit->getHealth();
+	_numHealth->setText(ss.str());
+	_barHealth->setMax(unit->getStats()->health);
+	_barHealth->setValue(unit->getHealth());
+	_barHealth->setValue2(unit->getStunlevel());
+
+	ss.str(L"");
+	ss << unit->getFatalWounds();
+	_numFatalWounds->setText(ss.str());
+	_barFatalWounds->setMax(unit->getFatalWounds());
+	_barFatalWounds->setValue(unit->getFatalWounds());
+
+	ss.str(L"");
+	ss << unit->getStats()->bravery;
+	_numBravery->setText(ss.str());
+	_barBravery->setMax(unit->getStats()->bravery);
+	_barBravery->setValue(unit->getStats()->bravery);
+
+	ss.str(L"");
+	ss << unit->getMorale();
+	_numMorale->setText(ss.str());
+	_barMorale->setMax(100);
+	_barMorale->setValue(unit->getMorale());
+
+	ss.str(L"");
+	ss << unit->getStats()->reactions;
+	_numReactions->setText(ss.str());
+	_barReactions->setMax(unit->getStats()->reactions);
+	_barReactions->setValue(unit->getStats()->reactions);
+
+	ss.str(L"");
+	ss << (int)((unit->getStats()->firing * unit->getHealth()) / unit->getStats()->health);
+	_numFiring->setText(ss.str());
+	_barFiring->setMax(unit->getStats()->firing);
+	_barFiring->setValue((unit->getStats()->firing * unit->getHealth()) / unit->getStats()->health);
+
+	ss.str(L"");
+	ss << (int)((unit->getStats()->throwing * unit->getHealth()) / unit->getStats()->health);
+	_numThrowing->setText(ss.str());
+	_barThrowing->setMax(unit->getStats()->throwing);
+	_barThrowing->setValue((unit->getStats()->throwing * unit->getHealth()) / unit->getStats()->health);
+
+	ss.str(L"");
+	ss << (int)((unit->getStats()->melee * unit->getHealth()) / unit->getStats()->health);
+	_numMelee->setText(ss.str());
+	_barMelee->setMax(unit->getStats()->melee);
+	_barMelee->setValue((unit->getStats()->melee * unit->getHealth()) / unit->getStats()->health);
+
+	ss.str(L"");
+	ss << unit->getStats()->strength;
+	_numStrength->setText(ss.str());
+	_barStrength->setMax(unit->getStats()->strength);
+	_barStrength->setValue(unit->getStats()->strength);
+
+	if (unit->getStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getRuleset()->getPsiRequirements())))
+	{
+		ss.str(L"");
+		ss << unit->getStats()->psiStrength;
+		_numPsiStrength->setText(ss.str());
+		_barPsiStrength->setMax(unit->getStats()->psiStrength);
+		_barPsiStrength->setValue(unit->getStats()->psiStrength);
+
+		_txtPsiStrength->setVisible(true);
+		_numPsiStrength->setVisible(true);
+		_barPsiStrength->setVisible(true);
 	_txtFAcc->setText(tr("STR_ACCURACY_SHORT").arg((int)(unit->getBaseStats()->firing * unit->getHealth()) / unit->getBaseStats()->health));
 
 	_txtReact->setText(tr("STR_REACTIONS_SHORT").arg(unit->getBaseStats()->reactions));
@@ -386,17 +875,62 @@ void InventoryState::updateStats()
 	}
 	else
 	{
-		_txtPSkill->setText(L"");
+//		_txtPSkill->setText(L"");
+		_txtPsiStrength->setVisible(false);
+		_numPsiStrength->setVisible(false);
+		_barPsiStrength->setVisible(false);
 	}
 
 	if (unit->getBaseStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
 	{
+		ss.str(L"");
+		ss << unit->getStats()->psiSkill;
+		_numPsiSkill->setText(ss.str());
+		_barPsiSkill->setMax(unit->getStats()->psiSkill);
+		_barPsiSkill->setValue(unit->getStats()->psiSkill);
+
+		_txtPsiSkill->setVisible(true);
+		_numPsiSkill->setVisible(true);
+		_barPsiSkill->setVisible(true);
 		_txtPStr->setText(tr("STR_PSIONIC_STRENGTH_SHORT").arg(unit->getBaseStats()->psiStrength));
 	}
 	else
 	{
-		_txtPStr->setText(L"");
+//		_txtPStr->setText(L"");
+		_txtPsiSkill->setVisible(false);
+		_numPsiSkill->setVisible(false);
+		_barPsiSkill->setVisible(false);
 	}
+
+	ss.str(L"");
+	ss << unit->getArmor(SIDE_FRONT);
+	_numFrontArmor->setText(ss.str());
+	_barFrontArmor->setMax(unit->getArmor()->getFrontArmor());
+	_barFrontArmor->setValue(unit->getArmor(SIDE_FRONT));
+
+	ss.str(L"");
+	ss << unit->getArmor(SIDE_LEFT);
+	_numLeftArmor->setText(ss.str());
+	_barLeftArmor->setMax(unit->getArmor()->getSideArmor());
+	_barLeftArmor->setValue(unit->getArmor(SIDE_LEFT));
+
+	ss.str(L"");
+	ss << unit->getArmor(SIDE_RIGHT);
+	_numRightArmor->setText(ss.str());
+	_barRightArmor->setMax(unit->getArmor()->getSideArmor());
+	_barRightArmor->setValue(unit->getArmor(SIDE_RIGHT));
+
+	ss.str(L"");
+	ss << unit->getArmor(SIDE_REAR);
+	_numRearArmor->setText(ss.str());
+	_barRearArmor->setMax(unit->getArmor()->getRearArmor());
+	_barRearArmor->setValue(unit->getArmor(SIDE_REAR));
+
+	ss.str(L"");
+	ss << unit->getArmor(SIDE_UNDER);
+	_numUnderArmor->setText(ss.str());
+	_barUnderArmor->setMax(unit->getArmor()->getUnderArmor());
+	_barUnderArmor->setValue(unit->getArmor(SIDE_UNDER));
 }
 
 /**
