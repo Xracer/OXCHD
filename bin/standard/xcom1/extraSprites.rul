@@ -75,3 +75,9 @@ extraSprites:
     subY: 98
     files:
       57: Resources/HD/BigObs/bigobs.png
+  - type: HDTAC01.PNG
+    singleImage: true
+    width: 960
+    height: 600
+    files:
+      0: Resources/HD/BG/HDTAC01.PNG

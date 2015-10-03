@@ -21,6 +21,8 @@
 #include "BattleItem.h"
 #include <cmath>
 #include <sstream>
+#include <typeinfo>
+#include "../Engine/Palette.h"
 #include "../Engine/Surface.h"
 #include "../Engine/Language.h"
 #include "../Engine/Logger.h"
@@ -140,6 +142,8 @@ BattleUnit::BattleUnit(Soldier *soldier, int depth) :
 
 	int look = soldier->getGender() + 2 * soldier->getLook();
 	setRecolor(look, look, _rankInt);
+
+	_statistics = new BattleUnitStatistics();
 }
 
 /**
@@ -277,6 +281,8 @@ BattleUnit::BattleUnit(Unit *unit, UnitFaction faction, int id, Armor *armor, in
 	}
 
 	setRecolor(std::rand() % 8, std::rand() % 8, generalRank);
+
+	_statistics = new BattleUnitStatistics();
 }
 
 
@@ -333,6 +339,7 @@ void BattleUnit::load(const YAML::Node &node)
 	_charging = 0;
 	_spawnUnit = node["spawnUnit"].as<std::string>(_spawnUnit);
 	_motionPoints = node["motionPoints"].as<int>(0);
+	_statistics->load(node["tempUnitStatistics"]);
 	_respawn = node["respawn"].as<bool>(_respawn);
 	_activeHand = node["activeHand"].as<std::string>(_activeHand);
 
@@ -3058,5 +3065,14 @@ void BattleUnit::recoverTimeUnits()
 		if (_energy > getBaseStats()->stamina)
 			_energy = getBaseStats()->stamina;
 	}
+}
+
+/**	
+* Get the unit's statistics.
+* @return BattleUnitStatistics statistics.
+*/
+BattleUnitStatistics* BattleUnit::getStatistics()
+{
+	return _statistics;
 }
 }
