@@ -99,15 +99,15 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 	const int x = screenWidth/2 - iconsWidth/2;
 	const int y = screenHeight - iconsHeight;
 
-	// Create buttonbar - this should be on the centerbottom of the screen
+	// Create buttonbar - this should be on the centerbottom on the screen
 	_icons = new InteractiveSurface(iconsWidth, iconsHeight, x, y);
 
 	// Create the battlemap view
 	// the actual map height is the total height minus the height of the buttonbar
 	_map = new Map(_game, screenWidth, screenHeight, 0, 0, visibleMapHeight);
 
-	_numLayers = new NumberText(6, 9, x + 490, y + 76);
-	_rank = new Surface(53, 51, x + 554, y + 72);
+	_numLayers = new NumberText(6, 9, x + 473, y + 76);
+	_rank = new Surface(53, 51, x + 556, y + 72);
 
 	// Create buttons
 	_btnUnitUp = new BattlescapeButton(43, 25, x + 237, y + 68);
@@ -131,11 +131,11 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 	_btnReserveAuto = new BattlescapeButton(43, 25, x + 167, y + 94);
 	_btnReserveKneel = new BattlescapeButton(23, 51, x + 212, y + 68);
 	_btnZeroTUs = new BattlescapeButton(23, 51, x + 97, y + 68);
-	_btnLeftHandItem = new InteractiveSurface(64, 98, x + 15, y + 12);
+	_btnLeftHandItem = new InteractiveSurface(64, 98, x + 15, y + 11);
 	_numAmmoLeft = new NumberText(30, 5, x + 16, y + 12);
 	_btnLeftReload = new InteractiveSurface(18, 18, x + 8, y + 99); //Activates reload screen for left hand
 	_btnLeftReload->onMouseClick((ActionHandler)&BattlescapeState::btnLeftReloadClick);
-	//_btnLeftThrow = new ImageButton(18, 18, x + 65, y + 94);
+	//_btnLeftThrow = new ImageButton(18, 18, x + 69, y + 99);
 	_btnRightHandItem = new InteractiveSurface(64, 98, x + 879, y + 12);
 	_numAmmoRight = new NumberText(30, 5, x + 880, y + 12);
 	const int visibleUnitX = _game->getMod()->getInterface("battlescape")->getElement("visibleUnits")->x;
@@ -156,22 +156,22 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 	_btnPsi->setVisible(false);
 
 	// Create soldier stats summary
-	_txtName = new Text(267, 14, x + 607, y + 68);
+	_txtName = new Text(267, 14, x + 624, y + 70);
 
-	_numTimeUnits = new NumberText(27, 16, x + 612, y + 90);
-	_barTimeUnits = new Bar(210, 5, x + 666, y + 86);
+	_numTimeUnits = new NumberText(27, 16, x + 624, y + 85);
+	_barTimeUnits = new Bar(210, 5, x + 684, y + 86);
 
-	_numEnergy = new NumberText(15, 5, x + 641, y + 90);
-	_barEnergy = new Bar(95, 5, x + 666, y + 95);
+	_numEnergy = new NumberText(15, 5, x + 654, y + 85);
+	_barEnergy = new Bar(95, 5, x + 684, y + 95);
 
-	_numHealth = new NumberText(15, 5, x + 612, y + 108);
-	_barHealth = new Bar(95, 5, x + 666, y + 104);
+	_numHealth = new NumberText(15, 5, x + 624, y + 103);
+	_barHealth = new Bar(95, 5, x + 684, y + 104);
 
-	_numMorale = new NumberText(15, 5, x + 641, y + 108);
-	_barMorale = new Bar(95, 5, x + 666, y + 113);
+	_numMorale = new NumberText(15, 5, x + 654, y + 103);
+	_barMorale = new Bar(95, 5, x + 684, y + 113);
 
 	_txtDebug = new Text(300, 10, 20, 0);
-	_txtTooltip = new Text(300, 10, x + 97, y + 56);
+	_txtTooltip = new Text(300, 10, x + 98, y + 55);
 
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
@@ -200,7 +200,7 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 
 	// there is some cropping going on here, because the icons image is 320x200 while we only need the bottom of it.
 	SDL_Rect *r = icons->getCrop();
-	r->x = 0;
+	r->x = 160;
 	r->y = 800 - iconsHeight;
 	r->w = iconsWidth;
 	r->h = iconsHeight;
@@ -464,10 +464,10 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 
 	_txtName->setHighContrast(true);
 
-	_barTimeUnits->setScale(1.0);
-	_barEnergy->setScale(1.0);
-	_barHealth->setScale(1.0);
-	_barMorale->setScale(1.0);
+	_barTimeUnits->setScale(1.5);
+	_barEnergy->setScale(1.5);
+	_barHealth->setScale(1.5);
+	_barMorale->setScale(1.5);
 
 	_txtDebug->setColor(Palette::blockOffset(8));
 	_txtDebug->setHighContrast(true);

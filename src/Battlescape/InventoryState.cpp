@@ -55,9 +55,9 @@
 namespace OpenXcom
 {
 
-static const int _templateBtnX = 924;
-static const int _createTemplateBtnY = 392;
-static const int _applyTemplateBtnY  = 417;
+static const int _templateBtnX = 1252;
+static const int _createTemplateBtnY = 592;
+static const int _applyTemplateBtnY  = 617;
 
 /**
  * Initializes all the elements in the Inventory screen.
@@ -86,7 +86,7 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_soldier = new Surface(121, 215, 109, 115);
 	_rank = new Surface(26, 23, 5, 5); //added for the rank icon
 	_txtName = new Text(400, 17, 40, 10);
-	_txtItem = new Text(160, 9, 8, 310);
+	_txtItem = new Text(160, 15, 8, 310);
 	_txtAmmo = new Text(80, 24, 8, 432);
 	_btnPrev = new BattlescapeButton(23, 22, 1180, 5);
 	_btnOk = new BattlescapeButton(35, 22, 1208, 5);
@@ -98,83 +98,83 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_btnApplyTemplate = new BattlescapeButton(32, 22, _templateBtnX, _applyTemplateBtnY);
 	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 8, 325);
 	_inv = new Inventory(_game, 1280, 800, 0, 0, _parent == 0);
-	_txtRank = new Text(100, 10, 10, 38); // added
-	_txtMissions = new Text(100, 10, 135, 38); // added
-	_txtKills = new Text(100, 10, 255, 38); // added
-	_txtStatus = new Text(100, 10, 380, 38); // added
-	_txtCraft = new Text(150, 10, 505, 38); // added
-	_txtArmor = new Text(150, 10, 630, 38); // added
+	_txtRank = new Text(100, 14, 10, 38); // added
+	_txtMissions = new Text(100, 14, 135, 38); // added
+	_txtKills = new Text(100, 14, 255, 38); // added
+	_txtStatus = new Text(100, 14, 380, 38); // added
+	_txtCraft = new Text(150, 14, 505, 38); // added
+	_txtArmor = new Text(150, 14, 630, 38); // added
 
-	_txtTimeUnits = new Text(120, 10, 803, 87);
-	_numTimeUnits = new Text(18, 10, 936, 87);
+	_txtTimeUnits = new Text(120, 14, 803, 87);
+	_numTimeUnits = new Text(18, 14, 936, 87);
 	_barTimeUnits = new Bar(200, 8, 955, 87);
 
-	_txtEnergy = new Text(120, 10, 803, 102);
-	_numEnergy = new Text(18, 10, 936, 102);
+	_txtEnergy = new Text(120, 14, 803, 102);
+	_numEnergy = new Text(18, 14, 936, 102);
 	_barEnergy = new Bar(200, 8, 955, 102);
 
-	_txtHealth = new Text(120, 10, 803, 117);
-	_numHealth = new Text(18, 10, 936, 117);
+	_txtHealth = new Text(120, 14, 803, 117);
+	_numHealth = new Text(18, 14, 936, 117);
 	_barHealth = new Bar(200, 8, 955, 117);
 
-	_txtFatalWounds = new Text(120, 10, 803, 132);
-	_numFatalWounds = new Text(18, 10, 936, 132);
+	_txtFatalWounds = new Text(120, 14, 803, 132);
+	_numFatalWounds = new Text(18, 14, 936, 132);
 	_barFatalWounds = new Bar(200, 8, 955, 132);
 
-	_txtBravery = new Text(120, 10, 803, 147);
-	_numBravery = new Text(18, 10, 936, 147);
+	_txtBravery = new Text(120, 14, 803, 147);
+	_numBravery = new Text(18, 14, 936, 147);
 	_barBravery = new Bar(200, 8, 955, 147);
 
-	_txtMorale = new Text(120, 10, 803, 162);
-	_numMorale = new Text(18, 10, 936, 162);
+	_txtMorale = new Text(120, 14, 803, 162);
+	_numMorale = new Text(18, 14, 936, 162);
 	_barMorale = new Bar(200, 8, 955, 162);
 
-	_txtReactions = new Text(120, 10, 803, 177);
-	_numReactions = new Text(18, 10, 936, 177);
+	_txtReactions = new Text(120, 14, 803, 177);
+	_numReactions = new Text(18, 14, 936, 177);
 	_barReactions = new Bar(200, 8, 955, 177);
 
-	_txtFiring = new Text(120, 10, 803, 192);
-	_numFiring = new Text(18, 10, 936, 192);
+	_txtFiring = new Text(120, 14, 803, 192);
+	_numFiring = new Text(18, 14, 936, 192);
 	_barFiring = new Bar(200, 8, 955, 192);
 
-	_txtThrowing = new Text(120, 10, 803, 207);
-	_numThrowing = new Text(18, 10, 936, 207);
+	_txtThrowing = new Text(120, 14, 803, 207);
+	_numThrowing = new Text(18, 14, 936, 207);
 	_barThrowing = new Bar(200, 8, 955, 207);
 
-	_txtMelee = new Text(120, 10, 803, 222);
-	_numMelee = new Text(18, 10, 936, 222);
+	_txtMelee = new Text(120, 14, 803, 222);
+	_numMelee = new Text(18, 14, 936, 222);
 	_barMelee = new Bar(200, 8, 955, 222);
 
-	_txtStrength = new Text(120, 10, 803, 237);
-	_numStrength = new Text(18, 10, 936, 237);
+	_txtStrength = new Text(120, 14, 803, 237);
+	_numStrength = new Text(18, 14, 936, 237);
 	_barStrength = new Bar(200, 8, 955, 237);
 
-	_txtPsiStrength = new Text(120, 10, 803, 252);
-	_numPsiStrength = new Text(18, 10, 936, 252);
+	_txtPsiStrength = new Text(120, 14, 803, 252);
+	_numPsiStrength = new Text(18, 14, 936, 252);
 	_barPsiStrength = new Bar(200, 8, 955, 252);
 
-	_txtPsiSkill = new Text(120, 10, 803, 267);
-	_numPsiSkill = new Text(18, 10, 936, 267);
+	_txtPsiSkill = new Text(120, 14, 803, 267);
+	_numPsiSkill = new Text(18, 14, 936, 267);
 	_barPsiSkill = new Bar(200, 8, 955, 267);
 
-	_txtFrontArmor = new Text(120, 10, 803, 297);
-	_numFrontArmor = new Text(18, 10, 936, 297);
+	_txtFrontArmor = new Text(120, 14, 803, 297);
+	_numFrontArmor = new Text(18, 14, 936, 297);
 	_barFrontArmor = new Bar(200, 8, 955, 297);
 
-	_txtLeftArmor = new Text(120, 10, 803, 312);
-	_numLeftArmor = new Text(18, 10, 936, 312);
+	_txtLeftArmor = new Text(120, 14, 803, 312);
+	_numLeftArmor = new Text(18, 14, 936, 312);
 	_barLeftArmor = new Bar(200, 8, 955, 312);
 
-	_txtRightArmor = new Text(120, 10, 803, 327);
-	_numRightArmor = new Text(18, 10, 936, 327);
+	_txtRightArmor = new Text(120, 14, 803, 327);
+	_numRightArmor = new Text(18, 14, 936, 327);
 	_barRightArmor = new Bar(200, 8, 955, 327);
 
-	_txtRearArmor = new Text(120, 10, 803, 342);
-	_numRearArmor = new Text(18, 10, 936, 342);
+	_txtRearArmor = new Text(120, 14, 803, 342);
+	_numRearArmor = new Text(18, 14, 936, 342);
 	_barRearArmor = new Bar(200, 8, 955, 342);
 
-	_txtUnderArmor = new Text(120, 10, 803, 357);
-	_numUnderArmor = new Text(18, 10, 936, 357);
+	_txtUnderArmor = new Text(120, 14, 803, 357);
+	_numUnderArmor = new Text(18, 14, 936, 357);
 	_barUnderArmor = new Bar(200, 8, 955, 357);
 
 	if (!_mindProbe)

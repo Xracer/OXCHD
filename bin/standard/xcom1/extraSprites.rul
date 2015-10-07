@@ -64,8 +64,8 @@ extraSprites:
       0: Resources/UI/globe_ufo.png
   - type: ICONS.PCK
     singleImage: true
-    width: 960
-    height: 600
+    width: 1280
+    height: 800
     files:
       0: Resources/HD/UI/UI.png
   - type: BIGOBS.PCK

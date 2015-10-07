@@ -192,8 +192,8 @@ bool RuleInventory::fitItemInSlot(RuleItem *item, int x, int y) const
 	}
 	else if (_type == INV_GROUND)
 	{
-		int width = (320 - _x) / SLOT_W;
-		int height = (200 - _y) / SLOT_H;
+		int width = (1280 - _x) / SLOT_W;
+		int height = (800 - _y) / SLOT_H;
 		int xOffset = 0;
 		while (x >= xOffset + width)
 			xOffset += width;

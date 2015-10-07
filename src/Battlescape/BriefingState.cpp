@@ -52,12 +52,12 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 {
 	_screen = true;
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(120, 18, 100, 164);
-	_txtTitle = new Text(300, 32, 16, 24);
-	_txtTarget = new Text(300, 17, 16, 40);
-	_txtCraft = new Text(300, 17, 16, 56);
-	_txtBriefing = new Text(274, 64, 16, 72);
+	_window = new Window(this, 960, 600, 160, 100);
+	_btnOk = new TextButton(120, 18, 590, 536);
+	_txtTitle = new Text(300, 32, 500, 124);
+	_txtTarget = new Text(300, 17, 500, 140);
+	_txtCraft = new Text(300, 17, 500, 180);
+	_txtBriefing = new Text(350, 120, 500, 200);
 
 	std::string mission = _game->getSavedGame()->getSavedBattle()->getMissionType();
 	AlienDeployment *deployment = _game->getMod()->getDeployment(mission);
@@ -77,15 +77,15 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 	{
 		setPalette("PAL_GEOSCAPE", 0);
 		_musicId = "GMDEFEND";
-		_window->setBackground(_game->getMod()->getSurface("BACK16.SCR"));
+		_window->setBackground(_game->getMod()->getSurface("HDBACK16.PNG"));
 	}
 	else
 	{
 		BriefingData data = deployment->getBriefingData();
 		setPalette("PAL_GEOSCAPE", data.palette);
 		_window->setBackground(_game->getMod()->getSurface(data.background));
-		_txtCraft->setY(56 + data.textOffset);
-		_txtBriefing->setY(72 + data.textOffset);
+		_txtCraft->setY(156 + data.textOffset);
+		_txtBriefing->setY(172 + data.textOffset);
 		_txtTarget->setVisible(data.showTarget);
 		_txtCraft->setVisible(data.showCraft);
 		_cutsceneId = data.cutscene;
@@ -107,7 +107,7 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 	add(_txtCraft, "text", "briefing");
 	add(_txtBriefing, "text", "briefing");
 
-	centerAllSurfaces();
+
 
 	// Set up objects
 	_btnOk->setText(tr("STR_OK"));
