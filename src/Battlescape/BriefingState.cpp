@@ -83,7 +83,7 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 	{
 		BriefingData data = deployment->getBriefingData();
 		setPalette("PAL_GEOSCAPE", data.palette);
-		_window->setBackground(_game->getMod()->getSurface(data.background));
+		_window->setBackground(_game->getMod()->getSurface("HDBACK16.PNG")); //replacing data.background with "HDBACK16.PNG" to introduce our HD BG
 		_txtCraft->setY(156 + data.textOffset);
 		_txtBriefing->setY(172 + data.textOffset);
 		_txtTarget->setVisible(data.showTarget);
@@ -107,7 +107,7 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 	add(_txtCraft, "text", "briefing");
 	add(_txtBriefing, "text", "briefing");
 
-
+	//centerAllSurfaces();
 
 	// Set up objects
 	_btnOk->setText(tr("STR_OK"));
