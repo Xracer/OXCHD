@@ -36,8 +36,9 @@
 namespace OpenXcom
 {
 
-const int Screen::ORIGINAL_WIDTH = 320;
-const int Screen::ORIGINAL_HEIGHT = 200;
+//change the original reolution of the game from 320 to 960 so that centerallSurfaces () work properly
+const int Screen::ORIGINAL_WIDTH = 960; 
+const int Screen::ORIGINAL_HEIGHT = 600;
 
 /**
  * Sets up all the internal display flags depending on

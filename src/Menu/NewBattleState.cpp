@@ -64,8 +64,8 @@ namespace OpenXcom
 NewBattleState::NewBattleState() : _craft(0)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0, POPUP_BOTH);
-	_txtTitle = new Text(320, 17, 0, 9);
+	_window = new Window(this, 960, 600, 0, 0, POPUP_BOTH);
+	_txtTitle = new Text(960, 20, 0, 10);
 
 	_txtMapOptions = new Text(148, 9, 8, 68);
 	_frameLeft = new Frame(148, 96, 8, 78);

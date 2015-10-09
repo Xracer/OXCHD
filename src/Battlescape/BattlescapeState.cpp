@@ -200,7 +200,7 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 
 	// there is some cropping going on here, because the icons image is 320x200 while we only need the bottom of it.
 	SDL_Rect *r = icons->getCrop();
-	r->x = 160;
+	r->x = 139; //moves the icons inverse
 	r->y = 800 - iconsHeight;
 	r->w = iconsWidth;
 	r->h = iconsHeight;

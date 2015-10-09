@@ -1151,7 +1151,7 @@ interfaces:
         pos: [300, -16]
         color: 16
       - id: icons
-        size: [1002, 121] #320, 56
+        size: [1000, 120] #320, 56
       - id: numLayers
         color: 15
       - id: warning
@@ -1181,6 +1181,7 @@ interfaces:
     elements:
       - id: window
         color: 239
+        size: [960, 600] #added to change the size of the window for proper centering
       - id: button
         color: 133
         color2: 133

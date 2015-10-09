@@ -153,7 +153,7 @@ bool RuleInventory::checkSlotInPosition(int *x, int *y) const
 	}
 	else if (_type == INV_GROUND)
 	{
-		if (mouseX >= _x && mouseX < 320 && mouseY >= _y && mouseY < 200)
+		if (mouseX >= _x && mouseX < 1280 && mouseY >= _y && mouseY < 800) //changed x320 and y 200
 		{
 			*x = (int)floor(double(mouseX - _x) / SLOT_W);
 			*y = (int)floor(double(mouseY - _y) / SLOT_H);
