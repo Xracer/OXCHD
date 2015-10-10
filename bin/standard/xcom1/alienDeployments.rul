@@ -835,7 +835,8 @@ alienDeployments:
     alert: STR_ALIENS_TERRORISE
     briefing:
       palette: 2
-      music: GMENBASE    
+      music: GMENBASE
+      background: HDBACK03.PNG
     markerName: STR_TERROR_SITE
     duration: [4, 10]
     despawnPenalty: 1000
@@ -1234,6 +1235,7 @@ alienDeployments:
       palette: 6
       music: GMNEWMAR
       showTarget: false
+      background: HDBACK01.PNG 
   - type: STR_MARS_THE_FINAL_ASSAULT
     data:
       - alienRank: 0

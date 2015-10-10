@@ -1181,7 +1181,6 @@ interfaces:
     elements:
       - id: window
         color: 239
-        size: [960, 600] #added to change the size of the window for proper centering
       - id: button
         color: 133
         color2: 133
