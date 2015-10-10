@@ -64,23 +64,23 @@ namespace OpenXcom
 BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(globe)
 {
 	// Create objects
-	_txtFacility = new Text(192, 9, 0, 0);
-	_view = new BaseView(192, 192, 0, 8);
-	_mini = new MiniBaseView(128, 16, 192, 41);
-	_edtBase = new TextEdit(this, 127, 17, 193, 0);
-	_txtLocation = new Text(126, 9, 194, 16);
-	_txtFunds = new Text(126, 9, 194, 24);
+	_txtFacility = new Text(192, 12, 25, 95);
+	_view = new BaseView(192, 192, 25, 105);
+	_mini = new MiniBaseView(128, 16, 13, 13);
+	_edtBase = new TextEdit(this, 127, 17, 13, 43);
+	_txtLocation = new Text(126, 12, 13, 65);
+	_txtFunds = new Text(126, 12, 13, 75);
 	_btnNewBase = new TextButton(128, 12, 192, 58);
-	_btnBaseInfo = new TextButton(128, 12, 192, 71);
-	_btnSoldiers = new TextButton(128, 12, 192, 84);
-	_btnCrafts = new TextButton(128, 12, 192, 97);
-	_btnFacilities = new TextButton(128, 12, 192, 110);
-	_btnResearch = new TextButton(128, 12, 192, 123);
-	_btnManufacture = new TextButton(128, 12, 192, 136);
-	_btnTransfer = new TextButton(128, 12, 192, 149);
-	_btnPurchase = new TextButton(128, 12, 192, 162);
-	_btnSell = new TextButton(128, 12, 192, 175);
-	_btnGeoscape = new TextButton(128, 12, 192, 188);
+	_btnBaseInfo = new TextButton(84, 30, 48, 560);
+	_btnSoldiers = new TextButton(84, 30, 136, 560);
+	_btnCrafts = new TextButton(84, 30, 224, 560);
+	_btnFacilities = new TextButton(84, 30, 312, 560);
+	_btnResearch = new TextButton(84, 30, 400, 560);
+	_btnManufacture = new TextButton(84, 30, 488, 560);
+	_btnTransfer = new TextButton(84, 30, 576, 560);
+	_btnPurchase = new TextButton(84, 30, 664, 560);
+	_btnSell = new TextButton(84, 30, 752, 560);
+	_btnGeoscape = new TextButton(84, 30, 840, 560);
 
 	// Set palette
 	setInterface("basescape");
@@ -103,7 +103,7 @@ BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(g
 	add(_btnSell, "button", "basescape");
 	add(_btnGeoscape, "button", "basescape");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_view->setTexture(_game->getMod()->getSurfaceSet("BASEBITS.PCK"));
