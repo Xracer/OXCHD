@@ -40,17 +40,17 @@ namespace OpenXcom
 NewGameState::NewGameState()
 {
 	// Create objects
-	_window = new Window(this, 192, 180, 64, 10, POPUP_VERTICAL);
-	_btnBeginner = new TextButton(160, 18, 80, 32);
-	_btnExperienced = new TextButton(160, 18, 80, 52);
-	_btnVeteran = new TextButton(160, 18, 80, 72);
-	_btnGenius = new TextButton(160, 18, 80, 92);
-	_btnSuperhuman = new TextButton(160, 18, 80, 112);
-	_btnIronman = new ToggleTextButton(78, 18, 80, 138);
-	_btnOk = new TextButton(78, 16, 80, 164);
-	_btnCancel = new TextButton(78, 16, 162, 164);
-	_txtTitle = new Text(192, 9, 64, 20);
-	_txtIronman = new Text(90, 24, 162, 135);
+	_window = new Window(this, 250, 260, 355, 120, POPUP_VERTICAL);
+	_btnBeginner = new TextButton(230, 25, 365, 165);
+	_btnExperienced = new TextButton(230, 25, 365, 195);
+	_btnVeteran = new TextButton(230, 25, 365, 225);
+	_btnGenius = new TextButton(230, 25, 365, 255);
+	_btnSuperhuman = new TextButton(230, 25, 365, 285);
+	_btnIronman = new ToggleTextButton(100, 25, 365, 315);
+	_txtTitle = new Text(250, 15, 355, 140);
+	_txtIronman = new Text(110, 24, 480, 315);
+	_btnOk = new TextButton(112, 25, 365, 345);
+	_btnCancel = new TextButton(112, 25, 480, 345);
 
 	_difficulty = _btnBeginner;
 
@@ -72,7 +72,7 @@ NewGameState::NewGameState()
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	_btnBeginner->setText(tr("STR_1_BEGINNER"));
 	_btnBeginner->setGroup(&_difficulty);
