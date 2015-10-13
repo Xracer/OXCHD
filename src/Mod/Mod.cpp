@@ -48,8 +48,6 @@
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
 #include "../Battlescape/Pathfinding.h"
-
-
 #include "SoldierNamePool.h"
 #include "RuleCountry.h"
 #include "RuleRegion.h"
@@ -71,14 +69,10 @@
 #include "RuleInventory.h"
 #include "RuleResearch.h"
 #include "RuleManufacture.h"
-
-
 #include "ExtraStrings.h"
 #include "RuleInterface.h"
 #include "RuleMissionScript.h"
 #include "../Geoscape/Globe.h"
-
-
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Region.h"
 #include "../Savegame/Base.h"
@@ -91,13 +85,9 @@
 #include "../Savegame/GameTime.h"
 #include "UfoTrajectory.h"
 #include "RuleAlienMission.h"
-
 #include "MCDPatch.h"
-
-
 #include "StatString.h"
 #include "RuleGlobe.h"
-
 #include "RuleVideo.h"
 
 
@@ -201,24 +191,11 @@ void Mod::resetGlobalStatics()
 /**
  * Creates an empty mod.
  */
-Mod::Mod() : _costSoldier(0), _costEngineer(0), _costScientist(0), _timePersonnel(0), _initialFunding(0), _turnAIUseGrenade(3), _turnAIUseBlaster(3), _startingTime(6, 1, 1, 1999, 12, 0, 0), _facilityListOrder(0), _craftListOrder(0), _itemListOrder(0), _researchListOrder(0),  _manufactureListOrder(0), _ufopaediaListOrder(0), _invListOrder(0), _modOffset(0)
+Mod::Mod() : _costEngineer(0), _costScientist(0), _timePersonnel(0), _initialFunding(0), _turnAIUseGrenade(3), _turnAIUseBlaster(3), _startingTime(6, 1, 1, 1999, 12, 0, 0), _facilityListOrder(0), _craftListOrder(0), _itemListOrder(0), _researchListOrder(0),  _manufactureListOrder(0), _ufopaediaListOrder(0), _invListOrder(0), _modOffset(0)
 {
 	_muteMusic = new Music();
 	_muteSound = new Sound();
 	_globe = new RuleGlobe();
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 /**
@@ -592,9 +569,9 @@ Sound *Mod::getSoundByDepth(unsigned int depth, unsigned int sound) const
 }
 
 /**
-* Returns the list of color LUTs in the mod.
-* @return Pointer to the list of LUTs.
-*/
+ * Returns the list of color LUTs in the mod.
+ * @return Pointer to the list of LUTs.
+ */
 const std::vector<std::vector<Uint8> > *Mod::getLUTs() const
 {
 	return &_transparencyLUTs;
@@ -627,11 +604,11 @@ int Mod::getSpriteOffset(int sprite, const std::string& set) const
 }
 
 /**
-* Returns the appropriate mod-based offset for a sound.
-* If the ID is bigger than the soundset contents, the mod offset is applied.
-* @param id Numeric ID of the sound.
-* @param resource Name of the soundset to lookup.
-*/
+ * Returns the appropriate mod-based offset for a sound.
+ * If the ID is bigger than the soundset contents, the mod offset is applied.
+ * @param id Numeric ID of the sound.
+ * @param resource Name of the soundset to lookup.
+ */
 int Mod::getSoundOffset(int sound, const std::string& set) const
 
 {
@@ -835,7 +812,7 @@ void Mod::loadFile(const std::string &filename)
 	}
 	for (YAML::const_iterator i = doc["soldiers"].begin(); i != doc["soldiers"].end(); ++i)
 	{
-		RuleSoldier *rule = loadRule(*i, &_soldiers);
+		RuleSoldier *rule = loadRule(*i, &_soldiers, &_soldiersIndex);
 		if (rule != 0)
 		{
 			rule->load(*i);
@@ -971,7 +948,6 @@ void Mod::loadFile(const std::string &filename)
 	{
 		_startingTime.load(doc["startingTime"]);
 	}
-	_costSoldier = doc["costSoldier"].as<int>(_costSoldier);
 	_costEngineer = doc["costEngineer"].as<int>(_costEngineer);
 	_costScientist = doc["costScientist"].as<int>(_costScientist);
 	_timePersonnel = doc["timePersonnel"].as<int>(_timePersonnel);
@@ -1232,20 +1208,6 @@ void Mod::loadFile(const std::string &filename)
 }
 
 /**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  * Loads a rule element, adding/removing from vectors as necessary.
  * @param node YAML node.
  * @param map Map associated to the rule type.
@@ -1517,16 +1479,6 @@ const std::vector<std::string> &Mod::getUfosList() const
 }
 
 /**
- * Returns the list of all terrains
- * provided by the mod.
- * @return List of terrains.
- */
-const std::vector<std::string> &Mod::getTerrainList() const
-{
-	return _terrainIndex;
-}
-
-/**
  * Returns the rules for the specified terrain.
  * @param name Terrain name.
  * @return Rules for the terrain.
@@ -1535,6 +1487,16 @@ RuleTerrain *Mod::getTerrain(const std::string &name) const
 {
 	std::map<std::string, RuleTerrain*>::const_iterator i = _terrains.find(name);
 	if (_terrains.end() != i) return i->second; else return 0;
+}
+
+/**
+ * Returns the list of all terrains
+ * provided by the mod.
+ * @return List of terrains.
+ */
+const std::vector<std::string> &Mod::getTerrainList() const
+{
+	return _terrainIndex;
 }
 
 /**
@@ -1569,15 +1531,16 @@ RuleSoldier *Mod::getSoldier(const std::string &name) const
 }
 
 /**
+ * Returns the list of all soldiers
+ * provided by the mod.
+ * @return List of soldiers.
+ */
+const std::vector<std::string> &Mod::getSoldiersList() const
+{
+	return _soldiersIndex;
+}
 
-
-
-
-
-
-
-
-
+/**
  * Returns the info about a specific unit.
  * @param name Unit name.
  * @return Rules for the units.
@@ -1649,16 +1612,6 @@ Armor *Mod::getArmor(const std::string &name) const
 const std::vector<std::string> &Mod::getArmorsList() const
 {
 	return _armorsIndex;
-}
-
-/**
- * Returns the cost of an individual soldier
- * for purchase/maintenance.
- * @return Cost.
- */
-int Mod::getSoldierCost() const
-{
-	return _costSoldier;
 }
 
 /**
@@ -1800,7 +1753,6 @@ std::vector<OpenXcom::RuleBaseFacility*> Mod::getCustomBaseFacilities() const
 
 		{
 			placeList.push_back(facility);
-
 		}
 	}
 	return placeList;
@@ -2102,12 +2054,17 @@ std::vector<std::string> Mod::getPsiRequirements() const
 /**
  * Creates a new randomly-generated soldier.
  * @param save Saved game the soldier belongs to.
+ * @param type The soldier type to generate.
  * @return Newly generated soldier.
  */
-Soldier *Mod::genSoldier(SavedGame *save) const
+Soldier *Mod::genSoldier(SavedGame *save, std::string type) const
 {
 	Soldier *soldier = 0;
 	int newId = save->getId("STR_SOLDIER");
+	if (type.empty())
+	{
+		type = _soldiersIndex.front();
+	}
 
 	// Check for duplicates
 	// Original X-COM gives up after 10 tries so might as well do the same here
@@ -2115,7 +2072,7 @@ Soldier *Mod::genSoldier(SavedGame *save) const
 	for (int i = 0; i < 10 && duplicate; i++)
 	{
 		delete soldier;
-		soldier = new Soldier(getSoldier("XCOM"), getArmor("STR_NONE_UC"), &_names, newId);
+		soldier = new Soldier(getSoldier(type), getArmor(getSoldier(type)->getArmor()), &_names, newId);
 		duplicate = false;
 		for (std::vector<Base*>::iterator i = save->getBases()->begin(); i != save->getBases()->end() && !duplicate; ++i)
 		{
