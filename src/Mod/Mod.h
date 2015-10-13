@@ -54,6 +54,7 @@ class RuleItem;
 class RuleUfo;
 class RuleTerrain;
 class MapDataSet;
+class ResourcePack;
 class RuleSoldier;
 class Unit;
 class Armor;
@@ -70,6 +71,7 @@ class MCDPatch;
 class ExtraSprites;
 class ExtraSounds;
 class ExtraStrings;
+class RuleCommendations;
 class StatString;
 class RuleInterface;
 class RuleGlobe;
@@ -285,6 +287,8 @@ public:
 	MapDataSet *getMapDataSet(const std::string &name);
 	/// Gets soldier unit rules.
 	RuleSoldier *getSoldier(const std::string &name) const;
+	/// Gets commendation rules.
+	std::map<std::string, RuleCommendations *> getCommendation() const;
 	/// Gets generated unit rules.
 	Unit *getUnit(const std::string &name) const;
 	/// Gets alien race rules.

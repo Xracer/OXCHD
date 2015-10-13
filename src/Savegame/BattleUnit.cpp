@@ -3075,4 +3075,21 @@ BattleUnitStatistics* BattleUnit::getStatistics()
 {
 	return _statistics;
 }
+/**
+* Sets the unit murderer's id.
+* @param int murderer id.
+*/
+void BattleUnit::setMurdererId(int id)
+{
+	_murdererId = id;
+}
+/**
+* Gets the unit murderer's id.
+* @return int murderer id.
+*/
+int BattleUnit::getMurdererId() const
+{
+	return _murdererId;
+}
+
 }

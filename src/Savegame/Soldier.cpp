@@ -23,6 +23,7 @@
 #include "Craft.h"
 #include "EquipmentLayoutItem.h"
 #include "SoldierDeath.h"
+#include "SoldierDiary.h"
 #include "../Mod/SoldierNamePool.h"
 #include "../Mod/RuleSoldier.h"
 #include "../Mod/Armor.h"
@@ -42,6 +43,8 @@ namespace OpenXcom
  */
 Soldier::Soldier(RuleSoldier *rules, Armor *armor, const std::vector<SoldierNamePool*> *names, int id) : _id(id), _improvement(0), _psiStrImprovement(0), _rules(rules), _rank(RANK_ROOKIE), _craft(0), _gender(GENDER_MALE), _look(LOOK_BLONDE), _missions(0), _kills(0), _recovery(0), _recentlyPromoted(false), _psiTraining(false), _armor(armor), _death(0)
 {
+	_diary = new SoldierDiary();
+	
 	if (names != 0)
 	{
 		UnitStats minStats = rules->getMinStats();
@@ -173,6 +176,10 @@ YAML::Node Soldier::save() const
 	if (_death != 0)
 	{
 		node["death"] = _death->save();
+	}
+	if (!_diary->getMissionIdList().empty() || !_diary->getSoldierCommendations()->empty())
+	{
+	node["diary"] = _diary->save();
 	}
 	return node;
 }
@@ -609,6 +616,15 @@ void Soldier::die(SoldierDeath *death)
 		delete *i;
 	}
 	_equipmentLayout.clear();
+}
+
+/**
+ * Returns the soldier's diary.
+ * @return Diary.
+ */
+SoldierDiary *Soldier::getDiary()
+{
+	return _diary;
 }
 
 /**
