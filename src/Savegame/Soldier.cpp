@@ -29,6 +29,7 @@
 #include "../Mod/Armor.h"
 #include "../Mod/Mod.h"
 #include "../Mod/StatString.h"
+#include "../Engine/Options.h"
 #include "SavedGame.h"
 
 namespace OpenXcom
@@ -89,6 +90,7 @@ Soldier::~Soldier()
 		delete *i;
 	}
 	delete _death;
+	delete _diary;
 }
 
 /**
