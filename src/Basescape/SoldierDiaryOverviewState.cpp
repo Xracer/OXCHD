@@ -21,7 +21,7 @@
 #include "SoldierDiaryMissionState.h"
 #include "SoldierInfoState.h"
 #include <string>
-#include "../Mod/Mod.h"
+#include "../Resource/ResourcePack.h"
 #include "../Engine/Game.h"
 #include "../Engine/Language.h"
 #include "../Engine/Palette.h"
@@ -105,7 +105,15 @@ SoldierDiaryOverviewState::SoldierDiaryOverviewState(Base *base, size_t soldierI
 
 	_btnCommendations->setColor(Palette::blockOffset(13)+10);
 	_btnCommendations->setText(tr("STR_AWARDS_UC"));
-	_btnCommendations->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnCommendationsClick);
+	if (!_game->getRuleset()->getCommendation().empty())
+	{
+		_btnCommendations->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnCommendationsClick);
+		_btnCommendations->setVisible(true);
+	}
+	else
+	{
+		_btnCommendations->setVisible(false);
+	}
 
 	_btnPrev->setColor(Palette::blockOffset(15)+6);
 	_btnPrev->setText(L"<<");

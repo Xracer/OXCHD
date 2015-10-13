@@ -18,7 +18,7 @@
  */
 #include "SoldierDiaryMissionState.h"
 #include <sstream>
-#include "../Mod/Mod.h"
+#include "../Resource/ResourcePack.h"
 #include "../Engine/Game.h"
 #include "../Engine/Language.h"
 #include "../Engine/Palette.h"
@@ -187,6 +187,16 @@ SoldierDiaryMissionState::SoldierDiaryMissionState(Base *base, size_t soldierId,
 			wssStatus << tr("STR_STUNNED").c_str();
             stunOrKill = true;
 		}
+        else if ((*j)->getUnitStatusString() == "STATUS_PANICKED")
+		{
+            wssStatus << tr("STR_PANICKED").c_str();
+            stunOrKill = true;
+        }
+        else if ((*j)->getUnitStatusString() == "STATUS_TURNING")
+        {
+            wssStatus << tr("STR_MINDCONTROLLED").c_str();
+            stunOrKill = true;
+        }
 
 		_lstKills->addRow(3, wssStatus.str().c_str(), wssUnit.str().c_str(), wssWeapon.str().c_str());
 	}

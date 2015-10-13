@@ -20,7 +20,7 @@
 #include <sstream>
 #include "../Engine/Game.h"
 #include "../Engine/Action.h"
-#include "../Mod/Mod.h"
+#include "../Resource/ResourcePack.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
 #include "../Interface/Bar.h"
@@ -153,6 +153,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	add(_btnArmor, "button", "soldierInfo");
 	add(_edtSoldier, "text1", "soldierInfo");
 	add(_btnSack, "button", "soldierInfo");
+	add(_btnDiary, "button", "soldierInfo");
 	add(_txtRank, "text1", "soldierInfo");
 	add(_txtMissions, "text1", "soldierInfo");
 	add(_txtKills, "text1", "soldierInfo");
@@ -246,6 +247,9 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 
 	_btnSack->setText(tr("STR_SACK"));
 	_btnSack->onMouseClick((ActionHandler)&SoldierInfoState::btnSackClick);
+
+	_btnDiary->setText(tr("STR_DIARY"));
+	_btnDiary->onMouseClick((ActionHandler)&SoldierInfoState::btnDiaryClick);
 
 	_txtPsionic->setText(tr("STR_IN_PSIONIC_TRAINING"));
 
@@ -504,6 +508,14 @@ void SoldierInfoState::edtSoldierPress(Action *)
 }
 
 /**
+ * Set the soldier Id.
+ */
+void SoldierInfoState::setSoldierId(size_t soldier)
+{
+	_soldierId = soldier;
+}
+
+/**
  * Changes the soldier's name.
  * @param action Pointer to an action.
  */
@@ -570,6 +582,15 @@ void SoldierInfoState::btnArmorClick(Action *)
 void SoldierInfoState::btnSackClick(Action *)
 {
 	_game->pushState(new SackSoldierState(_base, _soldierId));
+}
+
+/**
+ * Shows the Diary Soldier window.
+ * @param action Pointer to an action.
+ */
+void SoldierInfoState::btnDiaryClick(Action *)
+{
+	_game->pushState(new SoldierDiaryOverviewState(_base, _soldierId, this));
 }
 
 }

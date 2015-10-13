@@ -21,7 +21,7 @@
 #include "SoldierInfoState.h"
 #include <string>
 #include "../Engine/Game.h"
-#include "../Mod/Mod.h"
+#include "../Resource/ResourcePack.h"
 #include "../Engine/Language.h"
 #include "../Engine/Palette.h"
 #include "../Engine/Options.h"
@@ -45,7 +45,7 @@ namespace OpenXcom
  * @param game Pointer to the core game.
  * @param base Pointer to the base to get info from.
  */
-SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryOverviewState, int display) : _base(base), _soldierId(soldierId), _soldierDiaryOverviewState(soldierDiaryOverviewState), _display(display)
+SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryOverviewState, int display) : _base(base), _soldierId(soldierId), _soldierDiaryOverviewState(soldierDiaryOverviewState), _display(display), _lastScrollPos(0)
 {
 	if (_base == 0)
 	{
@@ -235,7 +235,7 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 
 	_lstKillTotals->setColor(Palette::blockOffset(15)+1);
 	_lstKillTotals->setSecondaryColor(Palette::blockOffset(13)+10);
-	_lstKillTotals->setColumns(2, 98, 98);
+	_lstKillTotals->setColumns(4, 68, 68, 68, 84);
 	_lstKillTotals->setMargin(8);
 	_lstKillTotals->setBackground(_window);
 	
@@ -329,6 +329,7 @@ void SoldierDiaryPerformanceState::init()
 	_lstUFO->scrollTo(0);
 	_lstMissionTotals->scrollTo(0);
 	_lstCommendations->scrollTo(0);
+	_lastScrollPos = 0;
 	// Set visibility for kills
 	_txtRace->setVisible(_displayKills);
 	_txtRank->setVisible(_displayKills);
@@ -346,6 +347,10 @@ void SoldierDiaryPerformanceState::init()
 	_lstUFO->setVisible(_displayMissions);
 	_lstMissionTotals->setVisible(_displayMissions);
 	// Set visibility for commendations
+	if (_game->getRuleset()->getCommendation().empty())
+	{
+		_displayCommendations = false;
+	}
     _txtMedalName->setVisible(_displayCommendations);
     _txtMedalLevel->setVisible(_displayCommendations);
 	_txtMedalInfo->setVisible(_displayCommendations);
@@ -353,7 +358,14 @@ void SoldierDiaryPerformanceState::init()
 	// Set visibility for buttons
 	_btnKills->setVisible(!_displayKills);
 	_btnMissions->setVisible(!_displayMissions);
-	_btnCommendations->setVisible(!_displayCommendations);
+	if (_game->getRuleset()->getCommendation().empty())
+	{
+		_btnCommendations->setVisible(false);
+	}
+	else
+	{
+		_btnCommendations->setVisible(!_displayCommendations);
+	}
 
 	if (_list->empty())
 	{
@@ -368,8 +380,18 @@ void SoldierDiaryPerformanceState::init()
 	_lstKillTotals->clearList();
 	_lstMissionTotals->clearList();
 	_commendationsListEntry.clear();
-	_lstKillTotals->addRow(2, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
-							  tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str());
+	if (_soldier->getCurrentStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getRuleset()->getPsiRequirements())))
+	{
+		_lstKillTotals->addRow(4, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
+								  tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str(),
+								  tr("STR_PANICKS").arg(_soldier->getDiary()->getPanickTotal()).c_str(),
+								  tr("STR_CONTROLS").arg(_soldier->getDiary()->getControlTotal()).c_str());
+	}
+	else
+	{
+		_lstKillTotals->addRow(2, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
+								  tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str());
+	}
 	_lstMissionTotals->addRow(4, tr("STR_MISSIONS").arg(_soldier->getDiary()->getMissionTotal()).c_str(),
 								 tr("STR_WINS").arg(_soldier->getDiary()->getWinTotal()).c_str(),
 								 tr("STR_SCORE_VALUE").arg(_soldier->getDiary()->getScoreTotal()).c_str(),
@@ -404,7 +426,11 @@ void SoldierDiaryPerformanceState::init()
     
     for (std::vector<SoldierCommendations*>::const_iterator i = _soldier->getDiary()->getSoldierCommendations()->begin() ; i != _soldier->getDiary()->getSoldierCommendations()->end() ; ++i)
 	{
-		RuleCommendations* commendation = _game->getMod()->getCommendation()[(*i)->getType()];
+		if (_game->getRuleset()->getCommendation().empty())
+		{
+			break;
+		}
+		RuleCommendations* commendation = _game->getRuleset()->getCommendation()[(*i)->getType()];
 		std::wstringstream ss1, ss2, ss3;
 
 		if ((*i)->getNoun() != "noNoun")
@@ -573,12 +599,15 @@ void SoldierDiaryPerformanceState::lstInfoMouseOut(Action *)
  * Runs state functionality every cycle.
  * Used to update sprite vector
  */
-void SoldierDiaryPerformanceState::handle(Action *action)
+void SoldierDiaryPerformanceState::think()
 {
-	State::handle(action);
+	State::think();
 
-	if (action->getDetails()->button.state == SDL_PRESSED || action->getDetails()->button.button == SDL_BUTTON_LEFT || action->getDetails()->button.button == SDL_BUTTON_WHEELUP || action->getDetails()->button.button == SDL_BUTTON_WHEELDOWN)
+	if (_lastScrollPos != _lstCommendations->getScroll())
+	{
 		drawSprites();
+		_lastScrollPos = _lstCommendations->getScroll();
+	}
 }
 
 }
