@@ -18,7 +18,7 @@
  */
 #include "SoldierDiaryMissionState.h"
 #include <sstream>
-#include "../Resource/ResourcePack.h"
+#include "../Mod/ResourcePack.h"
 #include "../Engine/Game.h"
 #include "../Engine/Language.h"
 #include "../Engine/Palette.h"

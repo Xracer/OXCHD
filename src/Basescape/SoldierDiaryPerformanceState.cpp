@@ -21,7 +21,7 @@
 #include "SoldierInfoState.h"
 #include <string>
 #include "../Engine/Game.h"
-#include "../Resource/ResourcePack.h"
+#include "../Mod/ResourcePack.h"
 #include "../Engine/Language.h"
 #include "../Engine/Palette.h"
 #include "../Engine/Options.h"
