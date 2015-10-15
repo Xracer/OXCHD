@@ -54,7 +54,7 @@ class RuleItem;
 class RuleUfo;
 class RuleTerrain;
 class MapDataSet;
-class ResourcePack;
+class Mod;
 class RuleSoldier;
 class Unit;
 class Armor;
