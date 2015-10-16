@@ -63,6 +63,7 @@ private:
 	std::vector<ReequipStat> _missingItems;
 	std::map<RuleItem*, int> _rounds;
 	std::map<int, RecoveryItem*> _recoveryStats;
+    MissionStatistics *_missionStatistics;	
 	bool _positiveScore, _noContainment, _manageContainment, _destroyBase;
 	int _limitsEnforced;
 	/// Adds to the debriefing stats.
