@@ -51,12 +51,12 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 {
 	_screen = true;
 	// Create objects
-	_window = new Window(this, 960, 600, 0, 0);
-	_btnOk = new TextButton(120, 22, 590, 566);
-	_txtTitle = new Text(300, 32, 300, 124);
-	_txtTarget = new Text(300, 20, 300, 160);
-	_txtCraft = new Text(300, 20, 300, 180);
-	_txtBriefing = new Text(400, 120, 300, 200);
+	_window = new Window(this, 320, 200, 0, 0);
+	_btnOk = new TextButton(120, 18, 100, 164);
+	_txtTitle = new Text(300, 32, 16, 24);
+	_txtTarget = new Text(300, 17, 16, 40);
+	_txtCraft = new Text(300, 17, 16, 56);
+	_txtBriefing = new Text(274, 64, 16, 72);
 
 	std::string mission = _game->getSavedGame()->getSavedBattle()->getMissionType();
 	AlienDeployment *deployment = _game->getMod()->getDeployment(mission);
@@ -76,15 +76,15 @@ BriefingState::BriefingState(Craft *craft, Base *base)
 	{
 		setPalette("PAL_GEOSCAPE", 0);
 		_musicId = "GMDEFEND";
-		_window->setBackground(_game->getMod()->getSurface("HDBACK16.PNG"));
+		_window->setBackground(_game->getMod()->getSurface("BACK16.SCR"));
 	}
 	else
 	{
 		BriefingData data = deployment->getBriefingData();
 		setPalette("PAL_GEOSCAPE", data.palette);
-		_window->setBackground(_game->getMod()->getSurface(data.background)); //replacing data.background with "HDBACK16.PNG" to introduce our HD BG
-		_txtCraft->setY(180 + data.textOffset);
-		_txtBriefing->setY(202 + data.textOffset);
+		_window->setBackground(_game->getMod()->getSurface(data.background));
+		_txtCraft->setY(56 + data.textOffset);
+		_txtBriefing->setY(72 + data.textOffset);
 		_txtTarget->setVisible(data.showTarget);
 		_txtCraft->setVisible(data.showCraft);
 		_cutsceneId = data.cutscene;

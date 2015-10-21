@@ -39,7 +39,6 @@ class Armor;
 class Language;
 class EquipmentLayoutItem;
 class SoldierDeath;
-class SoldierDiary;
 class SavedGame;
 
 /**
@@ -63,7 +62,6 @@ private:
 	Armor *_armor;
 	std::vector<EquipmentLayoutItem*> _equipmentLayout;
 	SoldierDeath *_death;
-	SoldierDiary *_diary;
 	std::wstring _statString;
 public:
 	/// Creates a new soldier.
@@ -142,8 +140,6 @@ public:
 	SoldierDeath *getDeath() const;
 	/// Kills the soldier.
 	void die(SoldierDeath *death);
-	/// Gets the soldier's diary.
-	SoldierDiary *getDiary();
 	/// Calculate statString.
 	void calcStatString(const std::vector<StatString *> &statStrings, bool psiStrengthEval);
 };

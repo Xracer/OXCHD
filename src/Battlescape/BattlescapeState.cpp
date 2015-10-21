@@ -24,13 +24,7 @@
 #include "Map.h"
 #include "Camera.h"
 #include "BattlescapeState.h"
-#include "NextTurnState.h"
 #include "AbortMissionState.h"
-#include "BattleState.h"
-#include "UnitTurnBState.h"
-#include "UnitWalkBState.h"
-#include "ProjectileFlyBState.h"
-#include "ExplosionBState.h"
 #include "TileEngine.h"
 #include "ActionMenuState.h"
 #include "UnitInfoState.h"
@@ -69,7 +63,6 @@
 #include "../Mod/RuleItem.h"
 #include "../Mod/AlienDeployment.h"
 #include "../Mod/Armor.h"
-#include "../Mod/RuleInventory.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/SavedBattleGame.h"
 #include "../Savegame/Tile.h"
@@ -98,79 +91,73 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 	const int x = screenWidth/2 - iconsWidth/2;
 	const int y = screenHeight - iconsHeight;
 
-	// Create buttonbar - this should be on the centerbottom on the screen
+	// Create buttonbar - this should be on the centerbottom of the screen
 	_icons = new InteractiveSurface(iconsWidth, iconsHeight, x, y);
 
 	// Create the battlemap view
 	// the actual map height is the total height minus the height of the buttonbar
 	_map = new Map(_game, screenWidth, screenHeight, 0, 0, visibleMapHeight);
 
-	_numLayers = new NumberText(6, 9, x + 473, y + 76);
-	_rank = new Surface(53, 51, x + 556, y + 72);
+	_numLayers = new NumberText(3, 5, x + 232, y + 6);
+	_rank = new Surface(26, 23, x + 107, y + 33);
 
 	// Create buttons
-	_btnUnitUp = new BattlescapeButton(43, 25, x + 237, y + 68);
-	_btnUnitDown = new BattlescapeButton(43, 25, x + 237, y + 94);
-	_btnMapUp = new BattlescapeButton(43, 25, x + 282, y + 68);
-	_btnMapDown = new BattlescapeButton(43, 25, x + 282, y + 94);
-	_btnShowMap = new BattlescapeButton(43, 25, x + 327, y + 68);
-	_btnKneel = new BattlescapeButton(43, 25, x + 327, y + 94);
-	_btnInventory = new BattlescapeButton(43, 25, x + 372, y + 68);
-	_btnCenter = new BattlescapeButton(43, 25, x + 372, y + 94);
-	_btnNextSoldier = new BattlescapeButton(43, 25, x + 417, y + 68);
-	_btnNextStop = new BattlescapeButton(43, 25, x + 417, y + 94);
-	_btnShowLayers = new BattlescapeButton(43, 25, x + 462, y + 68);
-	_btnHelp = new BattlescapeButton(43, 25, x + 462, y + 94);
-	_btnEndTurn = new BattlescapeButton(43, 25, x + 507, y + 68);
-	_btnAbort = new BattlescapeButton(43, 25, x + 507, y + 94);
-	_btnStats = new InteractiveSurface(100, 25, x + 552, y + 68);
-	_btnReserveNone = new BattlescapeButton(43, 25, x + 122, y + 68);
-	_btnReserveSnap = new BattlescapeButton(43, 25, x + 167, y + 68);
-	_btnReserveAimed = new BattlescapeButton(43, 25, x + 122, y + 94);
-	_btnReserveAuto = new BattlescapeButton(43, 25, x + 167, y + 94);
-	_btnReserveKneel = new BattlescapeButton(23, 51, x + 212, y + 68);
-	_btnZeroTUs = new BattlescapeButton(23, 51, x + 97, y + 68);
-	_btnLeftHandItem = new InteractiveSurface(64, 98, x + 15, y + 11);
-	_numAmmoLeft = new NumberText(30, 5, x + 16, y + 12);
-	_btnLeftReload = new InteractiveSurface(18, 18, x + 8, y + 99); //Activates reload screen for left hand
-	_btnLeftReload->onMouseClick((ActionHandler)&BattlescapeState::btnLeftReloadClick);
-	//_btnLeftThrow = new ImageButton(18, 18, x + 69, y + 99);
-	_btnRightHandItem = new InteractiveSurface(64, 98, x + 879, y + 12);
-	_numAmmoRight = new NumberText(30, 5, x + 880, y + 12);
+	_btnUnitUp = new BattlescapeButton(32, 16, x + 48, y);
+	_btnUnitDown = new BattlescapeButton(32, 16, x + 48, y + 16);
+	_btnMapUp = new BattlescapeButton(32, 16, x + 80, y);
+	_btnMapDown = new BattlescapeButton(32, 16, x + 80, y + 16);
+	_btnShowMap = new BattlescapeButton(32, 16, x + 112, y);
+	_btnKneel = new BattlescapeButton(32, 16, x + 112, y + 16);
+	_btnInventory = new BattlescapeButton(32, 16, x + 144, y);
+	_btnCenter = new BattlescapeButton(32, 16, x + 144, y + 16);
+	_btnNextSoldier = new BattlescapeButton(32, 16, x + 176, y);
+	_btnNextStop = new BattlescapeButton(32, 16, x + 176, y + 16);
+	_btnShowLayers = new BattlescapeButton(32, 16, x + 208, y);
+	_btnHelp = new BattlescapeButton(32, 16, x + 208, y + 16);
+	_btnEndTurn = new BattlescapeButton(32, 16, x + 240, y);
+	_btnAbort = new BattlescapeButton(32, 16, x + 240, y + 16);
+	_btnStats = new InteractiveSurface(164, 23, x + 107, y + 33);
+	_btnReserveNone = new BattlescapeButton(17, 11, x + 60, y + 33);
+	_btnReserveSnap = new BattlescapeButton(17, 11, x + 78, y + 33);
+	_btnReserveAimed = new BattlescapeButton(17, 11, x + 60, y + 45);
+	_btnReserveAuto = new BattlescapeButton(17, 11, x + 78, y + 45);
+	_btnReserveKneel = new BattlescapeButton(10, 23, x + 96, y + 33);
+	_btnZeroTUs = new BattlescapeButton(10, 23, x + 49, y + 33);
+	_btnLeftHandItem = new InteractiveSurface(32, 48, x + 8, y + 4);
+	_numAmmoLeft = new NumberText(30, 5, x + 8, y + 4);
+	_btnRightHandItem = new InteractiveSurface(32, 48, x + 280, y + 4);
+	_numAmmoRight = new NumberText(30, 5, x + 280, y + 4);
 	const int visibleUnitX = _game->getMod()->getInterface("battlescape")->getElement("visibleUnits")->x;
 	const int visibleUnitY = _game->getMod()->getInterface("battlescape")->getElement("visibleUnits")->y;
 	for (int i = 0; i < VISIBLE_MAX; ++i)
 	{
-		_btnVisibleUnit[i] = new InteractiveSurface(15, 12, x + visibleUnitX - 20, y + visibleUnitY - (i * 13));
-		_numVisibleUnit[i] = new NumberText(15, 12, x + _btnVisibleUnit[i]->getX() - _btnVisibleUnit[i]->getY() + 4);
+		_btnVisibleUnit[i] = new InteractiveSurface(15, 12, x + visibleUnitX, y + visibleUnitY - (i * 13));
+		_numVisibleUnit[i] = new NumberText(15, 12, _btnVisibleUnit[i]->getX() + 6 , _btnVisibleUnit[i]->getY() + 4);
 	}
-	_btnRightReload = new InteractiveSurface(18, 18, x + 872, y + 100); //Activates reload screen for right hand
-	_btnRightReload->onMouseClick((ActionHandler)&BattlescapeState::btnRightReloadClick);
-	//_btnRightThrow = new ImageButton(18, 18, x + 934, y + 94); //Activates throw screen for right hand
-	_numVisibleUnit[9]->setX(_numVisibleUnit[9]->getX() - 2); //624 need to be added // center number 10
-	_warning = new WarningMessage(250, 34, x + 357, y + 72);
-	_btnLaunch = new BattlescapeButton(32, 24, screenWidth - 37, 5); // we need screenWidth, because that is independent of the black bars on the screen
+	_numVisibleUnit[9]->setX(_numVisibleUnit[9]->getX() - 2); // center number 10
+	_warning = new WarningMessage(224, 24, x + 48, y + 32);
+	_btnLaunch = new BattlescapeButton(32, 24, screenWidth - 32, 0); // we need screenWidth, because that is independent of the black bars on the screen
 	_btnLaunch->setVisible(false);
 	_btnPsi = new BattlescapeButton(32, 24, screenWidth - 32, 25); // we need screenWidth, because that is independent of the black bars on the screen
 	_btnPsi->setVisible(false);
 
 	// Create soldier stats summary
-	_txtName = new Text(267, 14, x + 624, y + 70);
+	_txtName = new Text(136, 10, x + 135, y + 32);
 
-	_numTimeUnits = new NumberText(27, 16, x + 624, y + 85);
-	_barTimeUnits = new Bar(210, 5, x + 684, y + 86);
+	_numTimeUnits = new NumberText(15, 5, x + 136, y + 42);
+	_barTimeUnits = new Bar(102, 3, x + 170, y + 41);
 
-	_numEnergy = new NumberText(15, 5, x + 654, y + 85);
-	_barEnergy = new Bar(95, 5, x + 684, y + 95);
+	_numEnergy = new NumberText(15, 5, x + 154, y + 42);
+	_barEnergy = new Bar(102, 3, x + 170, y + 45);
 
-	_numHealth = new NumberText(15, 5, x + 624, y + 103);
-	_barHealth = new Bar(95, 5, x + 684, y + 104);
+	_numHealth = new NumberText(15, 5, x + 136, y + 50);
+	_barHealth= new Bar(102, 3, x + 170, y + 49);
 
-	_numMorale = new NumberText(15, 5, x + 654, y + 103);
-	_barMorale = new Bar(95, 5, x + 684, y + 113);
+	_numMorale = new NumberText(15, 5, x + 154, y + 50);
+	_barMorale = new Bar(102, 3, x + 170, y + 53);
 
 	_txtDebug = new Text(300, 10, 20, 0);
-	_txtTooltip = new Text(300, 10, x + 98, y + 55);
+	_txtTooltip = new Text(300, 10, x + 2, y - 10);
 
 	// Set palette
 	_game->getSavedGame()->getSavedBattle()->setPaletteByDepth(this);
@@ -199,8 +186,8 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 
 	// there is some cropping going on here, because the icons image is 320x200 while we only need the bottom of it.
 	SDL_Rect *r = icons->getCrop();
-	r->x = 139; //moves the icons inverse
-	r->y = 800 - iconsHeight;
+	r->x = 0;
+	r->y = 200 - iconsHeight;
 	r->w = iconsWidth;
 	r->h = iconsHeight;
 	// we need to blit the icons before we add the battlescape buttons, as they copy the underlying parent surface.
@@ -417,18 +404,6 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 	_btnZeroTUs->onMouseOut((ActionHandler)&BattlescapeState::txtTooltipOut);
 	_btnZeroTUs->allowClickInversion();
 
-	_btnLeftReload->onMouseClick((ActionHandler)&BattlescapeState::btnLeftReloadClick);
-	_btnLeftReload->onKeyboardPress((ActionHandler)&BattlescapeState::btnLeftReloadClick, Options::keyBattleLeftReload);
-	_btnLeftReload->setTooltip("STR_RELOAD_LEFT_HAND_WEAPON");
-	_btnLeftReload->onMouseIn((ActionHandler)&BattlescapeState::txtTooltipIn);
-	_btnLeftReload->onMouseOut((ActionHandler)&BattlescapeState::txtTooltipOut);
-
-	_btnRightReload->onMouseClick((ActionHandler)&BattlescapeState::btnRightReloadClick);
-	_btnRightReload->onKeyboardPress((ActionHandler)&BattlescapeState::btnRightReloadClick, Options::keyBattleRightReload);
-	_btnRightReload->setTooltip("STR_RELOAD_RIGHT_HAND_WEAPON");
-	_btnRightReload->onMouseIn((ActionHandler)&BattlescapeState::txtTooltipIn);
-	_btnRightReload->onMouseOut((ActionHandler)&BattlescapeState::txtTooltipOut);
-	
 	// shortcuts without a specific button
 	_btnStats->onKeyboardPress((ActionHandler)&BattlescapeState::btnReloadClick, Options::keyBattleReload);
 	_btnStats->onKeyboardPress((ActionHandler)&BattlescapeState::btnPersonalLightingClick, Options::keyBattlePersonalLighting);
@@ -463,10 +438,10 @@ BattlescapeState::BattlescapeState() : _reserve(0), _xBeforeMouseScrolling(0), _
 
 	_txtName->setHighContrast(true);
 
-	_barTimeUnits->setScale(1.5);
-	_barEnergy->setScale(1.5);
-	_barHealth->setScale(1.5);
-	_barMorale->setScale(1.5);
+	_barTimeUnits->setScale(1.0);
+	_barEnergy->setScale(1.0);
+	_barHealth->setScale(1.0);
+	_barMorale->setScale(1.0);
 
 	_txtDebug->setColor(Palette::blockOffset(8));
 	_txtDebug->setHighContrast(true);
@@ -1397,18 +1372,8 @@ void BattlescapeState::handleItemClick(BattleItem *item)
 	// make sure there is an item, and the battlescape is in an idle state
 	if (item && !_battleGame->isBusy())
 	{
-		if (_game->getSavedGame()->isResearched(item->getRules()->getRequirements()) || _save->getSelectedUnit()->getOriginalFaction() == FACTION_HOSTILE)
-		{
-			// Let's hardcode this instead of doing math like we should for moving the shot selection state.
-			const int offset = item->getSlot()->getId() == "STR_RIGHT_HAND" ? 800 : 60; 
-		
-			_battleGame->getCurrentAction()->weapon = item;
-			popup(new ActionMenuState(_battleGame->getCurrentAction(), _icons->getX() - 15 + offset, _icons->getY() + 20));
-		}
-		else
-		{
-			warning("STR_UNABLE_TO_USE_ALIEN_ARTIFACT_UNTIL_RESEARCHED");
-		}
+		_battleGame->getCurrentAction()->weapon = item;
+		popup(new ActionMenuState(_battleGame->getCurrentAction(), _icons->getX(), _icons->getY()+16));
 	}
 }
 
@@ -1581,25 +1546,6 @@ inline void BattlescapeState::handle(Action *action)
 				{
 					saveVoxelView();
 				}
-			}
-			// quick save and quick load
-			// not works in debug mode to prevent conflict in hotkeys by default
-			else if (!_game->getSavedGame()->isIronman())
-			{
-				if (action->getDetails()->key.keysym.sym == Options::keyQuickSave)
-				{
-					_game->pushState(new SaveGameState(OPT_BATTLESCAPE, SAVE_QUICK, _palette));
-				}
-				else if (action->getDetails()->key.keysym.sym == Options::keyQuickLoad)
-				{
-					_game->pushState(new LoadGameState(OPT_BATTLESCAPE, SAVE_QUICK, _palette));
-				}
-			}
-
-			// voxel view dump
-			if (action->getDetails()->key.keysym.sym == Options::keyBattleVoxelView)
-			{
-				saveVoxelView();
 			}
 		}
 	}
@@ -2238,29 +2184,4 @@ void BattlescapeState::stopScrolling(Action *action)
 	_cursorPosition.z = 0;
 }
 
-/**
-* Reload weapon in left hand.
-* @param action Pointer to an action.
-*/
-void BattlescapeState::btnLeftReloadClick(Action *)
-{
-	if (playableUnitSelected() && _save->getSelectedUnit()->checkAmmo()) // Removed "STR_LEFT_HAND"
-	{
-		_game->getMod()->getSound("BATTLE.CAT", 17)->play();
-		updateSoldierInfo();
-	}
-}
-
-/**
-* Reload weapon in right hand.
-* @param action Pointer to an action.
-*/
-void BattlescapeState::btnRightReloadClick(Action *)
-{
-	if (playableUnitSelected() && _save->getSelectedUnit()->checkAmmo()) // Removed "STR_RIGHT_HAND"
-	{
-		_game->getMod()->getSound("BATTLE.CAT", 17)->play();
-		updateSoldierInfo();
-	}
-}
 }

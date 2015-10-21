@@ -17,7 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Mod.h"
-
 #include <algorithm>
 #include <sstream>
 #include <climits>
@@ -57,10 +56,8 @@
 #include "RuleItem.h"
 #include "RuleUfo.h"
 #include "RuleTerrain.h"
-#include "RuleCommendations.h"
 #include "MapScript.h"
 #include "RuleSoldier.h"
-#include "RuleCommendations.h"
 #include "Unit.h"
 #include "AlienRace.h"
 #include "AlienDeployment.h"
@@ -89,7 +86,6 @@
 #include "StatString.h"
 #include "RuleGlobe.h"
 #include "RuleVideo.h"
-
 
 namespace OpenXcom
 {
@@ -334,15 +330,11 @@ Mod::~Mod()
 	{
 		delete i->second;
 	}
-
-	for (std::map<std::string, RuleCommendations *>::const_iterator i = _commendations.begin(); i != _commendations.end(); ++i)
-
 	for (std::map<std::string, std::vector<MapScript*> >::iterator i = _mapScripts.begin(); i != _mapScripts.end(); ++i)
 	{
 		for (std::vector<MapScript*>::iterator j = (*i).second.begin(); j != (*i).second.end(); ++j)
 		{
 			delete *j;
-
 		}
 	}
 	for (std::map<std::string, RuleVideo *>::const_iterator i = _videos.begin(); i != _videos.end(); ++i)
@@ -358,7 +350,6 @@ Mod::~Mod()
 		delete i->second;
 	}
 	for (std::map<std::string, SoundDefinition*>::const_iterator i = _soundDefs.begin(); i != _soundDefs.end(); ++i)
-
 	{
 		delete i->second;
 	}
@@ -591,8 +582,6 @@ int Mod::getModOffset() const
  * If the ID is bigger than the surfaceset contents, the mod offset is applied.
  * @param id Numeric ID of the sprite.
  * @param resource Name of the surfaceset to lookup.
-
-
  */
 int Mod::getSpriteOffset(int sprite, const std::string& set) const
 {
@@ -610,14 +599,10 @@ int Mod::getSpriteOffset(int sprite, const std::string& set) const
  * @param resource Name of the soundset to lookup.
  */
 int Mod::getSoundOffset(int sound, const std::string& set) const
-
 {
 	SoundSet *ss = getSoundSet(set);
 	if (ss != 0 && sound >= (int)ss->getTotalSounds())
 		return sound + _modOffset;
-
-
-
 	else
 		return sound;
 }
@@ -709,12 +694,10 @@ void Mod::loadMod(const std::vector<std::string> &rulesetFiles, size_t modIdx)
 		}
 	}
 
-
 	if (modIdx == 0)
 	{
 		loadVanillaResources();
 	}
-
 }
 
 /**
@@ -908,10 +891,8 @@ void Mod::loadFile(const std::string &filename)
 				case UFOPAEDIA_TYPE_TFTD_ARMOR:
 				case UFOPAEDIA_TYPE_TFTD_BASE_FACILITY:
 				case UFOPAEDIA_TYPE_TFTD_USO:
-
 					rule = new ArticleDefinitionTFTD();
 					break;
-
 				default: rule = 0; break;
 				}
 				_ufopaediaArticles[id] = rule;
@@ -1031,27 +1012,6 @@ void Mod::loadFile(const std::string &filename)
 			_extraStrings[type] = extraStrings.release();
 			_extraStringsIndex.push_back(type);
 		}
-	}
-	for (YAML::const_iterator i = doc["commendations"].begin(); i != doc["commendations"].end(); ++i)
-	{
-		std::string type = (*i)["type"].as<std::string>();
-		std::auto_ptr<RuleCommendations> commendations(new RuleCommendations());
-		commendations->load(*i);
-        _commendations[type] = commendations.release();
-	}
-
-	for (YAML::const_iterator i = doc["statStrings"].begin(); i != doc["statStrings"].end(); ++i)
-	{
-		StatString *statString = new StatString();
-		statString->load(*i);
-		_statStrings.push_back(statString);
-	}
-
-	for (YAML::const_iterator i = doc["statStrings"].begin(); i != doc["statStrings"].end(); ++i)
-	{
-		StatString *statString = new StatString();
-		statString->load(*i);
-		_statStrings.push_back(statString);
 	}
 
 	for (YAML::const_iterator i = doc["statStrings"].begin(); i != doc["statStrings"].end(); ++i)
@@ -1750,7 +1710,6 @@ std::vector<OpenXcom::RuleBaseFacility*> Mod::getCustomBaseFacilities() const
 		std::string type = (*i)["type"].as<std::string>();
 		RuleBaseFacility *facility = getBaseFacility(type);
 		if (!facility->isLift())
-
 		{
 			placeList.push_back(facility);
 		}
@@ -1897,7 +1856,6 @@ template <typename T>
 struct compareRule : public std::binary_function<const std::string&, const std::string&, bool>
 {
 	Mod *_mod;
-
 	typedef T*(Mod::*RuleLookup)(const std::string &id);
 	RuleLookup _lookup;
 
@@ -1921,7 +1879,6 @@ struct compareRule<RuleCraftWeapon> : public std::binary_function<const std::str
 {
 	Mod *_mod;
 
-
 	compareRule(Mod *mod) : _mod(mod)
 	{
 	}
@@ -1942,7 +1899,6 @@ template <>
 struct compareRule<Armor> : public std::binary_function<const std::string&, const std::string&, bool>
 {
 	Mod *_mod;
-
 
 	compareRule(Mod *mod) : _mod(mod)
 	{
@@ -1972,7 +1928,6 @@ template <>
 struct compareRule<ArticleDefinition> : public std::binary_function<const std::string&, const std::string&, bool>
 {
 	Mod *_mod;
-
 	static std::map<std::string, int> _sections;
 
 	compareRule(Mod *mod) : _mod(mod)
@@ -2182,7 +2137,6 @@ const std::vector<SDL_Color> *Mod::getTransparencies() const
 {
 	return &_transparencies;
 }
-
 
 const std::vector<MapScript*> *Mod::getMapScript(std::string id) const
 {
@@ -3311,7 +3265,6 @@ Music *Mod::loadMusic(MusicFormat fmt, const std::string &file, int track, float
  * @param pal the palette to base the lookup table on.
  */
 void Mod::createTransparencyLUT(Palette *pal)
-
 {
 	SDL_Color desiredColor;
 	std::vector<Uint8> lookUpTable;
@@ -3352,10 +3305,6 @@ void Mod::createTransparencyLUT(Palette *pal)
 		}
 	}
 	_transparencyLUTs.push_back(lookUpTable);
-
-
 }
-
-
 
 }

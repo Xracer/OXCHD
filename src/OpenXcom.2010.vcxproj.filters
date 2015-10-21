@@ -925,21 +925,6 @@
     <ClCompile Include="Mod\Mod.cpp">
       <Filter>Mod</Filter>
     </ClCompile>
-    <ClCompile Include="Basescape\SoldierDiaryMissionState.cpp">
-      <Filter>Basescape</Filter>
-    </ClCompile>
-    <ClCompile Include="Basescape\SoldierDiaryOverviewState.cpp">
-      <Filter>Basescape</Filter>
-    </ClCompile>
-    <ClCompile Include="Basescape\SoldierDiaryPerformanceState.cpp">
-      <Filter>Basescape</Filter>
-    </ClCompile>
-    <ClCompile Include="Mod\RuleCommendations.cpp">
-      <Filter>Mod</Filter>
-    </ClCompile>
-    <ClCompile Include="Savegame\SoldierDiary.cpp">
-      <Filter>Savegame</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -1893,21 +1878,6 @@
     <ClInclude Include="Mod\Mod.h">
       <Filter>Mod</Filter>
     </ClInclude>
-    <ClInclude Include="Basescape\SoldierDiaryMissionState.h">
-      <Filter>Basescape</Filter>
-    </ClInclude>
-    <ClInclude Include="Basescape\SoldierDiaryOverviewState.h">
-      <Filter>Basescape</Filter>
-    </ClInclude>
-    <ClInclude Include="Basescape\SoldierDiaryPerformanceState.h">
-      <Filter>Basescape</Filter>
-    </ClInclude>
-    <ClInclude Include="Mod\RuleCommendations.h">
-      <Filter>Mod</Filter>
-    </ClInclude>
-    <ClInclude Include="Savegame\SoldierDiary.h">
-      <Filter>Savegame</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Geoscape">
@@ -1943,9 +1913,6 @@
     <Filter Include="Mod">
       <UniqueIdentifier>{ea5b1e9f-9ff1-457d-9a15-5af8773ccb50}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="OpenXcom.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\windows\openxcom.ico" />

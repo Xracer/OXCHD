@@ -46,7 +46,7 @@ private:
 	std::vector<Soldier*> *_list;
 
 	Surface *_bg, *_rank;
-	TextButton *_btnOk, *_btnPrev, *_btnNext, *_btnArmor, *_btnSack, *_btnDiary;
+	TextButton *_btnOk, *_btnPrev, *_btnNext, *_btnArmor, *_btnSack;
 	Text *_txtRank, *_txtMissions, *_txtKills, *_txtCraft, *_txtRecovery, *_txtPsionic;
 	TextEdit *_edtSoldier;
 
@@ -60,8 +60,6 @@ public:
 	~SoldierInfoState();
 	/// Updates the soldier info.
 	void init();
-	/// Set the soldier Id.
-	void setSoldierId(size_t soldier);
 	/// Handler for pressing on the Name edit.
 	void edtSoldierPress(Action *action);
 	/// Handler for changing text on the Name edit.
@@ -76,8 +74,6 @@ public:
 	void btnArmorClick(Action *action);
 	/// Handler for clicking the Sack button.
 	void btnSackClick(Action *action);
-	/// Handler for clicking the Diary button.
-	void btnDiaryClick(Action *action);
 };
 
 }
