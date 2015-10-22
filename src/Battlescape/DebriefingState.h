@@ -67,7 +67,6 @@ private:
     MissionStatistics *_missionStatistics;
     std::vector<Soldier*> _soldiersCommended, _deadSoldiersCommended;
 	std::map<int, RecoveryItem*> _recoveryStats;
-    MissionStatistics *_missionStatistics;	
 	bool _positiveScore, _noContainment, _manageContainment, _destroyBase;
 	int _limitsEnforced;
 	/// Adds to the debriefing stats.
