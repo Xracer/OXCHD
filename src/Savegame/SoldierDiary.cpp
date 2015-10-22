@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -20,6 +20,7 @@
 #include "GameTime.h"
 #include "../Mod/RuleCommendations.h"
 #include "../Mod/Mod.h"
+
 #include "../Engine/Game.h"
 namespace OpenXcom
 {
@@ -39,7 +40,9 @@ SoldierDiary::SoldierDiary() : _killList(), _regionTotal(), _countryTotal(), _ty
 	_nightTerrorMissionTotal(0), _monthsService(0), _unconciousTotal(0), _shotAtCounterTotal(0), _hitCounterTotal(0), _loneSurvivorTotal(0),
 	_totalShotByFriendlyCounter(0), _totalShotFriendlyCounter(0), _ironManTotal(0), _importantMissionTotal(0), _longDistanceHitCounterTotal(0),
     _lowAccuracyHitCounterTotal(0), _shotsFiredCounterTotal(0), _shotsLandedCounterTotal(0), _shotAtCounter10in1Mission(0), _hitCounter5in1Mission(0),
-	_reactionFireTotal(0), _timesWoundedTotal(0), _valiantCruxTotal(0), _KIA(0), _trapKillTotal(0), _alienBaseAssaultTotal(0), _allAliensKilledTotal(0)
+	_reactionFireTotal(0), _timesWoundedTotal(0), _valiantCruxTotal(0), _KIA(0), _trapKillTotal(0), _alienBaseAssaultTotal(0), _allAliensKilledTotal(0), _allAliensStunnedTotal(0),
+    _woundsHealedTotal(0), _allUFOs(0), _allMissionTypes(0), _statGainTotal(0), _revivedUnitTotal(0), _wholeMedikitTotal(0), _braveryGainTotal(0), _bestOfRank(0),
+    _bestSoldier(false), _MIA(0), _martyrKillsTotal(0), _postMortemKills(0), _globeTrotter(false), _slaveKillsTotal(0), _panickTotal(0), _controlTotal(0)
 {
 }
 /**
@@ -107,6 +110,22 @@ void SoldierDiary::load(const YAML::Node& node)
 	_trapKillTotal = node["trapKillTotal"].as<int>(_trapKillTotal);
 	_alienBaseAssaultTotal = node["alienBaseAssaultTotal"].as<int>(_alienBaseAssaultTotal);
 	_allAliensKilledTotal = node["allAliensKilledTotal"].as<int>(_allAliensKilledTotal);
+    _allAliensStunnedTotal = node["allAliensStunnedTotal"].as<int>(_allAliensStunnedTotal);
+    _woundsHealedTotal = node["woundsHealedTotal"].as<int>(_woundsHealedTotal);
+	_allUFOs = node["allUFOs"].as<int>(_allUFOs);
+	_allMissionTypes = node["allMissionTypes"].as<int>(_allMissionTypes);
+	_statGainTotal = node["statGainTotal"].as<int>(_statGainTotal);
+    _revivedUnitTotal = node["revivedUnitTotal"].as<int>(_revivedUnitTotal);
+    _wholeMedikitTotal = node["wholeMedikitTotal"].as<int>(_wholeMedikitTotal);
+    _braveryGainTotal = node["braveryGainTotal"].as<int>(_braveryGainTotal);
+    _bestOfRank = node["bestOfRank"].as<int>(_bestOfRank);
+    _bestSoldier = node["bestSoldier"].as<bool>(_bestSoldier);
+	_martyrKillsTotal = node["martyrKillsTotal"].as<int>(_martyrKillsTotal);
+    _postMortemKills = node["postMortemKills"].as<int>(_postMortemKills);
+	_globeTrotter = node["globeTrotter"].as<bool>(_globeTrotter);
+	_slaveKillsTotal = node["slaveKillsTotal"].as<int>(_slaveKillsTotal);
+    _panickTotal = node["panickTotal"].as<int>(_panickTotal);
+    _controlTotal = node["controlTotal"].as<int>(_controlTotal);
 }
 /**
  * Saves the diary to a YAML file.
@@ -154,6 +173,22 @@ YAML::Node SoldierDiary::save() const
 	if (_trapKillTotal) node["trapKillTotal"] = _trapKillTotal;
 	if (_alienBaseAssaultTotal) node["alienBaseAssaultTotal"] = _alienBaseAssaultTotal;
 	if (_allAliensKilledTotal) node["allAliensKilledTotal"] = _allAliensKilledTotal;
+    if (_allAliensStunnedTotal) node["allAliensStunnedTotal"] = _allAliensStunnedTotal;
+    if (_woundsHealedTotal) node["woundsHealedTotal"] = _woundsHealedTotal;
+	if (_allUFOs) node["allUFOs"] = _allUFOs;
+	if (_allMissionTypes) node["allMissionTypes"] = _allMissionTypes;
+	if (_statGainTotal) node["statGainTotal"] =_statGainTotal;
+    if (_revivedUnitTotal) node["revivedUnitTotal"] = _revivedUnitTotal;
+    if (_wholeMedikitTotal) node["wholeMedikitTotal"] = _wholeMedikitTotal;
+    if (_braveryGainTotal) node["braveryGainTotal"] = _braveryGainTotal;
+    if (_bestOfRank) node["bestOfRank"] = _bestOfRank;
+    if (_bestSoldier) node["bestSoldier"] = _bestSoldier;
+	if (_martyrKillsTotal) node["martyrKillsTotal"] = _martyrKillsTotal;
+    if (_postMortemKills) node["postMortemKills"] = _postMortemKills;
+	if (_globeTrotter) node["globeTrotter"] = _globeTrotter;
+	if (_slaveKillsTotal) node["slaveKillsTotal"] = _slaveKillsTotal;
+    if (_panickTotal) node["panickTotal"] =_panickTotal;
+    if (_controlTotal) node["controlTotal"] = _controlTotal;
 	return node;
 }
 /**
@@ -161,22 +196,44 @@ YAML::Node SoldierDiary::save() const
  * @param unitStatistics BattleUnitStatistics to get stats from.
  * @param missionStatistics MissionStatistics to get stats from.
  */
-void SoldierDiary::updateDiary(BattleUnitStatistics *unitStatistics, MissionStatistics *missionStatistics, Mod *rules)
+void SoldierDiary::updateDiary(BattleUnitStatistics *unitStatistics, MissionStatistics *missionStatistics, Mod *mod)
 {
 	std::vector<BattleUnitKills*> unitKills = unitStatistics->kills;
 	for (std::vector<BattleUnitKills*>::const_iterator kill = unitKills.begin() ; kill != unitKills.end() ; ++kill)
     {
 		(*kill)->makeTurnUnique();
-        if ((*kill)->getUnitStatusString() == "STATUS_DEAD")
-            _killTotal++;
-        else if ((*kill)->getUnitStatusString() == "STATUS_UNCONSCIOUS")
-            _stunTotal++;
-		_killList.push_back(*kill);
-		if ((*kill)->hostileTurn())
-			if (rules->getItem((*kill)->weapon)->getBattleType() == BT_GRENADE || rules->getItem((*kill)->weapon)->getBattleType() == BT_PROXIMITYGRENADE)
-				_trapKillTotal++;
-			else
-				_reactionFireTotal++;
+        _killList.push_back(*kill);
+        if ((*kill)->getUnitFactionString() == "FACTION_HOSTILE")
+        {
+            if ((*kill)->getUnitStatusString() == "STATUS_DEAD")
+            {
+                _killTotal++;
+            }
+            else if ((*kill)->getUnitStatusString() == "STATUS_UNCONSCIOUS")
+            {
+                _stunTotal++;
+
+            }
+            else if ((*kill)->getUnitStatusString() == "STATUS_PANICKING")
+            {
+                _panickTotal++;
+            }
+            else if ((*kill)->getUnitStatusString() == "STATUS_TURNING")
+            {
+                _controlTotal++;
+            }
+            if ((*kill)->hostileTurn())
+            {
+                if (mod->getItem((*kill)->weapon)->getBattleType() == BT_GRENADE || mod->getItem((*kill)->weapon)->getBattleType() == BT_PROXIMITYGRENADE)
+                {
+                    _trapKillTotal++;
+                }
+                else
+                {
+                    _reactionFireTotal++;
+                }
+            }
+        }
     }
     _regionTotal[missionStatistics->region.c_str()]++;
     _countryTotal[missionStatistics->country.c_str()]++;
@@ -184,9 +241,9 @@ void SoldierDiary::updateDiary(BattleUnitStatistics *unitStatistics, MissionStat
     _UFOTotal[missionStatistics->ufo.c_str()]++;
     _scoreTotal += missionStatistics->score;
     if (missionStatistics->success)
-    {
+	{
         _winTotal++;
-        if (missionStatistics->type != "STR_SMALL_SCOUT" && missionStatistics->type != "STR_MEDIUM_SCOUT" && missionStatistics->type != "STR_LARGE_SCOUT" && missionStatistics->type != "STR_SUPPLY_SHIP")
+        if (missionStatistics->type != "STR_UFO_CRASH_RECOVERY")
             _importantMissionTotal++;
 		if (missionStatistics->type == "STR_ALIEN_BASE_ASSAULT")
 			_alienBaseAssaultTotal++;
@@ -194,20 +251,24 @@ void SoldierDiary::updateDiary(BattleUnitStatistics *unitStatistics, MissionStat
             _loneSurvivorTotal++;
         if (unitStatistics->ironMan)
             _ironManTotal++;
+        if (unitStatistics->nikeCross)
+            _allAliensKilledTotal++;
+        if (unitStatistics->mercyCross)
+            _allAliensStunnedTotal++;
+        if (missionStatistics->daylight > 5 && missionStatistics->type != "STR_ALIEN_BASE_ASSAULT" && missionStatistics->type != "STR_BASE_DEFENSE")
+            _nightMissionTotal++;
+        if (missionStatistics->type == "STR_BASE_DEFENSE")
+            _baseDefenseMissionTotal++;
+        else if (missionStatistics->type == "STR_TERROR_MISSION")
+        {
+            _terrorMissionTotal++;
+            if (missionStatistics->daylight > 5)
+                _nightTerrorMissionTotal++;
+        }
     }
     _daysWoundedTotal += unitStatistics->daysWounded;
     if (unitStatistics->daysWounded)
         _timesWoundedTotal++;
-    if (missionStatistics->type == "STR_BASE_DEFENSE")
-        _baseDefenseMissionTotal++;
-    else if (missionStatistics->type == "STR_TERROR_MISSION")
-    {
-        _terrorMissionTotal++;
-        if (missionStatistics->daylight > 5)
-            _nightTerrorMissionTotal++;
-    }
-    if (missionStatistics->daylight != 0)
-        _nightMissionTotal++;
     if (unitStatistics->wasUnconcious)
         _unconciousTotal++;
 	_shotAtCounterTotal += unitStatistics->shotAtCounter;
@@ -222,9 +283,40 @@ void SoldierDiary::updateDiary(BattleUnitStatistics *unitStatistics, MissionStat
 		_valiantCruxTotal++;
 	if (unitStatistics->KIA)
 		_KIA++;
-	if (unitStatistics->nikeCross)
-		_allAliensKilledTotal++;
+    if (unitStatistics->MIA)
+        _MIA++;
+	_woundsHealedTotal = unitStatistics->woundsHealed++;
+	if (_UFOTotal.size() >= mod->getUfosList().size())
+		_allUFOs = 1;
+	if ((_UFOTotal.size() + _typeTotal.size()) == (mod->getUfosList().size() + mod->getDeploymentsList().size() - 2))
+		_allMissionTypes = 1;
+	_martyrKillsTotal += unitStatistics->martyr;
+	_slaveKillsTotal += unitStatistics->slaveKills;
+
+	// Stat change long hand calculation
+	_statGainTotal = 0; // Reset.
+	_statGainTotal += unitStatistics->delta.tu;
+	_statGainTotal += unitStatistics->delta.stamina;
+	_statGainTotal += unitStatistics->delta.health;
+	_statGainTotal += unitStatistics->delta.bravery / 10; // Normalize
+	_statGainTotal += unitStatistics->delta.reactions;
+	_statGainTotal += unitStatistics->delta.firing;
+	_statGainTotal += unitStatistics->delta.throwing;
+	_statGainTotal += unitStatistics->delta.strength;
+	_statGainTotal += unitStatistics->delta.psiStrength;
+	_statGainTotal += unitStatistics->delta.melee;
+	_statGainTotal += unitStatistics->delta.psiSkill;
+    
+    _braveryGainTotal = unitStatistics->delta.bravery;
+    _revivedUnitTotal += unitStatistics->revivedSoldier;
+    _wholeMedikitTotal += std::min( std::min(unitStatistics->woundsHealed, unitStatistics->appliedStimulant), unitStatistics->appliedPainKill);
     _missionIdList.push_back(missionStatistics->id);
+
+
+	if (_countryTotal.size() == mod->getCountriesList().size())
+	{
+		_globeTrotter = true;
+	}
 }
 /**
  * Get soldier commendations.
@@ -242,27 +334,32 @@ std::vector<SoldierCommendations*> *SoldierDiary::getSoldierCommendations()
 bool SoldierDiary::manageCommendations(Mod *rules)
 {
 	std::map<std::string, RuleCommendations *> commendationsList = rules->getCommendation();
-	bool awardedCommendation = false;                   // This value is returned if at least on commendation was given
-    std::map<std::string, int> nextCommendationLevel;   // Noun, threshold
-    std::vector<std::string> modularCommendations;      // Commendation name
-	bool awardCommendationBool = false;                 // This value determines if a commendation will be given
+	bool awardedCommendation = false;                   // This value is returned if at least one commendation was given.
+    std::map<std::string, int> nextCommendationLevel;   // Noun, threshold.
+    std::vector<std::string> modularCommendations;      // Commendation name.
+	bool awardCommendationBool = false;                 // This value determines if a commendation will be given.
 	// Loop over all possible commendations
 	for (std::map<std::string, RuleCommendations *>::iterator i = commendationsList.begin(); i != commendationsList.end(); )
 	{	
 		awardCommendationBool = true;
         nextCommendationLevel.clear();
-        nextCommendationLevel["noNoun"] = 0; // Initialization
+        nextCommendationLevel["noNoun"] = 0;
         modularCommendations.clear();
-        // Loop over all the soldier's commendations, see if we already have the commendation
-        // If so, get the level and noun
+        // Loop over all the soldier's commendations, see if we already have the commendation.
+        // If so, get the level and noun.
         for (std::vector<SoldierCommendations*>::const_iterator j = _commendations.begin(); j != _commendations.end(); ++j)
         {
             if ( (*i).first == (*j)->getType() )
             {
+                // A map is used for modular medals
+                // A commendation that has no noun is always given the noun "noNoun"
                 nextCommendationLevel[(*j)->getNoun()] = (*j)->getDecorationLevelInt() + 1;
             }
         }
-		// Go through each possible criteria. Assume the medal is awarded, set to false if not.
+        // If we don't have this commendation, add one element to the vector
+        if (nextCommendationLevel.empty())
+            nextCommendationLevel["noNoun"] = 0;
+		// Go through each possible criteria. Assume the medal is awarded, set to false if not
 		// As soon as we find a medal criteria that we FAIL TO achieve, then we are not awarded a medal
 		for (std::map<std::string, std::vector<int> >::const_iterator j = (*i).second->getCriteria()->begin(); j != (*i).second->getCriteria()->end(); ++j)
 		{
@@ -288,7 +385,7 @@ bool SoldierDiary::manageCommendations(Mod *rules)
 					((*j).first == "totalFellUnconcious" && _unconciousTotal < (*j).second.at(nextCommendationLevel["noNoun"])) || 
                     ((*j).first == "totalShotAt10Times" && _shotAtCounter10in1Mission < (*j).second.at(nextCommendationLevel["noNoun"])) || 
 					((*j).first == "totalHit5Times" && _hitCounter5in1Mission < (*j).second.at(nextCommendationLevel["noNoun"])) ||
-					((*j).first == "totalFriendlyFired" && _totalShotByFriendlyCounter < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalFriendlyFired" && (_totalShotByFriendlyCounter < (*j).second.at(nextCommendationLevel["noNoun"]) || _KIA || _MIA)) ||
 					((*j).first == "total_lone_survivor" && _loneSurvivorTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
 					((*j).first == "totalIronMan" && _ironManTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
 					((*j).first == "totalImportantMissions" && _importantMissionTotal < (*j).second.at(nextCommendationLevel["noNoun"])) || 
@@ -301,7 +398,23 @@ bool SoldierDiary::manageCommendations(Mod *rules)
 					((*j).first == "isDead" && _KIA < (*j).second.at(nextCommendationLevel["noNoun"])) ||
 					((*j).first == "totalTrapKills" && _trapKillTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
 					((*j).first == "totalAlienBaseAssaults" && _alienBaseAssaultTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
-					((*j).first == "totalAllAliensKilled" && _allAliensKilledTotal < (*j).second.at(nextCommendationLevel["noNoun"])) )
+					((*j).first == "totalAllAliensKilled" && _allAliensKilledTotal < (*j).second.at(nextCommendationLevel["noNoun"])) || 
+                    ((*j).first == "totalAllAliensStunned" && _allAliensStunnedTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalWoundsHealed" && _woundsHealedTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalAllUFOs" && _allUFOs < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalAllMissionTypes" && _allMissionTypes < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalStatGain" && _statGainTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalRevives" && _revivedUnitTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalWholeMedikit" && _wholeMedikitTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalBraveryGain" && _braveryGainTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "bestOfRank" && _bestOfRank < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+                    ((*j).first == "bestSoldier" && (int)_bestSoldier < (*j).second.at(nextCommendationLevel["noNoun"])) || 
+                    ((*j).first == "isMIA" && _MIA < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalMartyrKills" && _martyrKillsTotal < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalPostMortemKills" && _postMortemKills < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+                    ((*j).first == "globeTrotter" && (int)_globeTrotter < (*j).second.at(nextCommendationLevel["noNoun"])) ||
+					((*j).first == "totalSlaveKills" && _slaveKillsTotal < (*j).second.at(nextCommendationLevel["noNoun"])) )
+					
 			{
 				awardCommendationBool = false;
 				break;
@@ -320,20 +433,21 @@ bool SoldierDiary::manageCommendations(Mod *rules)
 				else if ((*j).first == "totalKillsByRank")
 					tempTotal = getAlienRankTotal();
 				// Loop over the temporary map
-				// Match nouns and decoration levels
+				// match nouns and decoration levels
 				for(std::map<std::string, int>::const_iterator k = tempTotal.begin(); k != tempTotal.end(); ++k)
 				{
 					int criteria = -1;
                     std::string noun = (*k).first;
-					// If there is no matching noun, get the first award criteria
+					// If there is no matching noun, get the first award criteria.
                     if (nextCommendationLevel.count(noun) == 0)
 						criteria = (*j).second.front(); 
-					// Otherwise, get the criteria that reflects the soldier's commendation level
+					// Otherwise, get the criteria that reflects the soldier's commendation level.
                     else if (nextCommendationLevel[noun] != (*j).second.size())
 						criteria = (*j).second.at(nextCommendationLevel[noun]); 
 
-                    // If a criteria was set AND the stat's count exceeds the criteria
+                    // If a criteria was set AND the stat's count exceeds the criteria.
                     if (criteria != -1 && (*k).second >= criteria)
+
                     {
                         modularCommendations.push_back(noun);
                     }
@@ -344,10 +458,15 @@ bool SoldierDiary::manageCommendations(Mod *rules)
 					awardCommendationBool = false;
 					break;
 				}
+                else
+                {
+                    awardCommendationBool = true;
+                }
 			}
             else if ((*j).first == "killsWithCriteriaCareer" || (*j).first == "killsWithCriteriaMission" || (*j).first == "killsWithCriteriaTurn")
             {
-                // Fetch the kill criteria list
+                // Looks to see how many kills the soldier has received over the course of his career
+                // Fetch the kill criteria list.
                 std::vector<std::map<int, std::vector<std::string> > > *_killCriteriaList = (*i).second->getKillCriteria();
                 
                 // Loop over the OR vectors
@@ -391,23 +510,23 @@ bool SoldierDiary::manageCommendations(Mod *rules)
                             {
                                 continue;
                             }
-                            else if (thisTime != lastTime) 
+                            else if (thisTime != lastTime && (*j).first != "killsWithCriteriaCareer") 
                             {
                                 count = 1; // Reset
                                 goToNextTime = false;
                                 continue;
                             }
                             bool foundMatch = true;
-							
                             // Loop over the DETAILs of the AND vector
                             for (std::vector<std::string>::const_iterator detail = andCriteria->second.begin(); detail != andCriteria->second.end(); ++detail)
                             {
 								std::string battleTypeArray[] = { "BT_NONE", "BT_FIREARM", "BT_AMMO", "BT_MELEE", "BT_GRENADE",
 									"BT_PROXIMITYGRENADE", "BT_MEDIKIT", "BT_SCANNER", "BT_MINDPROBE", "BT_PSIAMP", "BT_FLARE", "BT_CORPSE", "BT_END" };
+								std::vector<std::string> battleTypeVector(battleTypeArray, battleTypeArray + 13);
 								int battleType = 0;
-								for (; battleType != battleTypeArray->size(); ++battleType)
+								for (; battleType != battleTypeVector.size(); ++battleType)
 								{
-									if ((*detail) == battleTypeArray[battleType])
+									if ((*detail) == battleTypeVector[battleType])
 									{
 										break;
 									}
@@ -415,21 +534,24 @@ bool SoldierDiary::manageCommendations(Mod *rules)
 
 								std::string damageTypeArray[] = { "DT_NONE", "DT_AP", "DT_IN", "DT_HE", "DT_LASER", "DT_PLASMA", 
 									"DT_STUN", "DT_MELEE", "DT_ACID", "DT_SMOKE", "DT_END"};
+								std::vector<std::string> damageTypeVector(damageTypeArray, damageTypeArray + 11);
 								int damageType = 0;
-								for (; damageType != damageTypeArray->size(); ++damageType)
+								for (; damageType != damageTypeVector.size(); ++damageType)
 								{
-									if ((*detail) == damageTypeArray[damageType])
+									if ((*detail) == damageTypeVector[damageType])
 									{
 										break;
 									}
 								}
 
                                 // See if we find no matches with any criteria. If so, break and try the next kill.
-								if ( (*singleKill)->rank != (*detail) && (*singleKill)->race != (*detail) &&
+								if ( (*singleKill)->weapon == "STR_WEAPON_UNKNOWN" || (*singleKill)->weaponAmmo == "STR_WEAPON_UNKNOWN" ||
+									((*singleKill)->rank != (*detail) && (*singleKill)->race != (*detail) &&
 									 (*singleKill)->weapon != (*detail) && (*singleKill)->weaponAmmo != (*detail) &&
 									 (*singleKill)->getUnitStatusString() != (*detail) && (*singleKill)->getUnitFactionString() != (*detail)  &&
 									 rules->getItem((*singleKill)->weaponAmmo)->getDamageType() != damageType && 
-									 rules->getItem((*singleKill)->weapon)->getBattleType() != battleType )
+									 rules->getItem((*singleKill)->weapon)->getBattleType() != battleType &&
+                                     (*singleKill)->getUnitSideString() != (*detail) && (*singleKill)->getUnitBodyPartString() != (*detail)) )
                                 {
                                     foundMatch = false;
                                     break;
@@ -439,8 +561,8 @@ bool SoldierDiary::manageCommendations(Mod *rules)
                             {
                                 count++;
                                 if ( count == (*andCriteria).first) 
-                                    goToNextTime = true; // Criteria met, move to next mission/turn
-                            }
+                                    goToNextTime = true; // Criteria met, move to next mission/turn.
+                             }
                         }
                         int multiCriteria = (*andCriteria).first;
                         // If one of the AND criteria fail, stop looking
@@ -449,11 +571,15 @@ bool SoldierDiary::manageCommendations(Mod *rules)
                             awardCommendationBool = false;
                             break;
                         }
-                    }
+                        else
+                        {
+                            awardCommendationBool = true;
+                        }
                     }
                     if (awardCommendationBool) 
-                        break; // Stop looking because we are getting one regardless
-            }
+                        break; // Stop looking because we are getting one regardless.
+                }
+			}	
         }
 		bool awardedModularCommendation = false;
 		if (awardCommendationBool)
@@ -487,7 +613,7 @@ bool SoldierDiary::manageCommendations(Mod *rules)
             }
 			awardedCommendation = true;
 		}
-		if (!awardedModularCommendation)
+		else
 		{
 			++i;
 		}
@@ -659,7 +785,21 @@ int SoldierDiary::getStunTotal() const
 {
 	return _stunTotal;
 }
-/*
+/**
+ * 
+ */
+int SoldierDiary::getPanickTotal() const
+{
+    return _panickTotal;
+}
+/**
+ *
+ */
+int SoldierDiary::getControlTotal() const
+{
+    return _controlTotal;
+}
+/**
  *
  */
 int SoldierDiary::getDaysWoundedTotal() const
@@ -673,6 +813,36 @@ void SoldierDiary::addMonthlyService()
 {
 	_monthsService++;
 }
+/**
+ *  Award special commendation to the original 8 soldiers.
+ */
+void SoldierDiary::awardOriginalEightCommendation()
+{
+    _commendations.push_back(new SoldierCommendations("STR_MEDAL_ORIGINAL8_NAME", "NoNoun"));
+}
+/**
+ *  Award post-humous best-of commendation.
+ */
+void SoldierDiary::awardBestOfRank(SoldierRank rank)
+{
+    _bestOfRank = (int)rank + 1;
+}
+/**
+ *  Award post-humous best-of commendation.
+ */
+void SoldierDiary::awardBestOverall()
+{
+    _bestSoldier = true;
+}
+
+/**
+ *  Award post-humous kills commendation.
+ */
+void SoldierDiary::awardPostMortemKill(int kills)
+{
+    _postMortemKills = kills;
+}
+
 /**
  * Initializes a new commendation entry from YAML.
  * @param node YAML node.

@@ -105,7 +105,7 @@ SoldierDiaryOverviewState::SoldierDiaryOverviewState(Base *base, size_t soldierI
 
 	_btnCommendations->setColor(Palette::blockOffset(13)+10);
 	_btnCommendations->setText(tr("STR_AWARDS_UC"));
-	if (!_game->geMod()->getCommendation().empty())
+	if (!_game->getMod()->getCommendation().empty())
 	{
 		_btnCommendations->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnCommendationsClick);
 		_btnCommendations->setVisible(true);

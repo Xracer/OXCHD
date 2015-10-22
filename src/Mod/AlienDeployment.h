@@ -46,7 +46,7 @@ struct BriefingData
 	int palette, textOffset;
 	std::string title, desc, music, background, cutscene;
 	bool showCraft, showTarget;
-	BriefingData() : palette(0), textOffset(0), music("GMDEFEND"), background("HDBACK16.PNG"), showCraft(true), showTarget(true) { /*Empty by Design*/ };
+	BriefingData() : palette(0), textOffset(0), music("GMDEFEND"), background("BACK16.SCR"), showCraft(true), showTarget(true) { /*Empty by Design*/ };
 };
 /**
  * Represents a specific type of Alien Deployment.

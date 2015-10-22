@@ -152,6 +152,11 @@ SavedGame::~SavedGame()
 	{
 		delete *i;
 	}
+    for (std::vector<MissionStatistics*>::iterator i = _missionStatistics.begin(); i != _missionStatistics.end(); ++i)
+	{
+		delete *i;
+	}
+    
 	delete _battleGame;
 }
 
@@ -1782,6 +1787,15 @@ std::vector<Soldier*> *SavedGame::getDeadSoldiers()
 }
 
 /**
+ * Returns the list of dead soldiers.
+ * @return Pointer to soldier list.
+ */
+std::vector<MissionStatistics*> *SavedGame::getMissionStatistics()
+{
+	return &_missionStatistics;
+}
+
+/**
  * Sets the last selected armour.
  * @param value The new value for last selected armor - Armor type string.
  */
@@ -1819,13 +1833,5 @@ Craft *SavedGame::findCraftByUniqueId(const CraftId& craftId) const
 	return NULL;
 }
 
-/**
-* Returns the list of dead soldiers.
-* @return Pointer to soldier list.
-*/
-std::vector<MissionStatistics*> *SavedGame::getMissionStatistics()
-{
-	return &_missionStatistics;
-}
 
 }

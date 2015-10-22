@@ -54,7 +54,6 @@ class RuleItem;
 class RuleUfo;
 class RuleTerrain;
 class MapDataSet;
-class Mod;
 class RuleSoldier;
 class Unit;
 class Armor;
@@ -100,6 +99,7 @@ private:
 	std::map<std::string, Music*> _musics;
 	std::vector<Uint16> _voxelData;
 	std::vector<std::vector<Uint8> > _transparencyLUTs;
+
 	std::vector<std::string> _soldierNames;
 	std::vector<SoldierNamePool*> _names;
 	std::map<std::string, RuleCountry*> _countries;
@@ -126,6 +126,7 @@ private:
 	std::map<std::string, SoundDefinition *> _soundDefs;
 	std::map<std::string, RuleVideo *>_videos;
 	std::map<std::string, MCDPatch *> _MCDPatches;
+	std::map<std::string, RuleCommendations *> _commendations;
 	std::map<std::string, std::vector<MapScript *> > _mapScripts;
 	std::map<std::string, RuleMissionScript*> _missionScripts;
 	std::vector<std::pair<std::string, ExtraSprites *> > _extraSprites;

@@ -123,7 +123,7 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	// Create objects
 	Surface *hd = _game->getMod()->getSurface("ALTGEOBORD.SCR");
 	_bg = new Surface(hd->getWidth(), hd->getHeight(), 0, 0);
-//	_sideLine = new Surface(64, screenHeight, screenWidth, 0);
+	//_sideLine = new Surface(64, screenHeight, screenWidth, 0);
 	_sidebar = new Surface(64, 200, screenWidth - 64, screenHeight / 2 - 100);
 
 	_globe = new Globe(_game, (screenWidth)/2, screenHeight/2, screenWidth, screenHeight, 0, 0);
@@ -179,10 +179,10 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	// Set palette
 	setInterface("geoscape");
 
-	add(_globe);
 	add(_bg);
-//	add(_sideLine);
+	//add(_sideLine);
 	add(_sidebar);
+	add(_globe);
 
 	add(_btnIntercept, "button", "geoscape");
 	add(_btnBases, "button", "geoscape");
@@ -228,7 +228,7 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_sidebar->copy(geobord);
 	_game->getMod()->getSurface("ALTGEOBORD.SCR")->blit(_bg);
 
-//	_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
+	//_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
 
 	_btnIntercept->initText(_game->getMod()->getFont("FONT_GEO_BIG"), _game->getMod()->getFont("FONT_GEO_SMALL"), _game->getLanguage());
 	_btnIntercept->setText(tr("STR_INTERCEPT"));
@@ -441,29 +441,6 @@ void GeoscapeState::handle(Action *action)
 			if (_game->getSavedGame()->getDebugMode())
 			{
 				_txtDebug->setText(L"DEBUG MODE");
-			}
-			else
-			{
-				_txtDebug->setText(L"");
-			}
-		}
-		// "ctrl-c" - delete all soldier commendations
-		if (Options::debug && action->getDetails()->key.keysym.sym == SDLK_c && (SDL_GetModState() & KMOD_CTRL) != 0)
-		{
-			if (_game->getSavedGame()->getDebugMode())
-			{
-				_txtDebug->setText(L"SOLDIER COMMENDATIONS DELETED");
-                for (std::vector<Base*>::iterator i = _game->getSavedGame()->getBases()->begin(); i != _game->getSavedGame()->getBases()->end(); ++i)
-				{
-					for (std::vector<Soldier*>::iterator j = (*i)->getSoldiers()->begin(); j != (*i)->getSoldiers()->end(); ++j)
-					{
-						for (std::vector<SoldierCommendations*>::iterator k = (*j)->getDiary()->getSoldierCommendations()->begin(); k != (*j)->getDiary()->getSoldierCommendations()->end(); ++k)
-						{
-							delete *k;
-						}
-						(*j)->getDiary()->getSoldierCommendations()->clear();
-					}
-				}
 			}
 			else
 			{
@@ -2648,9 +2625,9 @@ void GeoscapeState::resize(int &dX, int &dY)
 	_sideBottom->setHeight(height);
 	_sideBottom->setY(_sidebar->getY() + _sidebar->getHeight() + 1);
 
-	_sideLine->setHeight(Options::baseYResolution);
-	_sideLine->setY(0);
-	_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
+	//_sideLine->setHeight(Options::baseYResolution);
+	//_sideLine->setY(0);
+	//_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
 }
 
 }

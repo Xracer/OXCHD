@@ -57,7 +57,7 @@ private:
 	BattlescapeButton *_btnEndTurn, *_btnAbort, *_btnLaunch, *_btnPsi, *_reserve;
 	InteractiveSurface *_btnStats;
 	BattlescapeButton *_btnReserveNone, *_btnReserveSnap, *_btnReserveAimed, *_btnReserveAuto, *_btnReserveKneel, *_btnZeroTUs;
-	InteractiveSurface *_btnLeftHandItem, *_btnRightHandItem, *_btnRightReload, *_btnLeftReload;
+	InteractiveSurface *_btnLeftHandItem, *_btnRightHandItem;
 	static const int VISIBLE_MAX = 10;
 	InteractiveSurface *_btnVisibleUnit[VISIBLE_MAX];
 	NumberText *_numVisibleUnit[VISIBLE_MAX];
@@ -153,10 +153,6 @@ public:
 	void btnReserveClick(Action *action);
 	/// Handler for clicking the reload button.
 	void btnReloadClick(Action *action);
-	/// Handler for clicking the reload button.
-	void btnLeftReloadClick(Action *action);
-	/// Handler for clicking the reload button.
-	void btnRightReloadClick(Action *action);
 	/// Handler for clicking the lighting button.
 	void btnPersonalLightingClick(Action *action);
 	/// Determines whether a playable unit is selected.

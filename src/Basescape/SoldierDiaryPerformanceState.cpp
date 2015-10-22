@@ -33,7 +33,7 @@
 #include "../Savegame/Base.h"
 #include "../Savegame/Soldier.h"
 #include "../Savegame/SoldierDiary.h"
-#include "../Mon/RuleCommendations.h"
+#include "../Mod/RuleCommendations.h"
 #include "../Engine/Action.h"
 
 
@@ -74,7 +74,6 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
         _displayMissions = false;
 		_displayCommendations = true;
     }
-
 	// Create objects
 	_window = new Window(this, 320, 200, 0, 0);
 	_btnPrev = new TextButton(28, 14, 8, 8);
@@ -446,7 +445,6 @@ void SoldierDiaryPerformanceState::init()
 		ss2 << tr((*i)->getDecorationDescription().c_str());
 		_lstCommendations->addRow(2, ss1.str().c_str(), ss2.str().c_str());
 		
-
 		_commendationsListEntry.push_back(ss3.str().c_str());
 
 		drawSprites();
