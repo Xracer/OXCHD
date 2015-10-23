@@ -42,13 +42,13 @@ TransfersState::TransfersState(Base *base) : _base(base)
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 320, 184, 0, 8, POPUP_BOTH);
-	_btnOk = new TextButton(288, 16, 16, 166);
-	_txtTitle = new Text(278, 17, 21, 18);
-	_txtItem = new Text(114, 9, 16, 34);
-	_txtQuantity = new Text(54, 9, 152, 34);
-	_txtArrivalTime = new Text(112, 9, 212, 34);
-	_lstTransfers = new TextList(273, 112, 14, 50);
+	_window = new Window(this, 320, 184, 500, 608, POPUP_BOTH);
+	_btnOk = new TextButton(288, 16, 516, 766);
+	_txtTitle = new Text(278, 17, 521, 618);
+	_txtItem = new Text(114, 9, 516, 634);
+	_txtQuantity = new Text(54, 9, 652, 634);
+	_txtArrivalTime = new Text(112, 9, 712, 634);
+	_lstTransfers = new TextList(273, 112, 514, 650);
 
 	// Set palette
 	setInterface("transferInfo");
@@ -61,7 +61,7 @@ TransfersState::TransfersState(Base *base) : _base(base)
 	add(_txtArrivalTime, "text", "transferInfo");
 	add(_lstTransfers, "list", "transferInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));

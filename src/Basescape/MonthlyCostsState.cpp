@@ -42,20 +42,20 @@ namespace OpenXcom
 MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(300, 20, 10, 170);
-	_txtTitle = new Text(310, 17, 5, 12);
-	_txtCost = new Text(80, 9, 115, 32);
-	_txtQuantity = new Text(55, 9, 195, 32);
-	_txtTotal = new Text(60, 9, 249, 32);
-	_txtRental = new Text(150, 9, 10, 40);
-	_txtSalaries = new Text(150, 9, 10, 80);
-	_txtIncome = new Text(150, 9, 10, 146);
-	_txtMaintenance = new Text(150, 9, 10, 154);
-	_lstCrafts = new TextList(288, 32, 10, 48);
-	_lstSalaries = new TextList(300, 40, 10, 88);
-	_lstMaintenance = new TextList(300, 9, 10, 128);
-	_lstTotal = new TextList(100, 9, 205, 150);
+	_window = new Window(this, 320, 200, 500, 200, POPUP_BOTH);
+	_btnOk = new TextButton(300, 20, 510, 370);
+	_txtTitle = new Text(310, 17, 505, 212);
+	_txtCost = new Text(80, 9, 615, 232);
+	_txtQuantity = new Text(55, 9, 695, 232);
+	_txtTotal = new Text(60, 9, 749, 232);
+	_txtRental = new Text(150, 9, 510, 240);
+	_txtSalaries = new Text(150, 9, 510, 280);
+	_txtIncome = new Text(150, 9, 510, 346);
+	_txtMaintenance = new Text(150, 9, 510, 354);
+	_lstCrafts = new TextList(288, 32, 510, 248);
+	_lstSalaries = new TextList(300, 40, 510, 288);
+	_lstMaintenance = new TextList(300, 9, 510, 328);
+	_lstTotal = new TextList(100, 9, 705, 350);
 
 	// Set palette
 	setInterface("costsInfo");
@@ -75,7 +75,7 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	add(_txtMaintenance, "list", "costsInfo");
 	add(_lstTotal, "text2", "costsInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));

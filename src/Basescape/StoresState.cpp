@@ -41,13 +41,13 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(300, 16, 10, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtItem = new Text(142, 9, 10, 32);
-	_txtQuantity = new Text(88, 9, 152, 32);
-	_txtSpaceUsed = new Text(74, 9, 240, 32);
-	_lstStores = new TextList(288, 128, 8, 40);
+	_window = new Window(this, 320, 200, 500, 400, POPUP_BOTH);
+	_btnOk = new TextButton(300, 16, 510, 576);
+	_txtTitle = new Text(310, 17, 505, 408);
+	_txtItem = new Text(142, 9, 510, 432);
+	_txtQuantity = new Text(88, 9, 652, 432);
+	_txtSpaceUsed = new Text(74, 9, 740, 432);
+	_lstStores = new TextList(288, 128, 508, 440);
 
 	// Set palette
 	setInterface("storesInfo");
@@ -60,7 +60,7 @@ StoresState::StoresState(Base *base) : _base(base)
 	add(_txtSpaceUsed, "text", "storesInfo");
 	add(_lstStores, "list", "storesInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));

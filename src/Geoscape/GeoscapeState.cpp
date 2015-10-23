@@ -1841,10 +1841,10 @@ void GeoscapeState::btnBasesClick(Action *)
 		_game->popState();
 		MultiState *state = new MultiState;
 		state->add(new BasescapeState(_game->getSavedGame()->getSelectedBase(), _globe));
-		state->add(new BaseInfoState(_base, this));
-		state->add(new MonthlyCostsState(_base));
-		state->add(new StoresState(_base));
-		state->add(new TransfersState(_base));
+		//state->add(new BaseInfoState(_game->getSavedGame()->getSelectedBase(), this));
+		state->add(new MonthlyCostsState(_game->getSavedGame()->getSelectedBase()));
+		state->add(new StoresState(_game->getSavedGame()->getSelectedBase()));
+		state->add(new TransfersState(_game->getSavedGame()->getSelectedBase()));
 		// add more here
 		_game->pushState(state);
 	}
@@ -1854,10 +1854,10 @@ void GeoscapeState::btnBasesClick(Action *)
 		_game->popState();
 		MultiState *state = new MultiState;
 		state->add(new BasescapeState(0, _globe));
-		state->add(new BaseInfoState(_base, this));
-		state->add(new MonthlyCostsState(_base));
-		state->add(new StoresState(_base));
-		state->add(new TransfersState(_base));
+		//state->add(new BaseInfoState(_game->getSavedGame()->getSelectedBase(), this));
+		state->add(new MonthlyCostsState(_game->getSavedGame()->getSelectedBase()));
+		state->add(new StoresState(_game->getSavedGame()->getSelectedBase()));
+		state->add(new TransfersState(_game->getSavedGame()->getSelectedBase()));
 		// add more here
 		_game->pushState(state);
 	}
