@@ -1858,6 +1858,7 @@ void GeoscapeState::btnBasesClick(Action *)
 		MultiState *state = new MultiState;
 		BasescapeState *basescape = new BasescapeState(_game->getSavedGame()->getSelectedBase(), _globe);
 		state->add(basescape);
+
 		state->add(new BasescapeState(0, _globe));
 		state->add(new BaseInfoState(_game->getSavedGame()->getSelectedBase(), basescape));
 		state->add(new MonthlyCostsState(_game->getSavedGame()->getSelectedBase()));
