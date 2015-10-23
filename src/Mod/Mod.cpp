@@ -3078,7 +3078,7 @@ void Mod::loadExtraResources()
 void Mod::modResources()
 {
 	// bigger geoscape background
-	int newWidth = 320 - 64, newHeight = 200;
+	int newWidth = 1280, newHeight = 800;
 	Surface *newGeo = new Surface(newWidth * 3, newHeight * 3);
 	Surface *oldGeo = _surfaces["GEOBORD.SCR"];
 	for (int x = 0; x < newWidth; ++x)
@@ -3101,7 +3101,7 @@ void Mod::modResources()
 	_surfaces["ALTGEOBORD.SCR"] = newGeo;
 
 	// here we create an "alternate" background surface for the base info screen.
-	_surfaces["ALTBACK07.SCR"] = new Surface(320, 200);
+	_surfaces["ALTBACK07.SCR"] = new Surface(1280, 800);
 	_surfaces["ALTBACK07.SCR"]->loadScr(FileMap::getFilePath("GEOGRAPH/BACK07.SCR"));
 	for (int y = 172; y >= 152; --y)
 		for (int x = 5; x <= 314; ++x)

@@ -650,6 +650,7 @@
     <ClInclude Include="Engine\LocalizedText.h" />
     <ClInclude Include="Engine\Logger.h" />
     <ClInclude Include="Engine\ModInfo.h" />
+    <ClInclude Include="Engine\MultiState.h" />
     <ClInclude Include="Engine\Music.h" />
     <ClInclude Include="Engine\OpenGL.h" />
     <ClInclude Include="Engine\OptionInfo.h" />

@@ -83,14 +83,14 @@ extraSprites:
       0: Resources/HD/BG/HDTAC01.PNG
   - type: GEOBORD.SCR
     singleImage: true
-    width: 960
-    height: 600
+    width: 1280
+    height: 800
     files:
       0: Resources/HD/BG/GEOBORD.PNG
   - type: STARFIELD.PNG
     singleImage: true
-    width: 960
-    height: 600
+    width: 1280
+    height: 800
     files:
       0: Resources/HD/BG/STARFIELD.PNG
   - type: HDBACK01.PNG

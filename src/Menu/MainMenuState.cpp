@@ -50,13 +50,13 @@ void GoToMainMenuState::init()
 MainMenuState::MainMenuState()
 {
 	// Create objects
-	_window = new Window(this, 256, 160, 32, 20, POPUP_BOTH);
-	_btnNewGame = new TextButton(92, 20, 64, 90);
-	_btnNewBattle = new TextButton(92, 20, 164, 90);
-	_btnLoad = new TextButton(92, 20, 64, 118);
-	_btnOptions = new TextButton(92, 20, 164, 118);
-	_btnQuit = new TextButton(192, 20, 64, 146);
-	_txtTitle = new Text(256, 30, 32, 45);
+	_window = new Window(this, 960, 600, 0, 0, POPUP_BOTH);
+	_btnNewGame = new TextButton(120, 25, 340, 200);
+	_btnNewBattle = new TextButton(120, 25, 500, 200);
+	_btnLoad = new TextButton(120, 25, 340, 250);
+	_btnOptions = new TextButton(120, 25, 500, 250);
+	_btnQuit = new TextButton(200, 25, 380, 300);
+	_txtTitle = new Text(300, 30, 340, 150);
 
 	// Set palette
 	setInterface("mainMenu");
@@ -72,7 +72,7 @@ MainMenuState::MainMenuState()
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	_btnNewGame->setText(tr("STR_NEW_GAME"));
 	_btnNewGame->onMouseClick((ActionHandler)&MainMenuState::btnNewGameClick);

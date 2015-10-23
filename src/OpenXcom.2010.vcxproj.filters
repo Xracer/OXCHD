@@ -1920,6 +1920,9 @@
     <ClInclude Include="Battlescape\CommendationLateState.h">
       <Filter>Battlescape</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\MultiState.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Geoscape">

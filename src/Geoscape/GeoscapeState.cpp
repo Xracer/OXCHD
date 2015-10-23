@@ -53,6 +53,10 @@
 #include "InterceptState.h"
 #include "../Basescape/BasescapeState.h"
 #include "../Basescape/SellState.h"
+#include "../Basescape/BaseInfoState.h"
+#include "../Basescape/MonthlyCostsState.h"
+#include "../Basescape/StoresState.h"
+#include "../Basescape/TransfersState.h"
 #include "../Menu/CutsceneState.h"
 #include "../Menu/ErrorMessageState.h"
 #include "GraphsState.h"
@@ -102,11 +106,13 @@
 #include "../Menu/SaveGameState.h"
 #include "../Menu/ListSaveState.h"
 #include "../Mod/RuleGlobe.h"
+#include "../Engine/MultiState.h"
 #include "../Engine/Exception.h"
 #include "../Mod/AlienDeployment.h"
 #include "../Savegame/CraftWeapon.h"
 #include "../Mod/RuleCraftWeapon.h"
 #include "../Mod/RuleInterface.h"
+#include "../Engine/MultiState.h"
 
 namespace OpenXcom
 {
@@ -121,50 +127,51 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	int screenHeight = Options::baseYGeoscape;
 
 	// Create objects
-	Surface *hd = _game->getMod()->getSurface("ALTGEOBORD.SCR");
-	_bg = new Surface(hd->getWidth(), hd->getHeight(), 0, 0);
+	//Surface *hd = _game->getMod()->getSurface("ALTGEOBORD.SCR");
+	_ui = new Surface(1280, 800, 0, 0);
+	_bg = new Surface(1280, 800, 0, 0);
 	//_sideLine = new Surface(64, screenHeight, screenWidth, 0);
-	_sidebar = new Surface(64, 200, screenWidth - 64, screenHeight / 2 - 100);
+	//_sidebar = new Surface(64, 200, screenWidth - 64, screenHeight / 2 - 100);
 
 	_globe = new Globe(_game, (screenWidth)/2, screenHeight/2, screenWidth, screenHeight, 0, 0);
-	_bg->setX((_globe->getWidth() - _bg->getWidth()) / 2);
-	_bg->setY((_globe->getHeight() - _bg->getHeight()) / 2);
+	//_bg->setX((_globe->getWidth() - _bg->getWidth()) / 2);
+	//_bg->setY((_globe->getHeight() - _bg->getHeight()) / 2);
 
-	_btnIntercept = new TextButton(63, 11, screenWidth, screenHeight/2-100);
-	_btnBases = new TextButton(63, 11, screenWidth, screenHeight/2-88);
-	_btnGraphs = new TextButton(63, 11, screenWidth, screenHeight/2-76);
-	_btnUfopaedia = new TextButton(63, 11, screenWidth, screenHeight/2-64);
-	_btnOptions = new TextButton(63, 11, screenWidth, screenHeight/2-52);
-	_btnFunding = new TextButton(63, 11, screenWidth, screenHeight/2-40);
+	_btnIntercept = new TextButton(65, 52, 1210, 226);
+	_btnBases = new TextButton(65, 52, 1210, 281);
+	_btnGraphs = new TextButton(65, 52, 1210, 336);
+	_btnUfopaedia = new TextButton(65, 52, 1210, 391);
+	_btnOptions = new TextButton(65, 52, 1210, 446);
+	_btnFunding = new TextButton(65, 52, 1210, 501);
 
-	_btn5Secs = new TextButton(31, 13, screenWidth, screenHeight/2+12);
-	_btn1Min = new TextButton(31, 13, screenWidth, screenHeight/2+12);
-	_btn5Mins = new TextButton(31, 13, screenWidth, screenHeight/2+26);
-	_btn30Mins = new TextButton(31, 13, screenWidth, screenHeight/2+26);
-	_btn1Hour = new TextButton(31, 13, screenWidth, screenHeight/2+40);
-	_btn1Day = new TextButton(31, 13, screenWidth, screenHeight/2+40);
+	_btn5Secs = new TextButton(31, 15, 5, 46);
+	_btn1Min = new TextButton(31, 15, 38, 46);
+	_btn5Mins = new TextButton(31, 15, 71, 46);
+	_btn30Mins = new TextButton(31, 15, 104, 46);
+	_btn1Hour = new TextButton(31, 15, 137, 46);
+	_btn1Day = new TextButton(31, 15, 170, 46);
 
-	_btnRotateLeft = new InteractiveSurface(12, 10, screenWidth, screenHeight/2+76);
-	_btnRotateRight = new InteractiveSurface(12, 10, screenWidth, screenHeight/2+76);
-	_btnRotateUp = new InteractiveSurface(13, 12, screenWidth, screenHeight/2+62);
-	_btnRotateDown = new InteractiveSurface(13, 12, screenWidth, screenHeight/2+87);
-	_btnZoomIn = new InteractiveSurface(23, 23, screenWidth, screenHeight/2+56);
-	_btnZoomOut = new InteractiveSurface(13, 17, screenWidth, screenHeight/2+82);
+	_btnRotateLeft = new InteractiveSurface(17, 50, 1157, 711);
+	_btnRotateRight = new InteractiveSurface(17, 50, 1255, 712);
+	_btnRotateUp = new InteractiveSurface(50, 17, 1189, 679);
+	_btnRotateDown = new InteractiveSurface(50, 17, 1189, 777);
+	_btnZoomIn = new InteractiveSurface(31, 31, 1222, 699);
+	_btnZoomOut = new InteractiveSurface(31, 31, 1175, 745);
 
-	int height = (screenHeight - Screen::ORIGINAL_HEIGHT) / 2 + 10;
-	_sideTop = new TextButton(63, height, screenWidth, _sidebar->getY() - height - 1);
-	_sideBottom = new TextButton(63, height, screenWidth, _sidebar->getY() + _sidebar->getHeight() + 1);
+/*	int height = (screenHeight - Screen::ORIGINAL_HEIGHT) / 2 + 10;
+	_sideTop = new TextButton(63, height, screenWidth-63, _sidebar->getY() - height - 1);
+	_sideBottom = new TextButton(63, height, screenWidth-63, _sidebar->getY() + _sidebar->getHeight() + 1); */
 
-	_txtHour = new Text(20, 16, screenWidth, screenHeight/2-26);
-	_txtHourSep = new Text(4, 16, screenWidth, screenHeight/2-26);
-	_txtMin = new Text(20, 16, screenWidth, screenHeight/2-26);
-	_txtMinSep = new Text(4, 16, screenWidth, screenHeight/2-26);
-	_txtSec = new Text(11, 8, screenWidth, screenHeight/2-20);
-	_txtWeekday = new Text(59, 8, screenWidth, screenHeight/2-13);
-	_txtDay = new Text(29, 8, screenWidth, screenHeight/2-6);
-	_txtMonth = new Text(29, 8, screenWidth, screenHeight/2-6);
-	_txtYear = new Text(59, 8, screenWidth, screenHeight/2+1);
-	_txtFunds = new Text(59, 8, screenWidth, screenHeight/2-27);
+	_txtHour = new Text(20, 20, 54, 25);
+	_txtHourSep = new Text(4, 20, 74, 25);
+	_txtMin = new Text(20, 20, 78, 25);
+	_txtMinSep = new Text(4, 20, 98, 25);
+	_txtSec = new Text(11, 11, 102, 25);
+	_txtWeekday = new Text(59, 11, 9, 8);
+	_txtDay = new Text(29, 11, 68, 8);
+	_txtMonth = new Text(29, 11, 97, 8);
+	_txtYear = new Text(59, 1, 136, 8);
+	_txtFunds = new Text(59, 20, 1180, 12);
 
 	_timeSpeed = _btn5Secs;
 	_gameTimer = new Timer(Options::geoClockSpeed);
@@ -174,15 +181,17 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_dogfightStartTimer = new Timer(Options::dogfightSpeed);
 	_dogfightTimer = new Timer(Options::dogfightSpeed);
 
-	_txtDebug = new Text(200, 18, 0, 0);
+	_txtDebug = new Text(350, 18, 0, 0);
 
 	// Set palette
 	setInterface("geoscape");
 
-	add(_bg);
+
 	//add(_sideLine);
-	add(_sidebar);
+	//add(_sidebar);
+	add(_bg);
 	add(_globe);
+	add(_ui);
 
 	add(_btnIntercept, "button", "geoscape");
 	add(_btnBases, "button", "geoscape");
@@ -205,8 +214,8 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	add(_btnZoomIn);
 	add(_btnZoomOut);
 
-	add(_sideTop, "button", "geoscape");
-	add(_sideBottom, "button", "geoscape");
+//	add(_sideTop, "button", "geoscape");
+//	add(_sideBottom, "button", "geoscape");
 
 	add(_txtFunds, "text", "geoscape");
 	add(_txtHour, "text", "geoscape");
@@ -222,11 +231,12 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	add(_txtDebug, "text", "geoscape");
 
 	// Set up objects
-	Surface *geobord = _game->getMod()->getSurface("GEOBORD.SCR");
-	geobord->setX(_sidebar->getX() - geobord->getWidth() + _sidebar->getWidth());
-	geobord->setY(_sidebar->getY());
-	_sidebar->copy(geobord);
-	_game->getMod()->getSurface("ALTGEOBORD.SCR")->blit(_bg);
+	//Surface *geobord = _game->getMod()->getSurface("GEOBORD.SCR");
+	//geobord->setX(_sidebar->getX() - geobord->getWidth() + _sidebar->getWidth());
+	//geobord->setY(_sidebar->getY());
+	//_sidebar->copy(geobord);
+	_game->getMod()->getSurface("STARFIELD.PNG")->blit(_bg);
+	_game->getMod()->getSurface("GEOBORD.SCR")->blit(_ui);
 
 	//_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
 
@@ -308,8 +318,8 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btn1Day->onKeyboardPress((ActionHandler)&GeoscapeState::btnTimerClick, Options::keyGeoSpeed6);
 	_btn1Day->setGeoscapeButton(true);
 
-	_sideBottom->setGeoscapeButton(true);
-	_sideTop->setGeoscapeButton(true);
+//	_sideBottom->setGeoscapeButton(true);
+//	_sideTop->setGeoscapeButton(true);
 
 	_btnRotateLeft->onMousePress((ActionHandler)&GeoscapeState::btnRotateLeftPress);
 	_btnRotateLeft->onMouseRelease((ActionHandler)&GeoscapeState::btnRotateLeftRelease);
@@ -1827,11 +1837,29 @@ void GeoscapeState::btnBasesClick(Action *)
 	timerReset();
 	if (!_game->getSavedGame()->getBases()->empty())
 	{
-		_game->pushState(new BasescapeState(_game->getSavedGame()->getSelectedBase(), _globe));
+	//	_game->pushState(new BasescapeState(_game->getSavedGame()->getSelectedBase(), _globe));
+		_game->popState();
+		MultiState *state = new MultiState;
+		state->add(new BasescapeState(_game->getSavedGame()->getSelectedBase(), _globe));
+		state->add(new BaseInfoState(_base, this));
+		state->add(new MonthlyCostsState(_base));
+		state->add(new StoresState(_base));
+		state->add(new TransfersState(_base));
+		// add more here
+		_game->pushState(state);
 	}
 	else
 	{
-		_game->pushState(new BasescapeState(0, _globe));
+		//_game->pushState(new BasescapeState(0, _globe));
+		_game->popState();
+		MultiState *state = new MultiState;
+		state->add(new BasescapeState(0, _globe));
+		state->add(new BaseInfoState(_base, this));
+		state->add(new MonthlyCostsState(_base));
+		state->add(new StoresState(_base));
+		state->add(new TransfersState(_base));
+		// add more here
+		_game->pushState(state);
 	}
 }
 
@@ -2619,11 +2647,11 @@ void GeoscapeState::resize(int &dX, int &dY)
 	_bg->setX((_globe->getWidth() - _bg->getWidth()) / 2);
 	_bg->setY((_globe->getHeight() - _bg->getHeight()) / 2);
 
-	int height = (Options::baseYResolution - Screen::ORIGINAL_HEIGHT) / 2 + 10;
+	/*int height = (Options::baseYResolution - Screen::ORIGINAL_HEIGHT) / 2 + 10;
 	_sideTop->setHeight(height);
 	_sideTop->setY(_sidebar->getY() - height - 1);
 	_sideBottom->setHeight(height);
-	_sideBottom->setY(_sidebar->getY() + _sidebar->getHeight() + 1);
+	_sideBottom->setY(_sidebar->getY() + _sidebar->getHeight() + 1);*/
 
 	//_sideLine->setHeight(Options::baseYResolution);
 	//_sideLine->setY(0);
