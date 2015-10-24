@@ -41,7 +41,7 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 500, 400, POPUP_BOTH);
+	_window = new Window(this, 400, 200, 500, 400, POPUP_BOTH);
 	_btnOk = new TextButton(300, 16, 510, 576);
 	_txtTitle = new Text(310, 17, 505, 408);
 	_txtItem = new Text(142, 9, 510, 432);

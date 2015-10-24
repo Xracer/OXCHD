@@ -32,6 +32,7 @@ class TextButton;
 class TextEdit;
 class Text;
 class Bar;
+class Window;
 
 /**
  * Base Info screen that shows all the
@@ -44,9 +45,7 @@ private:
 	BasescapeState *_state;
 
 	Surface *_bg;
-	MiniBaseView *_mini;
-	TextButton *_btnOk, *_btnTransfers, *_btnStores, *_btnMonthlyCosts;
-	TextEdit *_edtBase;
+	Window *_window;
 
 	Text *_txtPersonnel, *_txtSoldiers, *_txtEngineers, *_txtScientists;
 	Text *_numSoldiers, *_numEngineers, *_numScientists;

@@ -329,12 +329,12 @@ extraSprites:
     subY: 3
     files:
       0: Resources/UI/globe_ufo.png
-  - type: BACK07HDALT.PNG
+  - type: BACK07ALT.PNG
     singleImage: true
-    width: 320
-    height: 160
+    width: 400
+    height: 203
     files:
-      0: Resources/HD/BG/BACK07HDALT.PNG
+      0: Resources/HD/BG/BACK07ALT.PNG
   - type: Commendations
     width: 31
     height: 8

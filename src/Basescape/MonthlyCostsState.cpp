@@ -43,7 +43,6 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 {
 	// Create objects
 	_window = new Window(this, 320, 200, 500, 200, POPUP_BOTH);
-	_btnOk = new TextButton(300, 20, 510, 370);
 	_txtTitle = new Text(310, 17, 505, 212);
 	_txtCost = new Text(80, 9, 615, 232);
 	_txtQuantity = new Text(55, 9, 695, 232);
@@ -61,7 +60,6 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	setInterface("costsInfo");
 
 	add(_window, "window", "costsInfo");
-	add(_btnOk, "button", "costsInfo");
 	add(_txtTitle, "text1", "costsInfo");
 	add(_txtCost, "text1", "costsInfo");
 	add(_txtQuantity, "text1", "costsInfo");
@@ -79,11 +77,6 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&MonthlyCostsState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&MonthlyCostsState::btnOkClick, Options::keyOk);
-	_btnOk->onKeyboardPress((ActionHandler)&MonthlyCostsState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -164,13 +157,5 @@ MonthlyCostsState::~MonthlyCostsState()
 
 }
 
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void MonthlyCostsState::btnOkClick(Action *)
-{
-	_game->popState();
-}
 
 }
