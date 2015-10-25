@@ -38,7 +38,7 @@ namespace OpenXcom
 ListLoadState::ListLoadState(OptionsOrigin origin) : ListGamesState(origin, 0, true)
 {
 	// Create objects
-	_btnOld = new TextButton(80, 16, 60, 172);
+	_btnOld = new TextButton(100, 25, 360, 500);
 
 	add(_btnOld, "button", "saveMenus");
 	
@@ -51,7 +51,7 @@ ListLoadState::ListLoadState(OptionsOrigin origin) : ListGamesState(origin, 0, t
 	}
 	else
 	{
-		_btnCancel->setX(180);
+		_btnCancel->setX(500);
 	}
 
 	_btnOld->setText(tr("STR_ORIGINAL_XCOM"));

@@ -49,53 +49,53 @@ namespace OpenXcom
 BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _state(state)
 {
 	// Create objects
-	_window = new Window(this, 400, 203, 500, 0, POPUP_BOTH);
-	_bg = new Surface(400, 203, 500, 0);
+	_window = new Window(this, 450, 203, 700, 3, POPUP_BOTH);
+	_bg = new Surface(400, 203, 700, 3);
 	//_edtBase = new TextEdit(this, 127, 16, 8, 8);
 
-	_txtPersonnel = new Text(300, 11, 508, 5);
-	_txtSoldiers = new Text(114, 11, 508, 18);
-	_numSoldiers = new Text(40, 11, 668, 18);
-	_barSoldiers = new Bar(150, 9, 708, 19);
-	_txtEngineers = new Text(114, 11, 508, 31);
-	_numEngineers = new Text(40, 11, 668, 31);
-	_barEngineers = new Bar(150, 9, 708, 32);
-	_txtScientists = new Text(114, 11, 508, 44);
-	_numScientists = new Text(40, 11, 668, 44);
-	_barScientists = new Bar(150, 9, 708, 45);
+	_txtPersonnel = new Text(300, 11, 708, 8);
+	_txtSoldiers = new Text(125, 11, 708, 21);
+	_numSoldiers = new Text(40, 11, 868, 21);
+	_barSoldiers = new Bar(150, 9, 908, 22);
+	_txtEngineers = new Text(125, 11, 708, 34);
+	_numEngineers = new Text(40, 11, 868, 34);
+	_barEngineers = new Bar(150, 9, 908, 35);
+	_txtScientists = new Text(125, 11, 708, 47);
+	_numScientists = new Text(40, 11, 868, 47);
+	_barScientists = new Bar(150, 9, 908, 48);
 
-	_txtSpace = new Text(300, 11, 508, 59);
-	_txtQuarters = new Text(114, 11, 508, 73);
-	_numQuarters = new Text(40, 11, 668, 73);
-	_barQuarters = new Bar(150, 9, 708, 74);
-	_txtStores = new Text(114, 11, 508, 86);
-	_numStores = new Text(40, 11, 668, 86);
-	_barStores = new Bar(150, 9, 708, 87);
-	_txtLaboratories = new Text(114, 11, 508, 99);
-	_numLaboratories = new Text(40, 11, 668, 99);
-	_barLaboratories = new Bar(150, 9, 708, 100);
-	_txtWorkshops = new Text(114, 11, 508, 112);
-	_numWorkshops = new Text(40, 11, 668, 112);
-	_barWorkshops = new Bar(150, 9, 708, 113);
+	_txtSpace = new Text(300, 11, 708, 62);
+	_txtQuarters = new Text(130, 11, 708, 76);
+	_numQuarters = new Text(40, 11, 868, 76);
+	_barQuarters = new Bar(150, 9, 908, 77);
+	_txtStores = new Text(130, 11, 708, 89);
+	_numStores = new Text(40, 11, 868, 89);
+	_barStores = new Bar(150, 9, 908, 90);
+	_txtLaboratories = new Text(130, 11, 708, 102);
+	_numLaboratories = new Text(40, 11, 868, 102);
+	_barLaboratories = new Bar(150, 9, 908, 103);
+	_txtWorkshops = new Text(130, 11, 708, 115);
+	_numWorkshops = new Text(40, 11, 868, 115);
+	_barWorkshops = new Bar(150, 9, 908, 116);
 	if (Options::storageLimitsEnforced)
 	{
-		_txtContainment = new Text(114, 11, 508, 125);
-		_numContainment = new Text(40, 11, 668, 125);
-		_barContainment = new Bar(150, 9, 708, 126);
+		_txtContainment = new Text(130, 11, 708, 128);
+		_numContainment = new Text(40, 11, 868, 128);
+		_barContainment = new Bar(150, 9, 908, 129);
 	}
-	_txtHangars = new Text(114, 11, 508, 138);
-	_numHangars = new Text(40, 11, 668, 138);
-	_barHangars = new Bar(150, 9, 708, 139);
+	_txtHangars = new Text(130, 11, 708, 141);
+	_numHangars = new Text(40, 11, 868, 141);
+	_barHangars = new Bar(150, 9, 908, 142);
 
-	_txtDefense = new Text(114, 11, 508, 156);
-	_numDefense = new Text(40, 11, 668, 156);
-	_barDefense = new Bar(150, 9, 708, 157);
-	_txtShortRange = new Text(114, 11, 508, 175);
-	_numShortRange = new Text(40, 11, 668, 175);
-	_barShortRange = new Bar(150, 9, 708, 176);
-	_txtLongRange = new Text(114, 11, 508, 188);
-	_numLongRange = new Text(40, 11, 668, 188);
-	_barLongRange = new Bar(150, 9, 708, 189);
+	_txtDefense = new Text(130, 11, 708, 159);
+	_numDefense = new Text(40, 11, 868, 159);
+	_barDefense = new Bar(150, 9, 908, 160);
+	_txtShortRange = new Text(130, 11, 708, 178);
+	_numShortRange = new Text(40, 11, 868, 178);
+	_barShortRange = new Bar(150, 9, 908, 179);
+	_txtLongRange = new Text(130, 11, 708, 191);
+	_numLongRange = new Text(40, 11, 868, 191);
+	_barLongRange = new Bar(150, 9, 908, 192);
 
 	// Set palette
 	setInterface("baseInfo");

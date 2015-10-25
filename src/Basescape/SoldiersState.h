@@ -37,7 +37,7 @@ class Base;
 class SoldiersState : public State
 {
 private:
-	TextButton *_btnOk, *_btnPsiTraining, *_btnMemorial;
+	TextButton *_btnPsiTraining;
 	Window *_window;
 	Text *_txtTitle, *_txtName, *_txtRank, *_txtCraft;
 	TextList *_lstSoldiers;
@@ -53,8 +53,6 @@ public:
 	void btnOkClick(Action *action);
 	/// Handler for clicking the Psi Training button.
 	void btnPsiTrainingClick(Action *action);
-	/// Handler for clicking the Memorial button.
-	void btnMemorialClick(Action *action);
 	/// Handler for clicking the Soldiers list.
 	void lstSoldiersClick(Action *action);
 };

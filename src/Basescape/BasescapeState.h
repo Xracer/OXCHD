@@ -68,6 +68,8 @@ public:
 	void btnFacilitiesClick(Action *action);
 	/// Handler for clicking the Research button.
 	void btnResearchClick(Action *action);
+	/// Handler for clicking the Training button.
+	void btnTrainingClick(Action *action);
 	/// Handler for clicking the Manufacture button.
 	void btnManufactureClick(Action *action);
 	/// Handler for clicking the Purchase/Hire button.

@@ -127,15 +127,10 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	int screenHeight = Options::baseYGeoscape;
 
 	// Create objects
-	//Surface *hd = _game->getMod()->getSurface("ALTGEOBORD.SCR");
 	_ui = new Surface(1280, 800, 0, 0);
 	_bg = new Surface(1280, 800, 0, 0);
-	//_sideLine = new Surface(64, screenHeight, screenWidth, 0);
-	//_sidebar = new Surface(64, 200, screenWidth - 64, screenHeight / 2 - 100);
 
 	_globe = new Globe(_game, (screenWidth)/2, screenHeight/2, screenWidth, screenHeight, 0, 0);
-	//_bg->setX((_globe->getWidth() - _bg->getWidth()) / 2);
-	//_bg->setY((_globe->getHeight() - _bg->getHeight()) / 2);
 
 	_btnIntercept = new TextButton(65, 52, 1210, 226);
 	_btnBases = new TextButton(65, 52, 1210, 281);
@@ -158,19 +153,15 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btnZoomIn = new InteractiveSurface(31, 31, 1222, 699);
 	_btnZoomOut = new InteractiveSurface(31, 31, 1175, 745);
 
-/*	int height = (screenHeight - Screen::ORIGINAL_HEIGHT) / 2 + 10;
-	_sideTop = new TextButton(63, height, screenWidth-63, _sidebar->getY() - height - 1);
-	_sideBottom = new TextButton(63, height, screenWidth-63, _sidebar->getY() + _sidebar->getHeight() + 1); */
-
 	_txtHour = new Text(20, 20, 54, 25);
 	_txtHourSep = new Text(4, 20, 74, 25);
 	_txtMin = new Text(20, 20, 78, 25);
 	_txtMinSep = new Text(4, 20, 98, 25);
-	_txtSec = new Text(11, 11, 102, 25);
+	_txtSec = new Text(13, 11, 102, 25);
 	_txtWeekday = new Text(59, 11, 9, 8);
 	_txtDay = new Text(29, 11, 68, 8);
 	_txtMonth = new Text(29, 11, 97, 8);
-	_txtYear = new Text(59, 1, 136, 8);
+	_txtYear = new Text(59, 11, 136, 8);
 	_txtFunds = new Text(59, 20, 1180, 12);
 
 	_timeSpeed = _btn5Secs;
@@ -186,9 +177,7 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	// Set palette
 	setInterface("geoscape");
 
-
-	//add(_sideLine);
-	//add(_sidebar);
+	//add objects
 	add(_bg);
 	add(_globe);
 	add(_ui);
@@ -214,9 +203,6 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	add(_btnZoomIn);
 	add(_btnZoomOut);
 
-//	add(_sideTop, "button", "geoscape");
-//	add(_sideBottom, "button", "geoscape");
-
 	add(_txtFunds, "text", "geoscape");
 	add(_txtHour, "text", "geoscape");
 	add(_txtHourSep, "text", "geoscape");
@@ -231,14 +217,8 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	add(_txtDebug, "text", "geoscape");
 
 	// Set up objects
-	//Surface *geobord = _game->getMod()->getSurface("GEOBORD.SCR");
-	//geobord->setX(_sidebar->getX() - geobord->getWidth() + _sidebar->getWidth());
-	//geobord->setY(_sidebar->getY());
-	//_sidebar->copy(geobord);
 	_game->getMod()->getSurface("STARFIELD.PNG")->blit(_bg);
 	_game->getMod()->getSurface("GEOBORD.SCR")->blit(_ui);
-
-	//_sideLine->drawRect(0, 0, _sideLine->getWidth(), _sideLine->getHeight(), 15);
 
 	_btnIntercept->initText(_game->getMod()->getFont("FONT_GEO_BIG"), _game->getMod()->getFont("FONT_GEO_SMALL"), _game->getLanguage());
 	_btnIntercept->setText(tr("STR_INTERCEPT"));
@@ -317,9 +297,6 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btn1Day->setGroup(&_timeSpeed);
 	_btn1Day->onKeyboardPress((ActionHandler)&GeoscapeState::btnTimerClick, Options::keyGeoSpeed6);
 	_btn1Day->setGeoscapeButton(true);
-
-//	_sideBottom->setGeoscapeButton(true);
-//	_sideTop->setGeoscapeButton(true);
 
 	_btnRotateLeft->onMousePress((ActionHandler)&GeoscapeState::btnRotateLeftPress);
 	_btnRotateLeft->onMouseRelease((ActionHandler)&GeoscapeState::btnRotateLeftRelease);

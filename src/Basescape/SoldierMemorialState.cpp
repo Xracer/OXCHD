@@ -44,21 +44,19 @@ namespace OpenXcom
 SoldierMemorialState::SoldierMemorialState()
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(288, 16, 16, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtName = new Text(114, 9, 16, 36);
-	_txtRank = new Text(102, 9, 130, 36);
-	_txtDate = new Text(90, 9, 218, 36);
-	_txtRecruited = new Text(150, 9, 16, 24);
-	_txtLost = new Text(150, 9, 160, 24);
-	_lstSoldiers = new TextList(288, 120, 8, 44);
+	_window = new Window(this, 450, 350, 700, 358);
+	_txtTitle = new Text(440, 17, 705, 368);
+	_txtName = new Text(150, 11, 705, 398);
+	_txtRank = new Text(100, 11, 855, 398);
+	_txtDate = new Text(100, 11, 955, 398);
+	_txtRecruited = new Text(150, 11, 705, 384);
+	_txtLost = new Text(150, 11, 855, 384);
+	_lstSoldiers = new TextList(300, 300, 705, 410);
 
 	// Set palette
 	setInterface("soldierMemorial");
 
 	add(_window, "window", "soldierMemorial");
-	add(_btnOk, "button", "soldierMemorial");
 	add(_txtTitle, "text", "soldierMemorial");
 	add(_txtName, "text", "soldierMemorial");
 	add(_txtRank, "text", "soldierMemorial");
@@ -67,14 +65,9 @@ SoldierMemorialState::SoldierMemorialState()
 	add(_txtLost, "text", "soldierMemorial");
 	add(_lstSoldiers, "list", "soldierMemorial");
 
-	centerAllSurfaces();
-
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&SoldierMemorialState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&SoldierMemorialState::btnOkClick, Options::keyCancel);
+	_window->setThinBorder();
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -121,16 +114,6 @@ SoldierMemorialState::SoldierMemorialState()
 SoldierMemorialState::~SoldierMemorialState()
 {
 
-}
-
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void SoldierMemorialState::btnOkClick(Action *)
-{
-	_game->popState();
-	_game->getMod()->playMusic("GMGEO");
 }
 
 /**
