@@ -42,26 +42,24 @@ namespace OpenXcom
 MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(300, 20, 10, 170);
-	_txtTitle = new Text(310, 17, 5, 12);
-	_txtCost = new Text(80, 9, 115, 32);
-	_txtQuantity = new Text(55, 9, 195, 32);
-	_txtTotal = new Text(60, 9, 249, 32);
-	_txtRental = new Text(150, 9, 10, 40);
-	_txtSalaries = new Text(150, 9, 10, 80);
-	_txtIncome = new Text(150, 9, 10, 146);
-	_txtMaintenance = new Text(150, 9, 10, 154);
-	_lstCrafts = new TextList(288, 32, 10, 48);
-	_lstSalaries = new TextList(300, 40, 10, 88);
-	_lstMaintenance = new TextList(300, 9, 10, 128);
-	_lstTotal = new TextList(100, 9, 205, 150);
+	_window = new Window(this, 450, 172, 700, 210, POPUP_BOTH);
+	_txtTitle = new Text(440, 15, 705, 220);
+	_txtCost = new Text(80, 11, 855, 235);
+	_txtQuantity = new Text(55, 11, 945, 235);
+	_txtTotal = new Text(60, 11, 1010, 235);
+	_txtRental = new Text(150, 11, 705, 235);
+	_txtSalaries = new Text(150, 11, 705, 280);
+	_txtIncome = new Text(150, 11, 710, 350);
+	_txtMaintenance = new Text(150, 11, 705, 365);
+	_lstCrafts = new TextList(400, 30, 705, 250);
+	_lstSalaries = new TextList(400, 40, 705, 295);
+	_lstMaintenance = new TextList(400, 11, 705, 335);
+	_lstTotal = new TextList(130, 11, 905, 365);
 
 	// Set palette
 	setInterface("costsInfo");
 
 	add(_window, "window", "costsInfo");
-	add(_btnOk, "button", "costsInfo");
 	add(_txtTitle, "text1", "costsInfo");
 	add(_txtCost, "text1", "costsInfo");
 	add(_txtQuantity, "text1", "costsInfo");
@@ -75,15 +73,11 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	add(_txtMaintenance, "list", "costsInfo");
 	add(_lstTotal, "text2", "costsInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&MonthlyCostsState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&MonthlyCostsState::btnOkClick, Options::keyOk);
-	_btnOk->onKeyboardPress((ActionHandler)&MonthlyCostsState::btnOkClick, Options::keyCancel);
+	_window->setThinBorder();
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -107,7 +101,7 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	ss2 << tr("STR_MAINTENANCE") << L"=" << Text::formatFunding(_game->getSavedGame()->getBaseMaintenance());
 	_txtMaintenance->setText(ss2.str());
 
-	_lstCrafts->setColumns(4, 125, 70, 44, 60);
+	_lstCrafts->setColumns(4, 160, 110, 60, 70);
 	_lstCrafts->setDot(true);
 
 	const std::vector<std::string> &crafts = _game->getMod()->getCraftsList();
@@ -122,7 +116,7 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 		}
 	}
 
-	_lstSalaries->setColumns(4, 125, 70, 44, 60);
+	_lstSalaries->setColumns(4, 160, 110, 60, 70);
 	_lstSalaries->setDot(true);
 
 	const std::vector<std::string> &soldiers = _game->getMod()->getSoldiersList();
@@ -145,7 +139,7 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	ss6 << _base->getTotalScientists();
 	_lstSalaries->addRow(4, tr("STR_SCIENTISTS").c_str(), Text::formatFunding(_game->getMod()->getScientistCost()).c_str(), ss6.str().c_str(), Text::formatFunding(_base->getTotalScientists() * _game->getMod()->getScientistCost()).c_str());
 
-	_lstMaintenance->setColumns(2, 239, 60);
+	_lstMaintenance->setColumns(2, 330, 70);
 	_lstMaintenance->setDot(true);
 	std::wostringstream ss7;
 	ss7 << L'\x01' << Text::formatFunding(_base->getFacilityMaintenance());
@@ -164,13 +158,5 @@ MonthlyCostsState::~MonthlyCostsState()
 
 }
 
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void MonthlyCostsState::btnOkClick(Action *)
-{
-	_game->popState();
-}
 
 }

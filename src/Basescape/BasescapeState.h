@@ -31,6 +31,7 @@ class TextButton;
 class TextEdit;
 class Base;
 class Globe;
+class Surface;
 
 /**
  * Basescape screen that shows a base's layout
@@ -43,7 +44,7 @@ private:
 	MiniBaseView *_mini;
 	Text *_txtFacility, *_txtLocation, *_txtFunds;
 	TextEdit *_edtBase;
-	TextButton *_btnNewBase, *_btnBaseInfo, *_btnSoldiers, *_btnCrafts, *_btnFacilities, *_btnResearch, *_btnManufacture, *_btnTransfer, *_btnPurchase, *_btnSell, *_btnGeoscape;
+	TextButton *_btnNewBase, *_btnBaseInfo, *_btnSoldiers, *_btnCrafts, *_btnFacilities, *_btnResearch, *_btnTraining, *_btnManufacture, *_btnTransfer, *_btnPurchase, *_btnSell, *_btnGeoscape;
 	Base *_base;
 	Globe *_globe;
 public:
@@ -67,6 +68,8 @@ public:
 	void btnFacilitiesClick(Action *action);
 	/// Handler for clicking the Research button.
 	void btnResearchClick(Action *action);
+	/// Handler for clicking the Training button.
+	void btnTrainingClick(Action *action);
 	/// Handler for clicking the Manufacture button.
 	void btnManufactureClick(Action *action);
 	/// Handler for clicking the Purchase/Hire button.

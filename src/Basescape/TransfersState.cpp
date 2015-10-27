@@ -42,34 +42,28 @@ TransfersState::TransfersState(Base *base) : _base(base)
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 320, 184, 0, 8, POPUP_BOTH);
-	_btnOk = new TextButton(288, 16, 16, 166);
-	_txtTitle = new Text(278, 17, 21, 18);
-	_txtItem = new Text(114, 9, 16, 34);
-	_txtQuantity = new Text(54, 9, 152, 34);
-	_txtArrivalTime = new Text(112, 9, 212, 34);
-	_lstTransfers = new TextList(273, 112, 14, 50);
+	_window = new Window(this, 450, 150, 700, 588, POPUP_BOTH);
+	_txtTitle = new Text(440, 17, 705, 598);
+	_txtItem = new Text(114, 11, 710, 615);
+	_txtQuantity = new Text(65, 11, 895, 615);
+	_txtArrivalTime = new Text(118, 11, 1010, 615);
+	_lstTransfers = new TextList(273, 112, 714, 629);
 
 	// Set palette
 	setInterface("transferInfo");
 
 	add(_window, "window", "transferInfo");
-	add(_btnOk, "button", "transferInfo");
 	add(_txtTitle, "text", "transferInfo");
 	add(_txtItem, "text", "transferInfo");
 	add(_txtQuantity, "text", "transferInfo");
 	add(_txtArrivalTime, "text", "transferInfo");
 	add(_lstTransfers, "list", "transferInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&TransfersState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&TransfersState::btnOkClick, Options::keyOk);
-	_btnOk->onKeyboardPress((ActionHandler)&TransfersState::btnOkClick, Options::keyCancel);
+	_window->setThinBorder();
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -81,7 +75,7 @@ TransfersState::TransfersState(Base *base) : _base(base)
 
 	_txtArrivalTime->setText(tr("STR_ARRIVAL_TIME_HOURS"));
 
-	_lstTransfers->setColumns(3, 155, 75, 46);
+	_lstTransfers->setColumns(3, 220, 120, 40);
 	_lstTransfers->setSelectable(true);
 	_lstTransfers->setBackground(_window);
 	_lstTransfers->setMargin(2);
@@ -101,15 +95,6 @@ TransfersState::TransfersState(Base *base) : _base(base)
 TransfersState::~TransfersState()
 {
 
-}
-
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void TransfersState::btnOkClick(Action *)
-{
-	_game->popState();
 }
 
 }

@@ -32,6 +32,7 @@ class ToggleTextButton;
 class TextList;
 class Region;
 struct GraphButInfo;
+class Window;
 
 /**
  * Graphs screen for displaying graphs of various
@@ -41,6 +42,7 @@ class GraphsState : public State
 {
 private:
 	InteractiveSurface *_bg;
+	Window *_window;
 	InteractiveSurface *_btnGeoscape;
 	InteractiveSurface *_btnXcomCountry, *_btnUfoCountry;
 	InteractiveSurface *_btnXcomRegion, *_btnUfoRegion;

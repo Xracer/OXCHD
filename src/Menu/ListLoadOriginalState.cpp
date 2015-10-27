@@ -47,13 +47,13 @@ ListLoadOriginalState::ListLoadOriginalState()
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnNew = new TextButton(80, 16, 60, 172);
-	_btnCancel = new TextButton(80, 16, 180, 172);
-	_txtTitle = new Text(310, 17, 5, 7);
-	_txtName = new Text(160, 9, 36, 24);
-	_txtTime = new Text(30, 9, 195, 24);
-	_txtDate = new Text(90, 9, 225, 24);
+	_window = new Window(this, 960, 600, 0, 0, POPUP_BOTH);
+	_btnNew = new TextButton(100, 25, 360, 500);
+	_btnCancel = new TextButton(100, 25, 500, 500);
+	_txtTitle = new Text(960, 17, 0, 50);
+	_txtName = new Text(150, 11, 50, 100);
+	_txtTime = new Text(30, 9, 210, 100);
+	_txtDate = new Text(110, 11, 504, 100);
 
 	// Set palette
 	setInterface("saveMenus");
@@ -66,26 +66,26 @@ ListLoadOriginalState::ListLoadOriginalState()
 	add(_txtTime, "text", "saveMenus");
 	add(_txtDate, "text", "saveMenus");
 
-	int y = 34;
+	int y = 130;
 	for (int i = 0; i < SaveConverter::NUM_SAVES; ++i)
 	{
-		_btnSlot[i] = new TextButton(24, 12, 10, y-2);
-		_txtSlotName[i] = new Text(160, 9, 36, y);
-		_txtSlotTime[i] = new Text(30, 9, 195, y);
-		_txtSlotDate[i] = new Text(90, 9, 225, y);
+		_btnSlot[i] = new TextButton(24, 15, 50, y-2);
+		_txtSlotName[i] = new Text(300, 11, 76, y);
+		_txtSlotTime[i] = new Text(40, 11, 377, y);
+		_txtSlotDate[i] = new Text(90, 11, 420, y);
 
 		add(_btnSlot[i], "button", "saveMenus");
 		add(_txtSlotName[i], "list", "saveMenus");
 		add(_txtSlotTime[i], "list", "saveMenus");
 		add(_txtSlotDate[i], "list", "saveMenus");
 
-		y += 14;
+		y += 18;
 	}
 
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	_btnNew->setText(tr("STR_OPENXCOM"));
 	_btnNew->onMouseClick((ActionHandler)&ListLoadOriginalState::btnNewClick);

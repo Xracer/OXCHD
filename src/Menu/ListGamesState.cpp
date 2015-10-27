@@ -86,16 +86,16 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0, POPUP_BOTH);
-	_btnCancel = new TextButton(80, 16, 120, 172);
-	_txtTitle = new Text(310, 17, 5, 7);
-	_txtDelete = new Text(310, 9, 5, 23);
-	_txtName = new Text(150, 9, 16, 32);
-	_txtDate = new Text(110, 9, 204, 32);
-	_lstSaves = new TextList(288, 112, 8, 42);
-	_txtDetails = new Text(288, 16, 16, 156);
-	_sortName = new ArrowButton(ARROW_NONE, 11, 8, 16, 32);
-	_sortDate = new ArrowButton(ARROW_NONE, 11, 8, 204, 32);
+	_window = new Window(this, 960, 600, 0, 0, POPUP_BOTH);
+	_btnCancel = new TextButton(100, 25, 500, 500);
+	_txtTitle = new Text(960, 17, 0, 50);
+	_txtDelete = new Text(960, 11, 0, 80);
+	_txtName = new Text(150, 11, 50, 100);
+	_txtDate = new Text(110, 11, 504, 100);
+	_lstSaves = new TextList(350, 300, 50, 115);
+	_txtDetails = new Text(350, 16, 50, 456);
+	_sortName = new ArrowButton(ARROW_NONE, 14, 11, 50, 100);
+	_sortDate = new ArrowButton(ARROW_NONE, 14, 11, 504, 100);
 
 	// Set palette
 	setInterface("geoscape", true, _game->getSavedGame() ? _game->getSavedGame()->getSavedBattle() : 0);
@@ -112,7 +112,7 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 	add(_sortDate, "text", "saveMenus");
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	_btnCancel->setText(tr("STR_CANCEL_UC"));
 	_btnCancel->onMouseClick((ActionHandler)&ListGamesState::btnCancelClick);
@@ -128,7 +128,7 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 
 	_txtDate->setText(tr("STR_DATE"));
 
-	_lstSaves->setColumns(3, 188, 60, 40);
+	_lstSaves->setColumns(3, 350, 100, 50);
 	_lstSaves->setSelectable(true);
 	_lstSaves->setBackground(_window);
 	_lstSaves->setMargin(8);
