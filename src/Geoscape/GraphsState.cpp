@@ -57,7 +57,7 @@ struct GraphButInfo
 GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 {
 	// Create objects
-	_window = new Window(this, 640, 400, 0, 0, POPUP_HORIZONTAL);
+//	_window = new Window(this, 640, 400, 0, 0, POPUP_HORIZONTAL);
 	_bg = new InteractiveSurface(640, 400, 0, 0);
 	_bg->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELUP);
 	_bg->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELDOWN);
@@ -77,7 +77,7 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	setInterface("graphs");
 
 	//add all our elements
-	add(_window, "window", "geoscape");
+//	add(_window, "window", "geoscape");
 	add(_bg);
 	add(_btnUfoRegion);
 	add(_btnUfoCountry);
@@ -283,7 +283,7 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	btnUfoRegionClick(0);
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
+//	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	if (_game->getMod()->getSurface("GRAPH.BDY"))
 	{
