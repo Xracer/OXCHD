@@ -154,15 +154,15 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btnZoomOut = new InteractiveSurface(31, 31, 1175, 745);
 
 	_txtHour = new Text(20, 20, 54, 25);
-	_txtHourSep = new Text(4, 20, 74, 25);
-	_txtMin = new Text(20, 20, 78, 25);
-	_txtMinSep = new Text(4, 20, 98, 25);
-	_txtSec = new Text(13, 11, 102, 25);
-	_txtWeekday = new Text(59, 11, 9, 8);
-	_txtDay = new Text(29, 11, 68, 8);
-	_txtMonth = new Text(29, 11, 97, 8);
-	_txtYear = new Text(59, 11, 136, 8);
-	_txtFunds = new Text(59, 20, 1180, 12);
+	_txtHourSep = new Text(4, 20, 76, 25);
+	_txtMin = new Text(20, 20, 82, 25);
+	_txtMinSep = new Text(4, 20, 104, 25);
+	_txtSec = new Text(15, 11, 108, 25);
+	_txtWeekday = new Text(75, 20, 5, 8);
+	_txtDay = new Text(30, 20, 84, 8);
+	_txtMonth = new Text(30, 20, 114, 8);
+	_txtYear = new Text(59, 20, 140, 8);
+	_txtFunds = new Text(100, 20, 1070, 12);
 
 	_timeSpeed = _btn5Secs;
 	_gameTimer = new Timer(Options::geoClockSpeed);
@@ -326,7 +326,8 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btnZoomOut->onMouseClick((ActionHandler)&GeoscapeState::btnZoomOutRightClick, SDL_BUTTON_RIGHT);
 	_btnZoomOut->onKeyboardPress((ActionHandler)&GeoscapeState::btnZoomOutLeftClick, Options::keyGeoZoomOut);
 
-	_txtFunds->setAlign(ALIGN_CENTER);
+	_txtFunds->setBig();
+	_txtFunds->setAlign(ALIGN_LEFT);
 	_txtFunds->setVisible(Options::showFundsOnGeoscape);
 
 	_txtHour->setBig();
@@ -340,15 +341,19 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_txtMinSep->setBig();
 	_txtMinSep->setText(L":");
 
+	_txtWeekday->setBig();
 	_txtWeekday->setAlign(ALIGN_CENTER);
 
+	_txtDay->setBig();
 	_txtDay->setAlign(ALIGN_CENTER);
 
+	_txtMonth->setBig();
 	_txtMonth->setAlign(ALIGN_CENTER);
 
+	_txtYear->setBig();
 	_txtYear->setAlign(ALIGN_CENTER);
 
-	if (Options::showFundsOnGeoscape)
+/*	if (Options::showFundsOnGeoscape)
 	{
 		_txtHour->setY(_txtHour->getY()+6);
 		_txtHour->setSmall();
@@ -360,7 +365,7 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 		_txtMinSep->setY(_txtMinSep->getY()+6);
 		_txtMinSep->setSmall();
 		_txtSec->setX(_txtSec->getX()-10);
-	}
+	}*/
 
 	_gameTimer->onTimer((StateHandler)&GeoscapeState::timeAdvance);
 	_gameTimer->start();

@@ -36,14 +36,14 @@ namespace OpenXcom
 		_screen = false;
 
 		// set background window
-		_window = new Window(this, 256, 180, 32, 10, POPUP_NONE);
+		_window = new Window(this, 340, 200, 32, 10, POPUP_NONE);
 
 		// set title
-		_txtTitle = new Text(224, 17, 48, 26);
+		_txtTitle = new Text(250, 17, 48, 26);
 
 		// set buttons
-		_btnOk = new TextButton(224, 16, 48, 166);
-		_lstSelection = new TextList(224, 104, 40, 50);
+		_btnOk = new TextButton(250, 25, 48, 166);
+		_lstSelection = new TextList(260, 104, 40, 50);
 
 		// Set palette
 		setInterface("ufopaedia");

@@ -68,8 +68,8 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	_btnIncome = new InteractiveSurface(32, 24, 324, 0);
 	_btnFinance = new InteractiveSurface(32, 24, 356, 0);
 	_btnGeoscape = new InteractiveSurface(32, 24, 388, 0);
-	_txtTitle = new Text(400, 16, 110, 30);
-	_txtFactor = new Text(55, 11, 110, 50); // the isolated text above the columns value
+	_txtTitle = new Text(500, 16, 110, 40);
+	_txtFactor = new Text(55, 11, 140, 70); // the isolated text above the columns value
 	_txtMonths = new TextList(450, 11, 161, 350);
 	_txtYears = new TextList(450, 11, 161, 366);
 
@@ -228,20 +228,20 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	}
 	Uint8 gridColor = _game->getMod()->getInterface("graphs")->getElement("graph")->color;
 	// set up the grid
-	_bg->drawRect(250, 100, 195, 150, gridColor); //change (125, 49, 162, 162) to (250, 98, 195, 150)
+	_bg->drawRect(160, 100, 400, 250, gridColor); //change (125, 49, 162, 162) to (250, 98, 300, 300) x,y is location of bg x',y' is size of bg
 
 	for (int grid = 0; grid !=5; ++grid)
 	{
-		for (int y = 65 + grid; y <= 163 + grid; y += 14) /// 14 changed to 17; y=50 -> y=65
+		for (int y = 100 + grid; y <= 325 + grid; y += 25) /// y=50 -> 100, y'=160 -> 325, y''=14 -> 25, y is location of grid y' is height is grid y'' is cell height
 		{
-			for (int x = 162 + grid; x <= 297 + grid; x += 17) //// 17 changed to 22 x = 126 -> 162
+			for (int x = 160 + grid; x <= 560 + grid; x += 35) //// 17 changed to 35 x = 126 -> 200; x is location of grid
 			{
 				Uint8 color = gridColor + grid + 1;
 				if (grid == 4)
 				{
 					color = 0;
 				}
-				_bg->drawRect(x, y, 16 - (grid*2), 13 - (grid*2), color);
+				_bg->drawRect(x, y, 35 - (grid*2), 25 - (grid*2), color); ///35 <- 16 - (grid*2), 25 <- 13 - (grid*2)
 			}
 		}
 	}
