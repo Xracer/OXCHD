@@ -46,10 +46,10 @@ namespace OpenXcom
 		_screen = false;
 
 		// set background window
-		_window = new Window(this, 256, 180, 32, 10, POPUP_BOTH);
+		_window = new Window(this, 640, 400, 160, 100, POPUP_BOTH); // 256, 180, 32, 10
 
 		// set title
-		_txtTitle = new Text(224, 17, 48, 33);
+		_txtTitle = new Text(590, 25, 185, 115);
 
 		// Set palette
 		setInterface("ufopaedia");
@@ -58,23 +58,23 @@ namespace OpenXcom
 		add(_window, "window", "ufopaedia");
 		add(_txtTitle, "text", "ufopaedia");
 		// set buttons
-		int y = 50;
+		int y = 150;
 		for (int i = 0; i < NUM_SECTIONS; ++i)
 		{
-			_btnSection[i] = new TextButton(224, 12, 48, y);
-			y += 13;
+			_btnSection[i] = new TextButton(350, 17, 305, y);
+			y += 19;
 
 			add(_btnSection[i], "button1", "ufopaedia");
 
 			_btnSection[i]->setText(tr(SECTIONS[i]));
 			_btnSection[i]->onMouseClick((ActionHandler)&UfopaediaStartState::btnSectionClick);
 		}
-		_btnOk = new TextButton(224, 12, 48, y);
+		_btnOk = new TextButton(350, 17, 305, y);
 		add(_btnOk, "button1", "ufopaedia");
 
 		centerAllSurfaces();
 
-		_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+		_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 		_txtTitle->setBig();
 		_txtTitle->setAlign(ALIGN_CENTER);

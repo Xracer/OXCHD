@@ -158,10 +158,10 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_txtMin = new Text(20, 20, 82, 25);
 	_txtMinSep = new Text(4, 20, 104, 25);
 	_txtSec = new Text(15, 11, 108, 25);
-	_txtWeekday = new Text(75, 20, 5, 8);
-	_txtDay = new Text(30, 20, 84, 8);
-	_txtMonth = new Text(30, 20, 114, 8);
-	_txtYear = new Text(59, 20, 140, 8);
+	_txtWeekday = new Text(100, 20, 5, 8);
+	_txtDay = new Text(50, 20, 105, 8);
+	_txtMonth = new Text(40, 20, 155, 8);
+	_txtYear = new Text(50, 20, 195, 8);
 	_txtFunds = new Text(100, 20, 1070, 12);
 
 	_timeSpeed = _btn5Secs;

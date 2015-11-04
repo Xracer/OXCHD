@@ -41,7 +41,7 @@ class Window;
 class GraphsState : public State
 {
 private:
-	InteractiveSurface *_bg;
+	InteractiveSurface *_bg, *_grid;
 	Window *_window;
 	InteractiveSurface *_btnGeoscape;
 	InteractiveSurface *_btnXcomCountry, *_btnUfoCountry;

@@ -36,14 +36,14 @@ namespace OpenXcom
 		_screen = false;
 
 		// set background window
-		_window = new Window(this, 340, 200, 32, 10, POPUP_NONE);
+		_window = new Window(this, 640, 400, 160, 100, POPUP_NONE);
 
 		// set title
-		_txtTitle = new Text(250, 17, 48, 26);
+		_txtTitle = new Text(600, 25, 180, 115);
 
 		// set buttons
-		_btnOk = new TextButton(250, 25, 48, 166);
-		_lstSelection = new TextList(260, 104, 40, 50);
+		_btnOk = new TextButton(300, 20, 330, 400);
+		_lstSelection = new TextList(300, 250, 325, 150);
 
 		// Set palette
 		setInterface("ufopaedia");
@@ -55,7 +55,7 @@ namespace OpenXcom
 
 		centerAllSurfaces();
 
-		_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+		_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 		_txtTitle->setBig();
 		_txtTitle->setAlign(ALIGN_CENTER);
@@ -65,7 +65,7 @@ namespace OpenXcom
 		_btnOk->onMouseClick((ActionHandler)&UfopaediaSelectState::btnOkClick);
 		_btnOk->onKeyboardPress((ActionHandler)&UfopaediaSelectState::btnOkClick,Options::keyCancel);
 
-		_lstSelection->setColumns(1, 206);
+		_lstSelection->setColumns(1, 300);
 		_lstSelection->setSelectable(true);
 		_lstSelection->setBackground(_window);
 		_lstSelection->setMargin(18);
