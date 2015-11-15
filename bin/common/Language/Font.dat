@@ -8,8 +8,8 @@ fonts:
     spacing: 0
   - id: FONT_SMALL
     image: FontSmall.png
-    width: 8
-    height: 9
+    width: 11
+    height: 13
     spacing: -1
   - id: FONT_GEO_BIG
     image: FontGeoBig.png
@@ -18,6 +18,6 @@ fonts:
     spacing: 1
   - id: FONT_GEO_SMALL
     image: FontGeoSmall.png
-    width: 5
-    height: 7
+    width: 7
+    height: 9
     spacing: 1

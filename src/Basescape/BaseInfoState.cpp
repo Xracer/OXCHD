@@ -27,6 +27,7 @@
 #include "../Interface/TextButton.h"
 #include "../Interface/Text.h"
 #include "../Interface/TextEdit.h"
+#include "../Interface/Window.h"
 #include "../Engine/Surface.h"
 #include "MiniBaseView.h"
 #include "../Savegame/SavedGame.h"
@@ -48,68 +49,59 @@ namespace OpenXcom
 BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _state(state)
 {
 	// Create objects
-	_bg = new Surface(320, 200, 0, 0);
-	_mini = new MiniBaseView(128, 16, 182, 8);
-	_btnOk = new TextButton(30, 14, 10, 180);
-	_btnTransfers = new TextButton(80, 14, 46, 180);
-	_btnStores = new TextButton(80, 14, 132, 180);
-	_btnMonthlyCosts = new TextButton(92, 14, 218, 180);
-	_edtBase = new TextEdit(this, 127, 16, 8, 8);
+	_window = new Window(this, 450, 203, 700, 3, POPUP_BOTH);
+	_bg = new Surface(400, 203, 700, 3);
+	//_edtBase = new TextEdit(this, 127, 16, 8, 8);
 
-	_txtPersonnel = new Text(300, 9, 8, 30);
-	_txtSoldiers = new Text(114, 9, 8, 41);
-	_numSoldiers = new Text(40, 9, 126, 41);
-	_barSoldiers = new Bar(150, 5, 166, 43);
-	_txtEngineers = new Text(114, 9, 8, 51);
-	_numEngineers = new Text(40, 9, 126, 51);
-	_barEngineers = new Bar(150, 5, 166, 53);
-	_txtScientists = new Text(114, 9, 8, 61);
-	_numScientists = new Text(40, 9, 126, 61);
-	_barScientists = new Bar(150, 5, 166, 63);
+	_txtPersonnel = new Text(300, 11, 708, 8);
+	_txtSoldiers = new Text(125, 11, 708, 21);
+	_numSoldiers = new Text(40, 11, 868, 21);
+	_barSoldiers = new Bar(150, 9, 908, 22);
+	_txtEngineers = new Text(125, 11, 708, 34);
+	_numEngineers = new Text(40, 11, 868, 34);
+	_barEngineers = new Bar(150, 9, 908, 35);
+	_txtScientists = new Text(125, 11, 708, 47);
+	_numScientists = new Text(40, 11, 868, 47);
+	_barScientists = new Bar(150, 9, 908, 48);
 
-	_txtSpace = new Text(300, 9, 8, 72);
-	_txtQuarters = new Text(114, 9, 8, 83);
-	_numQuarters = new Text(40, 9, 126, 83);
-	_barQuarters = new Bar(150, 5, 166, 85);
-	_txtStores = new Text(114, 9, 8, 93);
-	_numStores = new Text(40, 9, 126, 93);
-	_barStores = new Bar(150, 5, 166, 95);
-	_txtLaboratories = new Text(114, 9, 8, 103);
-	_numLaboratories = new Text(40, 9, 126, 103);
-	_barLaboratories = new Bar(150, 5, 166, 105);
-	_txtWorkshops = new Text(114, 9, 8, 113);
-	_numWorkshops = new Text(40, 9, 126, 113);
-	_barWorkshops = new Bar(150, 5, 166, 115);
+	_txtSpace = new Text(300, 11, 708, 62);
+	_txtQuarters = new Text(130, 11, 708, 76);
+	_numQuarters = new Text(40, 11, 868, 76);
+	_barQuarters = new Bar(150, 9, 908, 77);
+	_txtStores = new Text(130, 11, 708, 89);
+	_numStores = new Text(40, 11, 868, 89);
+	_barStores = new Bar(150, 9, 908, 90);
+	_txtLaboratories = new Text(130, 11, 708, 102);
+	_numLaboratories = new Text(40, 11, 868, 102);
+	_barLaboratories = new Bar(150, 9, 908, 103);
+	_txtWorkshops = new Text(130, 11, 708, 115);
+	_numWorkshops = new Text(40, 11, 868, 115);
+	_barWorkshops = new Bar(150, 9, 908, 116);
 	if (Options::storageLimitsEnforced)
 	{
-		_txtContainment = new Text(114, 9, 8, 123);
-		_numContainment = new Text(40, 9, 126, 123);
-		_barContainment = new Bar(150, 5, 166, 125);
+		_txtContainment = new Text(130, 11, 708, 128);
+		_numContainment = new Text(40, 11, 868, 128);
+		_barContainment = new Bar(150, 9, 908, 129);
 	}
-	_txtHangars = new Text(114, 9, 8, Options::storageLimitsEnforced ? 133 : 123);
-	_numHangars = new Text(40, 9, 126, Options::storageLimitsEnforced ? 133 : 123);
-	_barHangars = new Bar(150, 5, 166, Options::storageLimitsEnforced ? 135 : 125);
+	_txtHangars = new Text(130, 11, 708, 141);
+	_numHangars = new Text(40, 11, 868, 141);
+	_barHangars = new Bar(150, 9, 908, 142);
 
-	_txtDefense = new Text(114, 9, 8, Options::storageLimitsEnforced ? 147 : 138);
-	_numDefense = new Text(40, 9, 126, Options::storageLimitsEnforced ? 147 : 138);
-	_barDefense = new Bar(150, 5, 166, Options::storageLimitsEnforced ? 149 : 140);
-	_txtShortRange = new Text(114, 9, 8, Options::storageLimitsEnforced ? 157 : 153);
-	_numShortRange = new Text(40, 9, 126, Options::storageLimitsEnforced ? 157 : 153);
-	_barShortRange = new Bar(150, 5, 166, Options::storageLimitsEnforced ? 159 : 155);
-	_txtLongRange = new Text(114, 9, 8, Options::storageLimitsEnforced ? 167 : 163);
-	_numLongRange = new Text(40, 9, 126, Options::storageLimitsEnforced ? 167 : 163);
-	_barLongRange = new Bar(150, 5, 166, Options::storageLimitsEnforced ? 169 : 165);
+	_txtDefense = new Text(130, 11, 708, 159);
+	_numDefense = new Text(40, 11, 868, 159);
+	_barDefense = new Bar(150, 9, 908, 160);
+	_txtShortRange = new Text(130, 11, 708, 178);
+	_numShortRange = new Text(40, 11, 868, 178);
+	_barShortRange = new Bar(150, 9, 908, 179);
+	_txtLongRange = new Text(130, 11, 708, 191);
+	_numLongRange = new Text(40, 11, 868, 191);
+	_barLongRange = new Bar(150, 9, 908, 192);
 
 	// Set palette
 	setInterface("baseInfo");
 
 	add(_bg);
-	add(_mini, "miniBase", "basescape");
-	add(_btnOk, "button", "baseInfo");
-	add(_btnTransfers, "button", "baseInfo");
-	add(_btnStores, "button", "baseInfo");
-	add(_btnMonthlyCosts, "button", "baseInfo");
-	add(_edtBase, "text1", "baseInfo");
+	//add(_edtBase, "text1", "baseInfo");
 
 	add(_txtPersonnel, "text1", "baseInfo");
 	add(_txtSoldiers, "text2", "baseInfo");
@@ -155,45 +147,18 @@ BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _
 	add(_numLongRange, "numbers", "baseInfo");
 	add(_barLongRange, "detectionBars", "baseInfo");
 
-	centerAllSurfaces();
-
 	// Set up objects
+	_window->setThinBorder();
 	std::ostringstream ss;
 	if (Options::storageLimitsEnforced)
 	{
 		ss << "ALT";
 	}
-	ss << "BACK07.SCR";
+	ss << "BACK07ALT.PNG";
 	_game->getMod()->getSurface(ss.str())->blit(_bg);
 
-	_mini->setTexture(_game->getMod()->getSurfaceSet("BASEBITS.PCK"));
-	_mini->setBases(_game->getSavedGame()->getBases());
-	for (size_t i = 0; i < _game->getSavedGame()->getBases()->size(); ++i)
-	{
-		if (_game->getSavedGame()->getBases()->at(i) == _base)
-		{
-			_mini->setSelectedBase(i);
-			break;
-		}
-	}
-	_mini->onMouseClick((ActionHandler)&BaseInfoState::miniClick);
-	_mini->onKeyboardPress((ActionHandler)&BaseInfoState::handleKeyPress);
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&BaseInfoState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&BaseInfoState::btnOkClick, Options::keyCancel);
-
-	_btnTransfers->setText(tr("STR_TRANSFERS_UC"));
-	_btnTransfers->onMouseClick((ActionHandler)&BaseInfoState::btnTransfersClick);
-
-	_btnStores->setText(tr("STR_STORES_UC"));
-	_btnStores->onMouseClick((ActionHandler)&BaseInfoState::btnStoresClick);
-
-	_btnMonthlyCosts->setText(tr("STR_MONTHLY_COSTS"));
-	_btnMonthlyCosts->onMouseClick((ActionHandler)&BaseInfoState::btnMonthlyCostsClick);
-
-	_edtBase->setBig();
-	_edtBase->onChange((ActionHandler)&BaseInfoState::edtBaseChange);
+	//_edtBase->setBig();
+	//_edtBase->onChange((ActionHandler)&BaseInfoState::edtBaseChange);
 
 	_txtPersonnel->setText(tr("STR_PERSONNEL_AVAILABLE_PERSONNEL_TOTAL"));
 
@@ -267,7 +232,7 @@ BaseInfoState::~BaseInfoState()
 void BaseInfoState::init()
 {
 	State::init();
-	_edtBase->setText(_base->getName());
+	//_edtBase->setText(_base->getName());
 
 	std::wostringstream ss;
 	ss << _base->getAvailableSoldiers() << ":" << _base->getTotalSoldiers();
@@ -362,27 +327,11 @@ void BaseInfoState::init()
 /**
  * Changes the base name.
  * @param action Pointer to an action.
- */
+
 void BaseInfoState::edtBaseChange(Action *)
 {
 	_base->setName(_edtBase->getText());
-}
-
-/**
- * Selects a new base to display.
- * @param action Pointer to an action.
- */
-void BaseInfoState::miniClick(Action *)
-{
-	size_t base = _mini->getHoveredBase();
-	if (base < _game->getSavedGame()->getBases()->size())
-	{
-		_mini->setSelectedBase(base);
-		_base = _game->getSavedGame()->getBases()->at(base);
-		_state->setBase(_base);
-		init();
-	}
-}
+} */
 
 /**
  * Selects a new base to display.
@@ -405,7 +354,7 @@ void BaseInfoState::handleKeyPress(Action *action)
 		{
 			if (key == baseKeys[i])
 			{
-				_mini->setSelectedBase(i);
+			//	_mini->setSelectedBase(i);
 				_base = _game->getSavedGame()->getBases()->at(i);
 				_state->setBase(_base);
 				init();
@@ -413,42 +362,6 @@ void BaseInfoState::handleKeyPress(Action *action)
 			}
 		}
 	}
-}
-
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void BaseInfoState::btnOkClick(Action *)
-{
-	_game->popState();
-}
-
-/**
- * Goes to the Transfers window.
- * @param action Pointer to an action.
- */
-void BaseInfoState::btnTransfersClick(Action *)
-{
-	_game->pushState(new TransfersState(_base));
-}
-
-/**
- * Goes to the Stores screen.
- * @param action Pointer to an action.
- */
-void BaseInfoState::btnStoresClick(Action *)
-{
-	_game->pushState(new StoresState(_base));
-}
-
-/**
- * Goes to the Monthly Costs screen.
- * @param action Pointer to an action.
- */
-void BaseInfoState::btnMonthlyCostsClick(Action *)
-{
-	_game->pushState(new MonthlyCostsState(_base));
 }
 
 }

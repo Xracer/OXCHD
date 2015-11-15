@@ -19,6 +19,7 @@
 #include "GraphsState.h"
 #include <sstream>
 #include "../Engine/Game.h"
+#include "../Interface/Window.h"
 #include "../Mod/Mod.h"
 #include "../Engine/Palette.h"
 #include "../Engine/Surface.h"
@@ -56,25 +57,27 @@ struct GraphButInfo
 GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 {
 	// Create objects
-	_bg = new InteractiveSurface(320, 200, 0, 0);
+	_window = new Window(this, 640, 400, 0, 0, POPUP_HORIZONTAL);
+	_bg = new InteractiveSurface(640, 400, 0, 0);
 	_bg->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELUP);
 	_bg->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELDOWN);
-	_btnUfoRegion = new InteractiveSurface(32, 24, 96, 0);
-	_btnUfoCountry = new InteractiveSurface(32, 24, 128, 0);
-	_btnXcomRegion = new InteractiveSurface(32, 24, 160, 0);
-	_btnXcomCountry = new InteractiveSurface(32, 24, 192, 0);
-	_btnIncome = new InteractiveSurface(32, 24, 224, 0);
-	_btnFinance = new InteractiveSurface(32, 24, 256, 0);
-	_btnGeoscape = new InteractiveSurface(32, 24, 288, 0);
-	_txtTitle = new Text(220, 16, 100, 28);
-	_txtFactor = new Text(38, 11, 96, 28);
-	_txtMonths = new TextList(205, 8, 115, 183);
-	_txtYears = new TextList(200, 8, 121, 191);
+	_btnUfoRegion = new InteractiveSurface(32, 24, 196, 0);
+	_btnUfoCountry = new InteractiveSurface(32, 24, 228, 0);
+	_btnXcomRegion = new InteractiveSurface(32, 24, 260, 0);
+	_btnXcomCountry = new InteractiveSurface(32, 24, 292, 0);
+	_btnIncome = new InteractiveSurface(32, 24, 324, 0);
+	_btnFinance = new InteractiveSurface(32, 24, 356, 0);
+	_btnGeoscape = new InteractiveSurface(32, 24, 388, 0);
+	_txtTitle = new Text(400, 16, 110, 30);
+	_txtFactor = new Text(55, 11, 110, 50); // the isolated text above the columns value
+	_txtMonths = new TextList(450, 11, 161, 350);
+	_txtYears = new TextList(450, 11, 161, 366);
 
 	// Set palette
 	setInterface("graphs");
 
 	//add all our elements
+	add(_window, "window", "geoscape");
 	add(_bg);
 	add(_btnUfoRegion);
 	add(_btnUfoCountry);
@@ -87,9 +90,9 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	add(_txtYears, "scale", "graphs");
 	add(_txtTitle, "text", "graphs");
 	add(_txtFactor, "text", "graphs");
-	for (int scaleText = 0; scaleText != 10; ++scaleText)
+	for (int scaleText = 0; scaleText != 12; ++scaleText)
 	{
-		_txtScale.push_back(new Text(42, 16, 80, 171 - (scaleText*14)));
+		_txtScale.push_back(new Text(55, 16, 105, 345 - (scaleText*25)));
 		add(_txtScale.at(scaleText), "scale", "graphs");
 	}
 	Uint8 regionTotalColor = _game->getMod()->getInterface("graphs")->getElement("regionTotal")->color;
@@ -100,11 +103,11 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	for (std::vector<Region *>::iterator iter = _game->getSavedGame()->getRegions()->begin(); iter != _game->getSavedGame()->getRegions()->end(); ++iter)
 	{
 		// always save in toggles all the regions
-		_regionToggles.push_back(new GraphButInfo(tr((*iter)->getRules()->getType()) , 13 + (8*offset)));
+		_regionToggles.push_back(new GraphButInfo(tr((*iter)->getRules()->getType()) , 16 + (8*offset)));
 		// initially add the GRAPH_MAX_BUTTONS having the first regions information
 		if (offset < GRAPH_MAX_BUTTONS)
 		{
-			_btnRegions.push_back(new ToggleTextButton(88, 11, 0, offset*11));
+			_btnRegions.push_back(new ToggleTextButton(105, 16, 0, offset * 18));
 			_btnRegions.at(offset)->setText(tr((*iter)->getRules()->getType()));
 			_btnRegions.at(offset)->setInvertColor(13 + (8*offset));
 			_btnRegions.at(offset)->onMousePress((ActionHandler)&GraphsState::btnRegionListClick);
@@ -112,25 +115,25 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 			_btnRegions.at(offset)->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELDOWN);
 			add(_btnRegions.at(offset), "button", "graphs");
 		}
-		_alienRegionLines.push_back(new Surface(320,200,0,0));
+		_alienRegionLines.push_back(new Surface(640,400,0,0));
 		add(_alienRegionLines.at(offset));
-		_xcomRegionLines.push_back(new Surface(320,200,0,0));
+		_xcomRegionLines.push_back(new Surface(640,400,0,0));
 		add(_xcomRegionLines.at(offset));
 
 		++offset;
 	}
 
 	if (_regionToggles.size() < GRAPH_MAX_BUTTONS)
-		_btnRegionTotal = new ToggleTextButton(88, 11, 0, _regionToggles.size()*11);
+		_btnRegionTotal = new ToggleTextButton(105, 16, 0, _regionToggles.size()*18);
 	else
-		_btnRegionTotal = new ToggleTextButton(88, 11, 0, GRAPH_MAX_BUTTONS*11);
+		_btnRegionTotal = new ToggleTextButton(105, 16, 0, GRAPH_MAX_BUTTONS*18);
 	_regionToggles.push_back(new GraphButInfo(tr("STR_TOTAL_UC"), regionTotalColor));
 	_btnRegionTotal->onMousePress((ActionHandler)&GraphsState::btnRegionListClick);
 	_btnRegionTotal->setInvertColor(regionTotalColor);
 	_btnRegionTotal->setText(tr("STR_TOTAL_UC"));
-	_alienRegionLines.push_back(new Surface(320,200,0,0));
+	_alienRegionLines.push_back(new Surface(640, 400, 0, 0));
 	add(_alienRegionLines.at(offset));
-	_xcomRegionLines.push_back(new Surface(320,200,0,0));
+	_xcomRegionLines.push_back(new Surface(640, 400, 0, 0));
 	add(_xcomRegionLines.at(offset));
 	add(_btnRegionTotal, "button", "graphs");
 
@@ -142,7 +145,7 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 		// initially add the GRAPH_MAX_BUTTONS having the first countries information
 		if (offset < GRAPH_MAX_BUTTONS)
 		{
-			_btnCountries.push_back(new ToggleTextButton(88, 11, 0, offset*11));
+			_btnCountries.push_back(new ToggleTextButton(105, 16, 0, offset*18));
 			_btnCountries.at(offset)->setInvertColor(13 + (8*offset));
 			_btnCountries.at(offset)->setText(tr((*iter)->getRules()->getType()));
 			_btnCountries.at(offset)->onMousePress((ActionHandler)&GraphsState::btnCountryListClick);
@@ -150,29 +153,29 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 			_btnCountries.at(offset)->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELDOWN);
 			add(_btnCountries.at(offset), "button", "graphs");
 		}
-		_alienCountryLines.push_back(new Surface(320,200,0,0));
+		_alienCountryLines.push_back(new Surface(640, 400, 0, 0));
 		add(_alienCountryLines.at(offset));
-		_xcomCountryLines.push_back(new Surface(320,200,0,0));
+		_xcomCountryLines.push_back(new Surface(640, 400, 0, 0));
 		add(_xcomCountryLines.at(offset));
-		_incomeLines.push_back(new Surface(320,200,0,0));
+		_incomeLines.push_back(new Surface(640, 400, 0, 0));
 		add(_incomeLines.at(offset));
 
 		++offset;
 	}
 
 	if (_countryToggles.size() < GRAPH_MAX_BUTTONS)
-		_btnCountryTotal = new ToggleTextButton(88, 11, 0, _countryToggles.size()*11);
+		_btnCountryTotal = new ToggleTextButton(105, 16, 0, _countryToggles.size()*18);
 	else
-		_btnCountryTotal = new ToggleTextButton(88, 11, 0, GRAPH_MAX_BUTTONS*11);
+		_btnCountryTotal = new ToggleTextButton(105, 16, 0, GRAPH_MAX_BUTTONS*18);
 	_countryToggles.push_back(new GraphButInfo(tr("STR_TOTAL_UC"), countryTotalColor));
 	_btnCountryTotal->onMousePress((ActionHandler)&GraphsState::btnCountryListClick);
 	_btnCountryTotal->setInvertColor(countryTotalColor);
 	_btnCountryTotal->setText(tr("STR_TOTAL_UC"));
-	_alienCountryLines.push_back(new Surface(320,200,0,0));
+	_alienCountryLines.push_back(new Surface(640, 400, 0, 0));
 	add(_alienCountryLines.at(offset));
-	_xcomCountryLines.push_back(new Surface(320,200,0,0));
+	_xcomCountryLines.push_back(new Surface(640, 400, 0, 0));
 	add(_xcomCountryLines.at(offset));
-	_incomeLines.push_back(new Surface(320,200,0,0));
+	_incomeLines.push_back(new Surface(640, 400, 0, 0));
 	add(_incomeLines.at(offset));
 	add(_btnCountryTotal, "button", "graphs");
 
@@ -180,12 +183,12 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	for (int iter = 0; iter != 5; ++iter)
 	{
 		offset = iter;
-		_btnFinances.push_back(new ToggleTextButton(88, 11, 0, offset*11));
+		_btnFinances.push_back(new ToggleTextButton(105, 16, 0, offset * 18));
 		_financeToggles.push_back(false);
 		_btnFinances.at(offset)->setInvertColor(13 + (8*offset));
 		_btnFinances.at(offset)->onMousePress((ActionHandler)&GraphsState::btnFinanceListClick);
 		add(_btnFinances.at(offset), "button", "graphs");
-		_financeLines.push_back(new Surface(320,200,0,0));
+		_financeLines.push_back(new Surface(640, 400, 0, 0));
 		add(_financeLines.at(offset));
 	}
 
@@ -225,13 +228,13 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	}
 	Uint8 gridColor = _game->getMod()->getInterface("graphs")->getElement("graph")->color;
 	// set up the grid
-	_bg->drawRect(125, 49, 188, 127, gridColor);
+	_bg->drawRect(250, 100, 195, 150, gridColor); //change (125, 49, 162, 162) to (250, 98, 195, 150)
 
 	for (int grid = 0; grid !=5; ++grid)
 	{
-		for (int y = 50 + grid; y <= 163 + grid; y += 14)
+		for (int y = 65 + grid; y <= 163 + grid; y += 14) /// 14 changed to 17; y=50 -> y=65
 		{
-			for (int x = 126 + grid; x <= 297 + grid; x += 17)
+			for (int x = 162 + grid; x <= 297 + grid; x += 17) //// 17 changed to 22 x = 126 -> 162
 			{
 				Uint8 color = gridColor + grid + 1;
 				if (grid == 4)
@@ -248,9 +251,9 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	int month = _game->getSavedGame()->getTime()->getMonth();
 	// i know using textlist for this is ugly and brutal, but YOU try getting this damn text to line up.
 	// also, there's nothing wrong with being ugly or brutal, you should learn tolerance.
-	_txtMonths->setColumns(12, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17);
+	_txtMonths->setColumns(12, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35);
 	_txtMonths->addRow(12, L" ", L" ", L" ", L" ", L" ", L" ", L" ", L" ", L" ", L" ", L" ", L" ");
-	_txtYears->setColumns(6, 34, 34, 34, 34, 34, 34);
+	_txtYears->setColumns(6, 70, 70, 70, 70, 70, 70);
 	_txtYears->addRow(6, L" ", L" ", L" ", L" ", L" ", L" ");
 
 	for (int iter = 0; iter != 12; ++iter)
@@ -280,6 +283,8 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 	btnUfoRegionClick(0);
 
 	// Set up objects
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
+
 	if (_game->getMod()->getSurface("GRAPH.BDY"))
 	{
 		_game->getMod()->getSurface("GRAPH.BDY")->blit(_bg);

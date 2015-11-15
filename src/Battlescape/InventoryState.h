@@ -32,9 +32,11 @@ class Text;
 class InteractiveSurface;
 class Inventory;
 class SavedBattleGame;
+class Bar;
 class BattlescapeState;
 class BattleUnit;
 class BattlescapeButton;
+class TextButton;
 
 /**
  * Screen which displays soldier's inventory.
@@ -42,8 +44,10 @@ class BattlescapeButton;
 class InventoryState : public State
 {
 private:
-	Surface *_bg, *_soldier;
+	Surface *_bg, *_soldier, *_rank;
 	Text *_txtName, *_txtItem, *_txtAmmo, *_txtWeight, *_txtTus, *_txtFAcc, *_txtReact, *_txtPSkill, *_txtPStr;
+	Text *_txtRank, *_txtRankName, *_txtCraft, *_txtCraftName, *_txtMissions, *_txtnumMissions, *_txtKills;
+	Text *_txtnumKills, *_txtStatus, *_txtStatusType, *_txtArmor, *_txtArmorType;
 	BattlescapeButton *_btnOk, *_btnPrev, *_btnNext, *_btnUnload, *_btnGround, *_btnRank;
 	BattlescapeButton *_btnCreateTemplate, *_btnApplyTemplate;
 	Surface *_selAmmo;
@@ -51,6 +55,9 @@ private:
 	std::vector<EquipmentLayoutItem*> _curInventoryTemplate;
 	SavedBattleGame *_battleGame;
 	const bool _tu;
+	bool _fromInventory, _mindProbe;
+
+	BattleUnit *_unit;
 	BattlescapeState *_parent;
 	std::string _currentTooltip;
 public:

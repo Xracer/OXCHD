@@ -69,13 +69,15 @@
 #include "ExtraStrings.h"
 #include "RuleInterface.h"
 #include "RuleMissionScript.h"
+#include "RuleCommendations.h"
 #include "../Geoscape/Globe.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Region.h"
 #include "../Savegame/Base.h"
 #include "../Savegame/Country.h"
-#include "../Savegame/Soldier.h"
 #include "../Savegame/Craft.h"
+#include "../Savegame/Soldier.h"
+#include "../Savegame/SoldierDiary.h"
 #include "../Savegame/Transfer.h"
 #include "../Ufopaedia/Ufopaedia.h"
 #include "../Savegame/AlienStrategy.h"
@@ -338,7 +340,7 @@ Mod::~Mod()
 	for (std::map<std::string, RuleMusic *>::const_iterator i = _musicDefs.begin(); i != _musicDefs.end(); ++i)
 	{
 		delete i->second;
-	}
+	}	
 	for (std::map<std::string, RuleMissionScript*>::const_iterator i = _missionScripts.begin(); i != _missionScripts.end(); ++i)
 	{
 		delete i->second;
@@ -350,6 +352,10 @@ Mod::~Mod()
 	for (std::vector<StatString*>::const_iterator i = _statStrings.begin(); i != _statStrings.end(); ++i)
 	{
 		delete (*i);
+	}
+	for (std::map<std::string, RuleCommendations *>::const_iterator i = _commendations.begin(); i != _commendations.end(); ++i)
+	{
+		delete i->second;
 	}
 }
 
@@ -1022,6 +1028,13 @@ void Mod::loadFile(const std::string &filename)
 			_extraStringsIndex.push_back(type);
 		}
 	}
+	for (YAML::const_iterator i = doc["commendations"].begin(); i != doc["commendations"].end(); ++i)
+	{
+		std::string type = (*i)["type"].as<std::string>();
+		std::auto_ptr<RuleCommendations> commendations(new RuleCommendations());
+		commendations->load(*i);
+        _commendations[type] = commendations.release();
+	}
 
 	for (YAML::const_iterator i = doc["statStrings"].begin(); i != doc["statStrings"].end(); ++i)
 	{
@@ -1266,6 +1279,11 @@ SavedGame *Mod::newSave() const
 		Soldier *soldier = genSoldier(save);
 		soldier->setCraft(base->getCrafts()->front());
 		base->getSoldiers()->push_back(soldier);
+		soldier->getDiary()->awardOriginalEightCommendation();
+		for (std::vector<SoldierCommendations*>::iterator comm = soldier->getDiary()->getSoldierCommendations()->begin(); comm != soldier->getDiary()->getSoldierCommendations()->end(); ++comm)
+		{
+			(*comm)->makeOld(); // Soldier was already awarded these before arriving on base.
+		}
 	}
 
 	save->getBases()->push_back(base);
@@ -1475,6 +1493,15 @@ RuleSoldier *Mod::getSoldier(const std::string &name) const
 {
 	std::map<std::string, RuleSoldier*>::const_iterator i = _soldiers.find(name);
 	if (_soldiers.end() != i) return i->second; else return 0;
+}
+
+/**
+* Gets the list of commendations
+* @return The list of commendations.
+*/
+std::map<std::string, RuleCommendations *> Mod::getCommendation() const
+{
+	return _commendations;
 }
 
 /**
@@ -3013,7 +3040,7 @@ void Mod::loadExtraResources()
 void Mod::modResources()
 {
 	// bigger geoscape background
-	int newWidth = 320 - 64, newHeight = 200;
+	int newWidth = 1280, newHeight = 800;
 	Surface *newGeo = new Surface(newWidth * 3, newHeight * 3);
 	Surface *oldGeo = _surfaces["GEOBORD.SCR"];
 	for (int x = 0; x < newWidth; ++x)
@@ -3036,7 +3063,7 @@ void Mod::modResources()
 	_surfaces["ALTGEOBORD.SCR"] = newGeo;
 
 	// here we create an "alternate" background surface for the base info screen.
-	_surfaces["ALTBACK07.SCR"] = new Surface(320, 200);
+	_surfaces["ALTBACK07.SCR"] = new Surface(1280, 800);
 	_surfaces["ALTBACK07.SCR"]->loadScr(FileMap::getFilePath("GEOGRAPH/BACK07.SCR"));
 	for (int y = 172; y >= 152; --y)
 		for (int x = 5; x <= 314; ++x)

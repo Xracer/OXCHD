@@ -39,17 +39,17 @@ namespace OpenXcom
 NewGameState::NewGameState()
 {
 	// Create objects
-	_window = new Window(this, 192, 180, 64, 10, POPUP_VERTICAL);
-	_btnBeginner = new TextButton(160, 18, 80, 32);
-	_btnExperienced = new TextButton(160, 18, 80, 52);
-	_btnVeteran = new TextButton(160, 18, 80, 72);
-	_btnGenius = new TextButton(160, 18, 80, 92);
-	_btnSuperhuman = new TextButton(160, 18, 80, 112);
-	_btnIronman = new ToggleTextButton(78, 18, 80, 138);
-	_btnOk = new TextButton(78, 16, 80, 164);
-	_btnCancel = new TextButton(78, 16, 162, 164);
-	_txtTitle = new Text(192, 9, 64, 20);
-	_txtIronman = new Text(90, 24, 162, 135);
+	_window = new Window(this, 192, 180, 384, 210, POPUP_VERTICAL);
+	_btnBeginner = new TextButton(160, 18, 400, 232);
+	_btnExperienced = new TextButton(160, 18, 400, 252);
+	_btnVeteran = new TextButton(160, 18, 400, 272);
+	_btnGenius = new TextButton(160, 18, 400, 292);
+	_btnSuperhuman = new TextButton(160, 18, 400, 312);
+	_btnIronman = new ToggleTextButton(78, 18, 400, 338);
+	_btnOk = new TextButton(78, 16, 400, 364);
+	_btnCancel = new TextButton(78, 16, 482, 364);
+	_txtTitle = new Text(192, 9, 384, 220);
+	_txtIronman = new Text(90, 24, 482, 335);
 
 	_difficulty = _btnBeginner;
 

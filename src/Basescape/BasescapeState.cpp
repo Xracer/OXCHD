@@ -16,9 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BaseInfoState.h"
 #include "BasescapeState.h"
+#include "BuildFacilitiesState.h"
+#include "CraftInfoState.h"
+#include "CraftSoldiersState.h"
+#include "CraftsState.h"
+#include "ManageAlienContainmentState.h"
+#include "ManufactureState.h"
+#include "MonthlyCostsState.h"
+#include "NewResearchListState.h"
+#include "NewManufactureListState.h"
+#include "PurchaseState.h"
+#include "ResearchState.h"
+#include "SoldiersState.h"
+#include "SoldierMemorialState.h"
+#include "SellState.h"
+#include "StoresState.h"
+#include "TransferBaseState.h"
+#include "TransfersState.h"
 #include "../Engine/Game.h"
-#include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
@@ -30,26 +47,18 @@
 #include "../Savegame/Base.h"
 #include "../Savegame/BaseFacility.h"
 #include "../Mod/RuleBaseFacility.h"
-#include "../Savegame/Region.h"
+#include "../Mod/Mod.h"
 #include "../Mod/RuleRegion.h"
 #include "../Menu/ErrorMessageState.h"
 #include "DismantleFacilityState.h"
 #include "../Geoscape/BuildNewBaseState.h"
 #include "../Engine/Action.h"
 #include "../Savegame/Craft.h"
-#include "BaseInfoState.h"
-#include "SoldiersState.h"
-#include "CraftsState.h"
-#include "BuildFacilitiesState.h"
-#include "ResearchState.h"
-#include "ManageAlienContainmentState.h"
-#include "ManufactureState.h"
-#include "PurchaseState.h"
-#include "SellState.h"
-#include "TransferBaseState.h"
-#include "CraftInfoState.h"
+#include "../Savegame/Region.h"
 #include "../Geoscape/AllocatePsiTrainingState.h"
 #include "../Mod/RuleInterface.h"
+#include "../Engine/MultiState.h"
+#include "../Interface/Window.h"
 
 namespace OpenXcom
 {
@@ -63,23 +72,24 @@ namespace OpenXcom
 BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(globe)
 {
 	// Create objects
-	_txtFacility = new Text(192, 9, 0, 0);
-	_view = new BaseView(192, 192, 0, 8);
-	_mini = new MiniBaseView(128, 16, 192, 41);
-	_edtBase = new TextEdit(this, 127, 17, 193, 0);
-	_txtLocation = new Text(126, 9, 194, 16);
-	_txtFunds = new Text(126, 9, 194, 24);
-	_btnNewBase = new TextButton(128, 12, 192, 58);
-	_btnBaseInfo = new TextButton(128, 12, 192, 71);
-	_btnSoldiers = new TextButton(128, 12, 192, 84);
-	_btnCrafts = new TextButton(128, 12, 192, 97);
-	_btnFacilities = new TextButton(128, 12, 192, 110);
-	_btnResearch = new TextButton(128, 12, 192, 123);
-	_btnManufacture = new TextButton(128, 12, 192, 136);
-	_btnTransfer = new TextButton(128, 12, 192, 149);
-	_btnPurchase = new TextButton(128, 12, 192, 162);
-	_btnSell = new TextButton(128, 12, 192, 175);
-	_btnGeoscape = new TextButton(128, 12, 192, 188);
+	_txtFacility = new Text(192, 11, 25, 95);
+	_view = new BaseView(192, 192, 13, 120);
+	_mini = new MiniBaseView(180, 16, 13, 10);
+	_edtBase = new TextEdit(this, 150, 17, 13, 43);
+	_txtLocation = new Text(126, 11, 13, 65);
+	_txtFunds = new Text(126, 9, 13, 77);
+	_btnNewBase = new TextButton(32, 32, 220, 10);
+	_btnBaseInfo = new TextButton(110, 30, 10, 750);
+	_btnSoldiers = new TextButton(110, 30, 125, 750);
+	_btnCrafts = new TextButton(110, 30, 240, 750);
+	_btnFacilities = new TextButton(110, 30, 355, 750);
+	_btnResearch = new TextButton(110, 30, 470, 750);
+	_btnTraining = new TextButton(110, 30, 585, 750);
+	_btnManufacture = new TextButton(110, 30, 700, 750);
+	_btnTransfer = new TextButton(110, 30, 815, 750);
+	_btnPurchase = new TextButton(110, 30, 930, 750);
+	_btnSell = new TextButton(110, 30, 1045, 750);
+	_btnGeoscape = new TextButton(110, 30, 1160, 750);
 
 	// Set palette
 	setInterface("basescape");
@@ -96,13 +106,13 @@ BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(g
 	add(_btnCrafts, "button", "basescape");
 	add(_btnFacilities, "button", "basescape");
 	add(_btnResearch, "button", "basescape");
+	add(_btnTraining, "button", "basescape");
 	add(_btnManufacture, "button", "basescape");
 	add(_btnTransfer, "button", "basescape");
 	add(_btnPurchase, "button", "basescape");
 	add(_btnSell, "button", "basescape");
 	add(_btnGeoscape, "button", "basescape");
 
-	centerAllSurfaces();
 
 	// Set up objects
 	_view->setTexture(_game->getMod()->getSurfaceSet("BASEBITS.PCK"));
@@ -136,6 +146,9 @@ BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(g
 
 	_btnResearch->setText(tr("STR_RESEARCH"));
 	_btnResearch->onMouseClick((ActionHandler)&BasescapeState::btnResearchClick);
+
+	_btnTraining->setText(tr("STR_TRAINING"));
+	_btnTraining->onMouseClick((ActionHandler)&BasescapeState::btnTrainingClick);
 
 	_btnManufacture->setText(tr("STR_MANUFACTURE"));
 	_btnManufacture->onMouseClick((ActionHandler)&BasescapeState::btnManufactureClick);
@@ -258,7 +271,16 @@ void BasescapeState::btnNewBaseClick(Action *)
  */
 void BasescapeState::btnBaseInfoClick(Action *)
 {
-	_game->pushState(new BaseInfoState(_base, this));
+	//_game->pushState(new BaseInfoState(_base, this));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new BaseInfoState(_base, this));
+	state->add(new MonthlyCostsState(_base));
+	state->add(new StoresState(_base));
+	state->add(new TransfersState(_base));
+	// add more here
+	_game->pushState(state);
 }
 
 /**
@@ -267,7 +289,13 @@ void BasescapeState::btnBaseInfoClick(Action *)
  */
 void BasescapeState::btnSoldiersClick(Action *)
 {
-	_game->pushState(new SoldiersState(_base));
+	//_game->pushState(new SoldiersState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new SoldiersState(_base));
+	state->add(new SoldierMemorialState());
+	_game->pushState(state);
 }
 
 /**
@@ -276,7 +304,16 @@ void BasescapeState::btnSoldiersClick(Action *)
  */
 void BasescapeState::btnCraftsClick(Action *)
 {
-	_game->pushState(new CraftsState(_base));
+	//_game->pushState(new CraftsState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new CraftsState(_base));
+	/*	if (_base->getCrafts()->at(_lstCrafts->getSelectedRow())->getStatus() != "STR_OUT")
+	{
+	state->add(new CraftInfoState(_base, _lstCrafts->getSelectedRow()));
+	} */
+	_game->pushState(state);
 }
 
 /**
@@ -294,7 +331,29 @@ void BasescapeState::btnFacilitiesClick(Action *)
  */
 void BasescapeState::btnResearchClick(Action *)
 {
-	_game->pushState(new ResearchState(_base));
+	//_game->pushState(new ResearchState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new ResearchState(_base));
+	state->add(new NewResearchListState(_base));
+	_game->pushState(state);
+}
+
+/**
+* Goes to the Training screen.
+* @param action Pointer to an action.
+*/
+void BasescapeState::btnTrainingClick(Action *)
+{
+	//_game->pushState(new SoldiersState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	
+	state->add(new AllocatePsiTrainingState(_base));
+	
+	_game->pushState(state);
 }
 
 /**
@@ -303,7 +362,13 @@ void BasescapeState::btnResearchClick(Action *)
  */
 void BasescapeState::btnManufactureClick(Action *)
 {
-	_game->pushState(new ManufactureState(_base));
+	//_game->pushState(new ManufactureState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new ManufactureState(_base));
+	state->add(new NewManufactureListState(_base));
+	_game->pushState(state);
 }
 
 /**
@@ -312,7 +377,12 @@ void BasescapeState::btnManufactureClick(Action *)
  */
 void BasescapeState::btnPurchaseClick(Action *)
 {
-	_game->pushState(new PurchaseState(_base));
+	//_game->pushState(new PurchaseState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new PurchaseState(_base));
+	_game->pushState(state);
 }
 
 /**
@@ -321,7 +391,12 @@ void BasescapeState::btnPurchaseClick(Action *)
  */
 void BasescapeState::btnSellClick(Action *)
 {
-	_game->pushState(new SellState(_base));
+	//_game->pushState(new SellState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new SellState(_base));
+	_game->pushState(state);
 }
 
 /**
@@ -330,7 +405,12 @@ void BasescapeState::btnSellClick(Action *)
  */
 void BasescapeState::btnTransferClick(Action *)
 {
-	_game->pushState(new TransferBaseState(_base));
+	//_game->pushState(new TransferBaseState(_base));
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new TransferBaseState(_base));
+	_game->pushState(state);
 }
 
 /**

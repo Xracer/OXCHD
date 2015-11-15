@@ -44,53 +44,29 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 	bool isPsiBtnVisible = Options::anytimePsiTraining && _base->getAvailablePsiLabs() > 0;
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	if (isPsiBtnVisible)
-	{
-		_btnOk = new TextButton(96, 16, 216, 176);
-		_btnPsiTraining = new TextButton(96, 16, 112, 176);
-		_btnMemorial = new TextButton(96, 16, 8, 176);
-	}
-	else
-	{
-		_btnOk = new TextButton(148, 16, 164, 176);
-		_btnPsiTraining = new TextButton(148, 16, 164, 176);
-		_btnMemorial = new TextButton(148, 16, 8, 176);
-	}
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtName = new Text(114, 9, 16, 32);
-	_txtRank = new Text(102, 9, 130, 32);
-	_txtCraft = new Text(82, 9, 222, 32);
-	_lstSoldiers = new TextList(288, 128, 8, 40);
+	_window = new Window(this, 450, 350, 700, 3);
+
+	_txtTitle = new Text(440, 17, 705, 13);
+	_txtName = new Text(150, 11, 705, 30);
+	_txtRank = new Text(100, 11, 855, 30);
+	_txtCraft = new Text(100, 11, 955, 30);
+	_lstSoldiers = new TextList(300, 300, 708, 45);
 
 	// Set palette
 	setInterface("soldierList");
 
 	add(_window, "window", "soldierList");
-	add(_btnOk, "button", "soldierList");
-	add(_btnPsiTraining, "button", "soldierList");
-	add(_btnMemorial, "button", "soldierList");
 	add(_txtTitle, "text1", "soldierList");
 	add(_txtName, "text2", "soldierList");
 	add(_txtRank, "text2", "soldierList");
 	add(_txtCraft, "text2", "soldierList");
 	add(_lstSoldiers, "list", "soldierList");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&SoldiersState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&SoldiersState::btnOkClick, Options::keyCancel);
-
-	_btnPsiTraining->setText(tr("STR_PSI_TRAINING"));
-	_btnPsiTraining->onMouseClick((ActionHandler)&SoldiersState::btnPsiTrainingClick);
-	_btnPsiTraining->setVisible(isPsiBtnVisible);
-
-	_btnMemorial->setText(tr("STR_MEMORIAL"));
-	_btnMemorial->onMouseClick((ActionHandler)&SoldiersState::btnMemorialClick);
+	_window->setThinBorder();
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -139,33 +115,6 @@ void SoldiersState::init()
 	{
 		_lstSoldiers->scrollTo(0);
 	}
-}
-
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void SoldiersState::btnOkClick(Action *)
-{
-	_game->popState();
-}
-
-/**
- * Opens the Psionic Training screen.
- * @param action Pointer to an action.
- */
-void SoldiersState::btnPsiTrainingClick(Action *)
-{
-	_game->pushState(new AllocatePsiTrainingState(_base));
-}
-
-/**
- * Opens the Memorial screen.
- * @param action Pointer to an action.
- */
-void SoldiersState::btnMemorialClick(Action *)
-{
-	_game->pushState(new SoldierMemorialState);
 }
 
 /**

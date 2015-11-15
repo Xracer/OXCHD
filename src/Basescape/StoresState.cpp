@@ -41,34 +41,28 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(300, 16, 10, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtItem = new Text(142, 9, 10, 32);
-	_txtQuantity = new Text(88, 9, 152, 32);
-	_txtSpaceUsed = new Text(74, 9, 240, 32);
-	_lstStores = new TextList(288, 128, 8, 40);
+	_window = new Window(this, 450, 200, 700, 385, POPUP_BOTH);
+	_txtTitle = new Text(440, 17, 705, 395);
+	_txtItem = new Text(142, 11, 705, 412);
+	_txtQuantity = new Text(88, 11, 895, 412);
+	_txtSpaceUsed = new Text(74, 11, 1020, 412);
+	_lstStores = new TextList(420, 150, 705, 426);
 
 	// Set palette
 	setInterface("storesInfo");
 
 	add(_window, "window", "storesInfo");
-	add(_btnOk, "button", "storesInfo");
 	add(_txtTitle, "text", "storesInfo");
 	add(_txtItem, "text", "storesInfo");
 	add(_txtQuantity, "text", "storesInfo");
 	add(_txtSpaceUsed, "text", "storesInfo");
 	add(_lstStores, "list", "storesInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
-
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&StoresState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&StoresState::btnOkClick, Options::keyOk);
-	_btnOk->onKeyboardPress((ActionHandler)&StoresState::btnOkClick, Options::keyCancel);
+	_window->setThinBorder();
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -80,7 +74,7 @@ StoresState::StoresState(Base *base) : _base(base)
 
 	_txtSpaceUsed->setText(tr("STR_SPACE_USED_UC"));
 
-	_lstStores->setColumns(3, 162, 92, 32);
+	_lstStores->setColumns(3, 220, 120, 40);
 	_lstStores->setSelectable(true);
 	_lstStores->setBackground(_window);
 	_lstStores->setMargin(2);
@@ -106,15 +100,6 @@ StoresState::StoresState(Base *base) : _base(base)
 StoresState::~StoresState()
 {
 
-}
-
-/**
- * Returns to the previous screen.
- * @param action Pointer to an action.
- */
-void StoresState::btnOkClick(Action *)
-{
-	_game->popState();
 }
 
 }

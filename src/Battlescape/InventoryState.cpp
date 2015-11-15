@@ -31,6 +31,11 @@
 #include "../Engine/InteractiveSurface.h"
 #include "../Engine/Sound.h"
 #include "../Engine/SurfaceSet.h"
+#include "../Interface/Text.h"
+#include "../Interface/BattlescapeButton.h"
+#include "../Interface/Text.h"
+#include "../Interface/BattlescapeButton.h"
+#include "../Interface/Bar.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Tile.h"
 #include "../Savegame/SavedBattleGame.h"
@@ -48,9 +53,9 @@
 namespace OpenXcom
 {
 
-static const int _templateBtnX = 288;
-static const int _createTemplateBtnY = 90;
-static const int _applyTemplateBtnY  = 113;
+static const int _templateBtnX = 1247;
+static const int _createTemplateBtnY = 592;
+static const int _applyTemplateBtnY  = 617;
 
 /**
  * Initializes all the elements in the Inventory screen.
@@ -75,27 +80,29 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	}
 
 	// Create objects
-	_bg = new Surface(320, 200, 0, 0);
-	_soldier = new Surface(320, 200, 0, 0);
-	_txtName = new Text(210, 17, 28, 6);
-	_txtTus = new Text(40, 9, 245, 24);
-	_txtWeight = new Text(70, 9, 245, 24);
-	_txtFAcc = new Text(40, 9, 245, 32);
-	_txtReact = new Text(40, 9, 245, 40);
-	_txtPSkill = new Text(40, 9, 245, 48);
-	_txtPStr = new Text(40, 9, 245, 56);
-	_txtItem = new Text(160, 9, 128, 140);
-	_txtAmmo = new Text(66, 24, 254, 64);
-	_btnOk = new BattlescapeButton(35, 22, 237, 1);
-	_btnPrev = new BattlescapeButton(23, 22, 273, 1);
-	_btnNext = new BattlescapeButton(23, 22, 297, 1);
-	_btnUnload = new BattlescapeButton(32, 25, 288, 32);
-	_btnGround = new BattlescapeButton(32, 15, 289, 137);
-	_btnRank = new BattlescapeButton(26, 23, 0, 0);
+	_bg = new Surface(1280, 800, 0, 0);
+	_soldier = new Surface(121, 215, 109, 85);
+	
+	_rank = new Surface(26, 23, 5, 5); //added for the rank icon
+	_txtName = new Text(400, 17, 40, 10);
+	_txtItem = new Text(160, 15, 8, 310);
+	_txtAmmo = new Text(80, 24, 8, 432);
+	_btnPrev = new BattlescapeButton(23, 22, 1159, 5);
+	_btnOk = new BattlescapeButton(35, 22, 1184, 5);
+	_btnNext = new BattlescapeButton(23, 22, 1222, 5);
+	_btnUnload = new BattlescapeButton(32, 25, 8, 365);
+	_btnGround = new BattlescapeButton(32, 15, 1134, 442);
 	_btnCreateTemplate = new BattlescapeButton(32, 22, _templateBtnX, _createTemplateBtnY);
 	_btnApplyTemplate = new BattlescapeButton(32, 22, _templateBtnX, _applyTemplateBtnY);
-	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 272, 88);
-	_inv = new Inventory(_game, 320, 200, 0, 0, _parent == 0);
+	_selAmmo = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, 60, 350);
+	_inv = new Inventory(_game, 1280, 800, 0, 0, _parent == 0);
+	_txtRank = new Text(100, 14, 40, 38); // added
+	_txtMissions = new Text(100, 14, 145, 38); // added
+	_txtKills = new Text(100, 14, 250, 38); // added
+	_txtStatus = new Text(100, 14, 355, 38); // added
+	_txtCraft = new Text(150, 14, 460, 38); // added
+	_txtArmor = new Text(150, 14, 565, 38); // added
+	
 
 	// Set palette
 	setPalette("PAL_BATTLESCAPE");
@@ -103,16 +110,11 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	add(_bg);
 
 	// Set up objects
-	_game->getMod()->getSurface("TAC01.SCR")->blit(_bg);
+	_game->getMod()->getSurface("HDTAC01.PNG")->blit(_bg);
 
 	add(_soldier);
+	add(_rank, "rank", "inventory", _bg);
 	add(_txtName, "textName", "inventory", _bg);
-	add(_txtTus, "textTUs", "inventory", _bg);
-	add(_txtWeight, "textWeight", "inventory", _bg);
-	add(_txtFAcc, "textFiring", "inventory", _bg);
-	add(_txtReact, "textReaction", "inventory", _bg);
-	add(_txtPSkill, "textPsiSkill", "inventory", _bg);
-	add(_txtPStr, "textPsiStrength", "inventory", _bg);
 	add(_txtItem, "textItem", "inventory", _bg);
 	add(_txtAmmo, "textAmmo", "inventory", _bg);
 	add(_btnOk, "buttonOK", "inventory", _bg);
@@ -120,41 +122,36 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	add(_btnNext, "buttonNext", "inventory", _bg);
 	add(_btnUnload, "buttonUnload", "inventory", _bg);
 	add(_btnGround, "buttonGround", "inventory", _bg);
-	add(_btnRank, "rank", "inventory", _bg);
 	add(_btnCreateTemplate, "buttonCreate", "inventory", _bg);
 	add(_btnApplyTemplate, "buttonApply", "inventory", _bg);
 	add(_selAmmo);
 	add(_inv);
 
-	// move the TU display down to make room for the weight display
-	if (Options::showMoreStatsInInventoryView)
-	{
-		_txtTus->setY(_txtTus->getY() + 8);
-	}
-
-	centerAllSurfaces();
-
-
+	// Objects for information under name field
+	add(_txtRank);
+	add(_txtCraft);
+	add(_txtMissions);
+	add(_txtKills);
+	add(_txtStatus);
+	add(_txtArmor);
+	
+	_txtName->setColor(Palette::blockOffset(4));
+	_txtName->setBig();
+	_txtName->setHighContrast(true);
+	
+	_txtItem->setHighContrast(true);
+	
+	_txtAmmo->setColor(Palette::blockOffset(4));
+	_txtAmmo->setSecondaryColor(Palette::blockOffset(1));
+	_txtAmmo->setAlign(ALIGN_LEFT);
+	_txtAmmo->setHighContrast(true);
 
 	_txtName->setBig();
 	_txtName->setHighContrast(true);
-
-	_txtTus->setHighContrast(true);
-
-	_txtWeight->setHighContrast(true);
-
-	_txtFAcc->setHighContrast(true);
-
-	_txtReact->setHighContrast(true);
-
-	_txtPSkill->setHighContrast(true);
-
-	_txtPStr->setHighContrast(true);
-
 	_txtItem->setHighContrast(true);
-
 	_txtAmmo->setAlign(ALIGN_CENTER);
 	_txtAmmo->setHighContrast(true);
+	
 
 	_btnOk->onMouseClick((ActionHandler)&InventoryState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&InventoryState::btnOkClick, Options::keyCancel);
@@ -185,11 +182,6 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_btnGround->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
 	_btnGround->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
 
-	_btnRank->onMouseClick((ActionHandler)&InventoryState::btnRankClick);
-	_btnRank->setTooltip("STR_UNIT_STATS");
-	_btnRank->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
-	_btnRank->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
-
 	_btnCreateTemplate->onMouseClick((ActionHandler)&InventoryState::btnCreateTemplateClick);
 	_btnCreateTemplate->onKeyboardPress((ActionHandler)&InventoryState::btnCreateTemplateClick, Options::keyInvCreateTemplate);
 	_btnCreateTemplate->setTooltip("STR_CREATE_INVENTORY_TEMPLATE");
@@ -203,6 +195,8 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_btnApplyTemplate->onMouseIn((ActionHandler)&InventoryState::txtTooltipIn);
 	_btnApplyTemplate->onMouseOut((ActionHandler)&InventoryState::txtTooltipOut);
 
+	Uint8 color = _game->getMod()->getInterface("stats")->getElement("text")->color;
+	Uint8 color2 = _game->getMod()->getInterface("stats")->getElement("text")->color2;
 
 	// only use copy/paste buttons in setup (i.e. non-tu) mode
 	if (_tu)
@@ -222,12 +216,33 @@ InventoryState::InventoryState(bool tu, BattlescapeState *parent) : _tu(tu), _pa
 	_inv->onMouseOver((ActionHandler)&InventoryState::invMouseOver);
 	_inv->onMouseOut((ActionHandler)&InventoryState::invMouseOut);
 
-	_txtTus->setVisible(_tu);
-	_txtWeight->setVisible(Options::showMoreStatsInInventoryView);
-	_txtFAcc->setVisible(Options::showMoreStatsInInventoryView && !_tu);
-	_txtReact->setVisible(Options::showMoreStatsInInventoryView && !_tu);
-	_txtPSkill->setVisible(Options::showMoreStatsInInventoryView && !_tu);
-	_txtPStr->setVisible(Options::showMoreStatsInInventoryView && !_tu);
+	_currentTooltip = "";
+	
+	//Setup object for the top row labels of stats
+	_txtRank->setColor(color);
+	_txtRank->setSecondaryColor(color2);
+	_txtRank->setHighContrast(true);
+	
+	_txtCraft->setColor(color);
+	_txtCraft->setSecondaryColor(color2);
+	_txtCraft->setHighContrast(true);
+	
+	_txtMissions->setColor(color);
+	_txtMissions->setSecondaryColor(color2);
+	_txtMissions->setHighContrast(true);
+	
+	_txtKills->setColor(color);
+	_txtKills->setSecondaryColor(color2);
+	_txtKills->setHighContrast(true);
+	
+	_txtStatus->setColor(color);
+	_txtStatus->setSecondaryColor(color2);
+	_txtStatus->setHighContrast(true);
+	
+	_txtArmor->setColor(color);
+	_txtArmor->setSecondaryColor(color2);
+	_txtArmor->setHighContrast(true);
+
 }
 
 static void _clearInventoryTemplate(std::vector<EquipmentLayoutItem*> &inventoryTemplate)
@@ -306,7 +321,7 @@ void InventoryState::init()
 
 	unit->setCache(0);
 	_soldier->clear();
-	_btnRank->clear();
+	_rank->clear();
 
 	_txtName->setBig();
 	_txtName->setText(unit->getName(_game->getLanguage()));
@@ -317,7 +332,7 @@ void InventoryState::init()
 		SurfaceSet *texture = _game->getMod()->getSurfaceSet("SMOKE.PCK");
 		texture->getFrame(20 + s->getRank())->setX(0);
 		texture->getFrame(20 + s->getRank())->setY(0);
-		texture->getFrame(20 + s->getRank())->blit(_btnRank);
+		texture->getFrame(20 + s->getRank())->blit(_rank);
 
 		std::string look = s->getArmor()->getSpriteInventory();
 		if (s->getGender() == GENDER_MALE)
@@ -362,40 +377,6 @@ void InventoryState::updateStats()
 {
 	BattleUnit *unit = _battleGame->getSelectedUnit();
 
-	_txtTus->setText(tr("STR_TIME_UNITS_SHORT").arg(unit->getTimeUnits()));
-
-	int weight = unit->getCarriedWeight(_inv->getSelectedItem());
-	_txtWeight->setText(tr("STR_WEIGHT").arg(weight).arg(unit->getBaseStats()->strength));
-	if (weight > unit->getBaseStats()->strength)
-	{
-		_txtWeight->setSecondaryColor(_game->getMod()->getInterface("inventory")->getElement("weight")->color2);
-	}
-	else
-	{
-		_txtWeight->setSecondaryColor(_game->getMod()->getInterface("inventory")->getElement("weight")->color);
-	}
-
-	_txtFAcc->setText(tr("STR_ACCURACY_SHORT").arg((int)(unit->getBaseStats()->firing * unit->getHealth()) / unit->getBaseStats()->health));
-
-	_txtReact->setText(tr("STR_REACTIONS_SHORT").arg(unit->getBaseStats()->reactions));
-
-	if (unit->getBaseStats()->psiSkill > 0)
-	{
-		_txtPSkill->setText(tr("STR_PSIONIC_SKILL_SHORT").arg(unit->getBaseStats()->psiSkill));
-	}
-	else
-	{
-		_txtPSkill->setText(L"");
-	}
-
-	if (unit->getBaseStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
-	{
-		_txtPStr->setText(tr("STR_PSIONIC_STRENGTH_SHORT").arg(unit->getBaseStats()->psiStrength));
-	}
-	else
-	{
-		_txtPStr->setText(L"");
-	}
 }
 
 /**
