@@ -46,7 +46,7 @@ namespace OpenXcom
 {
 	_diary = new SoldierDiary();
 
-	if (names != 0) ///if (id != 0) need to test this was changed in the main branch
+	if (id != 0)
 
 	{
 		UnitStats minStats = rules->getMinStats();
