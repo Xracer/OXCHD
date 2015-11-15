@@ -43,7 +43,6 @@ class GMCatFile;
 class Music;
 class Palette;
 class SavedGame;
-class SoldierNamePool;
 class Soldier;
 class RuleCountry;
 class RuleRegion;
@@ -99,8 +98,6 @@ private:
 	std::vector<Uint16> _voxelData;
 	std::vector<std::vector<Uint8> > _transparencyLUTs;
 
-	std::vector<std::string> _soldierNames;
-	std::vector<SoldierNamePool*> _names;
 	std::map<std::string, RuleCountry*> _countries;
 	std::map<std::string, RuleRegion*> _regions;
 	std::map<std::string, RuleBaseFacility*> _facilities;
@@ -189,8 +186,6 @@ public:
 	static int ITEM_RELOAD;
 	static int WALK_OFFSET;
 	static int FLYING_SOUND;
-	static int MALE_SCREAM[3];
-	static int FEMALE_SCREAM[3];
 	static int BUTTON_PRESS;
 	static int WINDOW_POPUP[3];
 	static int UFO_FIRE;
@@ -204,6 +199,9 @@ public:
 	static int BATTLESCAPE_CURSOR;
 	static int UFOPAEDIA_CURSOR;
 	static int GRAPHS_CURSOR;
+	static int DAMAGE_RANGE;
+	static int EXPLOSIVE_DAMAGE_RANGE;
+	static int FIRE_DAMAGE_RANGE;
 	static std::string DEBRIEF_MUSIC_GOOD;
 	static std::string DEBRIEF_MUSIC_BAD;
 	static int DIFFICULTY_COEFFICIENT[5];
@@ -247,8 +245,6 @@ public:
 	void loadAll(const std::vector< std::pair< std::string, std::vector<std::string> > > &mods);
 	/// Generates the starting saved game.
 	SavedGame *newSave() const;
-	/// Gets the pool list for soldier names.
-	const std::vector<SoldierNamePool*> &getPools() const;
 	/// Gets the ruleset for a country type.
 	RuleCountry *getCountry(const std::string &id) const;
 	/// Gets the available countries.
