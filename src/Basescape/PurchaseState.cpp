@@ -494,31 +494,6 @@ void PurchaseState::lstItemsMousePress(Action *action)
 }
 
 /**
-<<<<<<< HEAD
- * Gets the price of the currently selected item.
- * @return Price of the currently selected item.
- */
-int PurchaseState::getPrice()
-{
-	switch (getType(_sel))
-	{
-	case TRANSFER_SOLDIER:
-		return _game->getMod()->getSoldier(_soldiers[_sel])->getBuyCost();
-	case TRANSFER_ENGINEER:
-		return _game->getMod()->getScientistCost() * 2;
-	case TRANSFER_SCIENTIST:
-		return _game->getMod()->getEngineerCost() * 2;
-	case TRANSFER_ITEM:
-		return _game->getMod()->getItem(_items[getItemIndex(_sel)])->getBuyCost();
-	case TRANSFER_CRAFT:
-		return _game->getMod()->getCraft(_crafts[getCraftIndex(_sel)])->getBuyCost();
-	}
-	return 0;
-	}
-
-/**
-=======
->>>>>>> refs/remotes/SupSuper/master
  * Increases the quantity of the selected item to buy by one.
  */
 void PurchaseState::increase()
