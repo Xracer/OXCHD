@@ -105,8 +105,6 @@ int Mod::ITEM_THROW;
 int Mod::ITEM_RELOAD;
 int Mod::WALK_OFFSET;
 int Mod::FLYING_SOUND;
-int Mod::MALE_SCREAM[3];
-int Mod::FEMALE_SCREAM[3];
 int Mod::BUTTON_PRESS;
 int Mod::WINDOW_POPUP[3];
 int Mod::UFO_FIRE;
@@ -120,6 +118,9 @@ int Mod::BASESCAPE_CURSOR;
 int Mod::BATTLESCAPE_CURSOR;
 int Mod::UFOPAEDIA_CURSOR;
 int Mod::GRAPHS_CURSOR;
+int Mod::DAMAGE_RANGE;
+int Mod::EXPLOSIVE_DAMAGE_RANGE;
+int Mod::FIRE_DAMAGE_RANGE;
 std::string Mod::DEBRIEF_MUSIC_GOOD;
 std::string Mod::DEBRIEF_MUSIC_BAD;
 int Mod::DIFFICULTY_COEFFICIENT[5];
@@ -139,12 +140,6 @@ void Mod::resetGlobalStatics()
 	Mod::ITEM_RELOAD = 17;
 	Mod::WALK_OFFSET = 22;
 	Mod::FLYING_SOUND = 15;
-	Mod::MALE_SCREAM[0] = 41;
-	Mod::MALE_SCREAM[1] = 42;
-	Mod::MALE_SCREAM[2] = 43;
-	Mod::FEMALE_SCREAM[0] = 44;
-	Mod::FEMALE_SCREAM[1] = 45;
-	Mod::FEMALE_SCREAM[2] = 46;
 	Mod::BUTTON_PRESS = 0;
 	Mod::WINDOW_POPUP[0] = 1;
 	Mod::WINDOW_POPUP[1] = 2;
@@ -160,6 +155,9 @@ void Mod::resetGlobalStatics()
 	Mod::BATTLESCAPE_CURSOR = 144;
 	Mod::UFOPAEDIA_CURSOR = 252;
 	Mod::GRAPHS_CURSOR = 252;
+	Mod::DAMAGE_RANGE = 100;
+	Mod::EXPLOSIVE_DAMAGE_RANGE = 50;
+	Mod::FIRE_DAMAGE_RANGE = 5;
 	Mod::DEBRIEF_MUSIC_GOOD = "GMMARS";
 	Mod::DEBRIEF_MUSIC_BAD = "GMMARS";
 
@@ -227,10 +225,6 @@ Mod::~Mod()
 	for (std::map<std::string, SoundSet*>::iterator i = _sounds.begin(); i != _sounds.end(); ++i)
 	{
 		delete i->second;
-	}
-	for (std::vector<SoldierNamePool*>::iterator i = _names.begin(); i != _names.end(); ++i)
-	{
-		delete *i;
 	}
 	for (std::map<std::string, RuleCountry*>::iterator i = _countries.begin(); i != _countries.end(); ++i)
 	{
@@ -625,7 +619,7 @@ void Mod::loadAll(const std::vector< std::pair< std::string, std::vector<std::st
 		{
 			loadMod(mods[i].second, i);
 		}
-		catch (YAML::Exception &e)
+		catch (Exception &e)
 		{
 			const std::string &modId = mods[i].first;
 			Log(LOG_WARNING) << "disabling mod with invalid ruleset: " << modId;
@@ -644,10 +638,10 @@ void Mod::loadAll(const std::vector< std::pair< std::string, std::vector<std::st
 			}
 			Options::save();
 
-			throw Exception("failed to load ruleset from mod '" +
+			throw Exception("failed to load '" +
 				Options::getModInfos().at(modId).getName() +
-				"' (" + std::string(e.what()) +
-				"); disabling mod for next startup");
+				"'; mod disabled for next startup\n" +
+				e.what());
 		}
 	}
 	sortLists();
@@ -668,7 +662,14 @@ void Mod::loadMod(const std::vector<std::string> &rulesetFiles, size_t modIdx)
 	for (std::vector<std::string>::const_iterator i = rulesetFiles.begin(); i != rulesetFiles.end(); ++i)
 	{
 		Log(LOG_VERBOSE) << "- " << *i;
-		loadFile(*i);
+		try
+		{
+			loadFile(*i);
+		}
+		catch (YAML::Exception &e)
+		{
+			throw Exception((*i) + " (" + std::string(e.what()) + ")");
+		}
 	}
 
 	// these need to be validated, otherwise we're gonna get into some serious trouble down the line.
@@ -696,6 +697,26 @@ void Mod::loadMod(const std::vector<std::string> &rulesetFiles, size_t modIdx)
 				{
 					throw Exception("Error with MissionScript: " + (*i).first + " cannot mix terror/non-terror missions in a single command, so sayeth the wise Alaundo."); 
 				}
+			}
+		}
+	}
+
+	// instead of passing a pointer to the region load function and moving the alienMission loading before region loading
+	// and sanitizing there, i'll sanitize here, i'm sure this sanitation will grow, and will need to be refactored into
+	// its own function at some point, but for now, i'll put it here next to the missionScript sanitation, because it seems
+	// the logical place for it, given that this sanitation is required as a result of moving all terror mission handling
+	// into missionScripting behaviour. apologies to all the modders that will be getting errors and need to adjust their
+	// rulesets, but this will save you weird errors down the line.
+	for (std::map<std::string, RuleRegion*>::iterator i = _regions.begin(); i != _regions.end(); ++i)
+	{
+		// bleh, make copies, const correctness kinda screwed me here.
+		WeightedOptions weights = (*i).second->getAvailableMissions();
+		std::vector<std::string> names = weights.getNames();
+		for (std::vector<std::string>::iterator j = names.begin(); j != names.end(); ++j)
+		{
+			if (getAlienMission(*j)->getObjective() == OBJECTIVE_SITE)
+			{
+				throw Exception("Error with MissionWeights: Region: " + (*i).first + " has " + *j + " listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen."); 
 			}
 		}
 	}
@@ -804,19 +825,7 @@ void Mod::loadFile(const std::string &filename)
 		RuleSoldier *rule = loadRule(*i, &_soldiers, &_soldiersIndex);
 		if (rule != 0)
 		{
-			rule->load(*i);
-		}
-		for (YAML::const_iterator j = (*i)["soldierNames"].begin(); j != (*i)["soldierNames"].end(); ++j)
-		{
-			std::string fileName = (*j).as<std::string>();
-			if (fileName == "delete")
-			{
-				_soldierNames.clear();
-			}
-			else
-			{
-				_soldierNames.push_back(fileName);
-			}
+			rule->load(*i, this);
 		}
 	}
 	for (YAML::const_iterator i = doc["units"].begin(); i != doc["units"].end(); ++i)
@@ -1069,22 +1078,6 @@ void Mod::loadFile(const std::string &filename)
 		Mod::ITEM_RELOAD = (*i)["itemReload"].as<int>(Mod::ITEM_RELOAD);
 		Mod::WALK_OFFSET = (*i)["walkOffset"].as<int>(Mod::WALK_OFFSET);
 		Mod::FLYING_SOUND = (*i)["flyingSound"].as<int>(Mod::FLYING_SOUND);
-		if ((*i)["maleScream"])
-		{
-			int k = 0;
-			for (YAML::const_iterator j = (*i)["maleScream"].begin(); j != (*i)["maleScream"].end() && k < 3; ++j, ++k)
-			{
-				Mod::MALE_SCREAM[k] = (*j).as<int>(Mod::MALE_SCREAM[k]);
-			}
-		}
-		if ((*i)["femaleScream"])
-		{
-			int k = 0;
-			for (YAML::const_iterator j = (*i)["femaleScream"].begin(); j != (*i)["femaleScream"].end() && k < 3; ++j, ++k)
-			{
-				Mod::FEMALE_SCREAM[k] = (*j).as<int>(Mod::FEMALE_SCREAM[k]);
-			}
-		}
 		Mod::BUTTON_PRESS = (*i)["buttonPress"].as<int>(Mod::BUTTON_PRESS);
 		if ((*i)["windowPopup"])
 		{
@@ -1105,6 +1098,9 @@ void Mod::loadFile(const std::string &filename)
 		Mod::BATTLESCAPE_CURSOR = (*i)["battlescapeCursor"].as<int>(Mod::BATTLESCAPE_CURSOR);
 		Mod::UFOPAEDIA_CURSOR = (*i)["ufopaediaCursor"].as<int>(Mod::UFOPAEDIA_CURSOR);
 		Mod::GRAPHS_CURSOR = (*i)["graphsCursor"].as<int>(Mod::GRAPHS_CURSOR);
+		Mod::DAMAGE_RANGE = (*i)["damageRange"].as<int>(Mod::DAMAGE_RANGE);
+		Mod::EXPLOSIVE_DAMAGE_RANGE = (*i)["explosiveDamageRange"].as<int>(Mod::EXPLOSIVE_DAMAGE_RANGE);
+		Mod::FIRE_DAMAGE_RANGE = (*i)["fireDamageRange"].as<int>(Mod::FIRE_DAMAGE_RANGE);
 		Mod::DEBRIEF_MUSIC_GOOD = (*i)["goodDebriefingMusic"].as<std::string>(Mod::DEBRIEF_MUSIC_GOOD);
 		Mod::DEBRIEF_MUSIC_BAD = (*i)["badDebriefingMusic"].as<std::string>(Mod::DEBRIEF_MUSIC_BAD);
 	}
@@ -1296,15 +1292,6 @@ SavedGame *Mod::newSave() const
 	save->setTime(_startingTime);
 
 	return save;
-}
-
-/**
- * Returns the list of soldier name pools.
- * @return Pointer to soldier name pool list.
- */
-const std::vector<SoldierNamePool*> &Mod::getPools() const
-{
-	return _names;
 }
 
 /**
@@ -1983,13 +1970,6 @@ struct compareRule<ArticleDefinition> : public std::binary_function<const std::s
 };
 std::map<std::string, int> compareRule<ArticleDefinition>::_sections;
 
-static void addSoldierNamePool(std::vector<SoldierNamePool*> &names, const std::string &namFile)
-{
-	SoldierNamePool *pool = new SoldierNamePool();
-	pool->load(FileMap::getFilePath(namFile));
-	names.push_back(pool);
-}
-
 /**
  * Sorts all our lists according to their weight.
  */
@@ -2005,24 +1985,6 @@ void Mod::sortLists()
 	std::sort(_craftWeaponsIndex.begin(), _craftWeaponsIndex.end(), compareRule<RuleCraftWeapon>(this));
 	std::sort(_armorsIndex.begin(), _armorsIndex.end(), compareRule<Armor>(this));
 	std::sort(_ufopaediaIndex.begin(), _ufopaediaIndex.end(), compareRule<ArticleDefinition>(this));
-
-	for (std::vector<std::string>::iterator i = _soldierNames.begin(); i != _soldierNames.end(); ++i)
-	{
-		if (i->substr(i->length() - 1, 1) == "/")
-		{
-			// load all *.nam files in given directory
-			std::set<std::string> names = FileMap::filterFiles(FileMap::getVFolderContents(*i), "nam");
-			for (std::set<std::string>::iterator j = names.begin(); j != names.end(); ++j)
-			{
-				addSoldierNamePool(_names, *i + *j);
-			}
-		}
-		else
-		{
-			// load given file
-			addSoldierNamePool(_names, *i);
-		}
-	}
 }
 
 /**
@@ -2054,7 +2016,7 @@ Soldier *Mod::genSoldier(SavedGame *save, std::string type) const
 	for (int i = 0; i < 10 && duplicate; i++)
 	{
 		delete soldier;
-		soldier = new Soldier(getSoldier(type), getArmor(getSoldier(type)->getArmor()), &_names, newId);
+		soldier = new Soldier(getSoldier(type), getArmor(getSoldier(type)->getArmor()), newId);
 		duplicate = false;
 		for (std::vector<Base*>::iterator i = save->getBases()->begin(); i != save->getBases()->end() && !duplicate; ++i)
 		{
