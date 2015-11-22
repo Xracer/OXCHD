@@ -1386,17 +1386,7 @@ void Base::setupDefenses()
 			else // so this vehicle needs ammo
 			{
 				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front());
-				int ammoPerVehicle, clipSize;
-				if (ammo->getClipSize() > 0 && rule->getClipSize() > 0)
-				{
-					clipSize = rule->getClipSize();
-					ammoPerVehicle = clipSize / ammo->getClipSize();
-				}
-				else
-				{
-					clipSize = ammo->getClipSize();
-					ammoPerVehicle = clipSize;
-				}
+				int ammoPerVehicle = ammo->getClipSize();
 				int baseQty = _items->getItem(ammo->getType()) / ammoPerVehicle;
 				if (!baseQty)
 				{
@@ -1406,7 +1396,7 @@ void Base::setupDefenses()
 				int canBeAdded = std::min(itemQty, baseQty);
 				for (int j=0; j<canBeAdded; ++j)
 				{
-					_vehicles.push_back(new Vehicle(rule, clipSize, size));
+					_vehicles.push_back(new Vehicle(rule, ammoPerVehicle, size));
 					_items->removeItem(ammo->getType(), ammoPerVehicle);
 				}
 				_items->removeItem(itemId, canBeAdded);
@@ -1733,15 +1723,7 @@ void Base::cleanupDefenses(bool reclaimItems)
 			if (!rule->getCompatibleAmmo()->empty())
 			{
 				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front());
-				int ammoPerVehicle;
-				if (ammo->getClipSize() > 0 && rule->getClipSize() > 0)
-				{
-					ammoPerVehicle = rule->getClipSize() / ammo->getClipSize();
-				}
-				else
-				{
-					ammoPerVehicle = ammo->getClipSize();
-				}
+				int ammoPerVehicle = ammo->getClipSize();
 				_items->addItem(ammo->getType(), ammoPerVehicle);
 			}
 		}

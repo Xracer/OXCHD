@@ -1164,7 +1164,6 @@ en-US:
   STR_GROUND: "GROUND"
   STR_LIVING_QUARTERS_PLURAL: "Living Quarters"
   STR_LIST_ITEM: "ITEM"
-
   STR_ALL_ALIENS_KILLED_IN_CRASH: "All Aliens killed in subcrash,{NEWLINE}Auto recovery initiated"
   STR_RESET: "Reset"
   STR_MEMORIAL: "Memorial"
@@ -1183,7 +1182,7 @@ en-US:
   STR_SELL_PRODUCTION: "SELL"
   STR_BOTH_HANDS_MUST_BE_EMPTY: "Both hands must be empty!"
   STR_NOT_ENOUGH_ITEMS_FOR_TEMPLATE: "Not enough items to copy template!"
-    STR_DIARY: "RECORD"
+  STR_DIARY: "RECORD"
   STR_KILLED: "KILLED"
   STR_STUNNED: "STUNNED"
   STR_PANICKED: "PANICKED"

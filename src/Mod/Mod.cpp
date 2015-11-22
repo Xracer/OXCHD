@@ -58,6 +58,7 @@
 #include "RuleTerrain.h"
 #include "MapScript.h"
 #include "RuleSoldier.h"
+#include "RuleCommendations.h"
 #include "Unit.h"
 #include "AlienRace.h"
 #include "AlienDeployment.h"
@@ -69,19 +70,18 @@
 #include "ExtraStrings.h"
 #include "RuleInterface.h"
 #include "RuleMissionScript.h"
-#include "RuleCommendations.h"
 #include "../Geoscape/Globe.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Region.h"
 #include "../Savegame/Base.h"
 #include "../Savegame/Country.h"
-#include "../Savegame/Craft.h"
 #include "../Savegame/Soldier.h"
-#include "../Savegame/SoldierDiary.h"
+#include "../Savegame/Craft.h"
 #include "../Savegame/Transfer.h"
 #include "../Ufopaedia/Ufopaedia.h"
 #include "../Savegame/AlienStrategy.h"
 #include "../Savegame/GameTime.h"
+#include "../Savegame/SoldierDiary.h"
 #include "UfoTrajectory.h"
 #include "RuleAlienMission.h"
 #include "MCDPatch.h"
@@ -118,9 +118,6 @@ int Mod::BASESCAPE_CURSOR;
 int Mod::BATTLESCAPE_CURSOR;
 int Mod::UFOPAEDIA_CURSOR;
 int Mod::GRAPHS_CURSOR;
-int Mod::DAMAGE_RANGE;
-int Mod::EXPLOSIVE_DAMAGE_RANGE;
-int Mod::FIRE_DAMAGE_RANGE;
 std::string Mod::DEBRIEF_MUSIC_GOOD;
 std::string Mod::DEBRIEF_MUSIC_BAD;
 int Mod::DIFFICULTY_COEFFICIENT[5];
@@ -155,9 +152,6 @@ void Mod::resetGlobalStatics()
 	Mod::BATTLESCAPE_CURSOR = 144;
 	Mod::UFOPAEDIA_CURSOR = 252;
 	Mod::GRAPHS_CURSOR = 252;
-	Mod::DAMAGE_RANGE = 100;
-	Mod::EXPLOSIVE_DAMAGE_RANGE = 50;
-	Mod::FIRE_DAMAGE_RANGE = 5;
 	Mod::DEBRIEF_MUSIC_GOOD = "GMMARS";
 	Mod::DEBRIEF_MUSIC_BAD = "GMMARS";
 
@@ -340,7 +334,7 @@ Mod::~Mod()
 	for (std::map<std::string, RuleMusic *>::const_iterator i = _musicDefs.begin(); i != _musicDefs.end(); ++i)
 	{
 		delete i->second;
-	}	
+	}
 	for (std::map<std::string, RuleMissionScript*>::const_iterator i = _missionScripts.begin(); i != _missionScripts.end(); ++i)
 	{
 		delete i->second;
@@ -701,26 +695,6 @@ void Mod::loadMod(const std::vector<std::string> &rulesetFiles, size_t modIdx)
 		}
 	}
 
-	// instead of passing a pointer to the region load function and moving the alienMission loading before region loading
-	// and sanitizing there, i'll sanitize here, i'm sure this sanitation will grow, and will need to be refactored into
-	// its own function at some point, but for now, i'll put it here next to the missionScript sanitation, because it seems
-	// the logical place for it, given that this sanitation is required as a result of moving all terror mission handling
-	// into missionScripting behaviour. apologies to all the modders that will be getting errors and need to adjust their
-	// rulesets, but this will save you weird errors down the line.
-	for (std::map<std::string, RuleRegion*>::iterator i = _regions.begin(); i != _regions.end(); ++i)
-	{
-		// bleh, make copies, const correctness kinda screwed me here.
-		WeightedOptions weights = (*i).second->getAvailableMissions();
-		std::vector<std::string> names = weights.getNames();
-		for (std::vector<std::string>::iterator j = names.begin(); j != names.end(); ++j)
-		{
-			if (getAlienMission(*j)->getObjective() == OBJECTIVE_SITE)
-			{
-				throw Exception("Error with MissionWeights: Region: " + (*i).first + " has " + *j + " listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen."); 
-			}
-		}
-	}
-
 	if (modIdx == 0)
 	{
 		loadVanillaResources();
@@ -1028,13 +1002,6 @@ void Mod::loadFile(const std::string &filename)
 			_extraStringsIndex.push_back(type);
 		}
 	}
-	for (YAML::const_iterator i = doc["commendations"].begin(); i != doc["commendations"].end(); ++i)
-	{
-		std::string type = (*i)["type"].as<std::string>();
-		std::auto_ptr<RuleCommendations> commendations(new RuleCommendations());
-		commendations->load(*i);
-        _commendations[type] = commendations.release();
-	}
 
 	for (YAML::const_iterator i = doc["statStrings"].begin(); i != doc["statStrings"].end(); ++i)
 	{
@@ -1098,9 +1065,6 @@ void Mod::loadFile(const std::string &filename)
 		Mod::BATTLESCAPE_CURSOR = (*i)["battlescapeCursor"].as<int>(Mod::BATTLESCAPE_CURSOR);
 		Mod::UFOPAEDIA_CURSOR = (*i)["ufopaediaCursor"].as<int>(Mod::UFOPAEDIA_CURSOR);
 		Mod::GRAPHS_CURSOR = (*i)["graphsCursor"].as<int>(Mod::GRAPHS_CURSOR);
-		Mod::DAMAGE_RANGE = (*i)["damageRange"].as<int>(Mod::DAMAGE_RANGE);
-		Mod::EXPLOSIVE_DAMAGE_RANGE = (*i)["explosiveDamageRange"].as<int>(Mod::EXPLOSIVE_DAMAGE_RANGE);
-		Mod::FIRE_DAMAGE_RANGE = (*i)["fireDamageRange"].as<int>(Mod::FIRE_DAMAGE_RANGE);
 		Mod::DEBRIEF_MUSIC_GOOD = (*i)["goodDebriefingMusic"].as<std::string>(Mod::DEBRIEF_MUSIC_GOOD);
 		Mod::DEBRIEF_MUSIC_BAD = (*i)["badDebriefingMusic"].as<std::string>(Mod::DEBRIEF_MUSIC_BAD);
 	}
@@ -1173,6 +1137,13 @@ void Mod::loadFile(const std::string &filename)
 		{
 			rule->load(*i);
 		}
+	}
+	for (YAML::const_iterator i = doc["commendations"].begin(); i != doc["commendations"].end(); ++i)
+	{
+		std::string type = (*i)["type"].as<std::string>();
+		std::auto_ptr<RuleCommendations> commendations(new RuleCommendations());
+		commendations->load(*i);
+        _commendations[type] = commendations.release();
 	}
 }
 
@@ -1279,10 +1250,11 @@ SavedGame *Mod::newSave() const
 		Soldier *soldier = genSoldier(save);
 		soldier->setCraft(base->getCrafts()->front());
 		base->getSoldiers()->push_back(soldier);
+		// Award soldier a special 'original eigth' commendation
 		soldier->getDiary()->awardOriginalEightCommendation();
 		for (std::vector<SoldierCommendations*>::iterator comm = soldier->getDiary()->getSoldierCommendations()->begin(); comm != soldier->getDiary()->getSoldierCommendations()->end(); ++comm)
 		{
-			(*comm)->makeOld(); // Soldier was already awarded these before arriving on base.
+			(*comm)->makeOld();
 		}
 	}
 
@@ -1496,15 +1468,6 @@ RuleSoldier *Mod::getSoldier(const std::string &name) const
 }
 
 /**
-* Gets the list of commendations
-* @return The list of commendations.
-*/
-std::map<std::string, RuleCommendations *> Mod::getCommendation() const
-{
-	return _commendations;
-}
-
-/**
  * Returns the list of all soldiers
  * provided by the mod.
  * @return List of soldiers.
@@ -1512,6 +1475,15 @@ std::map<std::string, RuleCommendations *> Mod::getCommendation() const
 const std::vector<std::string> &Mod::getSoldiersList() const
 {
 	return _soldiersIndex;
+}
+
+/**
+ * Gets the list of commendations
+ * @return The list of commendations.
+ */
+std::map<std::string, RuleCommendations *> Mod::getCommendation() const
+{
+	return _commendations;
 }
 
 /**

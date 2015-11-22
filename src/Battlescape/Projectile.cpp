@@ -118,21 +118,12 @@ int Projectile::calculateTrajectory(double accuracy)
 	return calculateTrajectory(accuracy, originVoxel);
 }
 
-int Projectile::calculateTrajectory(double accuracy, Position originVoxel, bool excludeUnit)
+int Projectile::calculateTrajectory(double accuracy, Position originVoxel)
 {
 	Tile *targetTile = _save->getTile(_action.target);
 	BattleUnit *bu = _action.actor;
 	
-	int test;
-	if (excludeUnit)
-	{
-		test = _save->getTileEngine()->calculateLine(originVoxel, _targetVoxel, false, &_trajectory, bu);
-	}
-	else
-	{
-		test = _save->getTileEngine()->calculateLine(originVoxel, _targetVoxel, false, &_trajectory, 0);
-	}
-
+	int test = _save->getTileEngine()->calculateLine(originVoxel, _targetVoxel, false, &_trajectory, bu);
 	if (test != V_EMPTY &&
 		!_trajectory.empty() &&
 		_action.actor->getFaction() == FACTION_PLAYER &&

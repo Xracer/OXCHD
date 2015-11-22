@@ -123,8 +123,8 @@ private:
 	std::map<std::string, SoundDefinition *> _soundDefs;
 	std::map<std::string, RuleVideo *>_videos;
 	std::map<std::string, MCDPatch *> _MCDPatches;
-	std::map<std::string, RuleCommendations *> _commendations;
 	std::map<std::string, std::vector<MapScript *> > _mapScripts;
+	std::map<std::string, RuleCommendations *> _commendations;
 	std::map<std::string, RuleMissionScript*> _missionScripts;
 	std::vector<std::pair<std::string, ExtraSprites *> > _extraSprites;
 	std::vector<std::pair<std::string, ExtraSounds *> > _extraSounds;
@@ -201,9 +201,6 @@ public:
 	static int BATTLESCAPE_CURSOR;
 	static int UFOPAEDIA_CURSOR;
 	static int GRAPHS_CURSOR;
-	static int DAMAGE_RANGE;
-	static int EXPLOSIVE_DAMAGE_RANGE;
-	static int FIRE_DAMAGE_RANGE;
 	static std::string DEBRIEF_MUSIC_GOOD;
 	static std::string DEBRIEF_MUSIC_BAD;
 	static int DIFFICULTY_COEFFICIENT[5];
@@ -283,10 +280,10 @@ public:
 	MapDataSet *getMapDataSet(const std::string &name);
 	/// Gets soldier unit rules.
 	RuleSoldier *getSoldier(const std::string &name) const;
-	/// Gets commendation rules.
-	std::map<std::string, RuleCommendations *> getCommendation() const;
 	/// Gets the available soldiers.
 	const std::vector<std::string> &getSoldiersList() const;
+	/// Gets commendation rules.
+	std::map<std::string, RuleCommendations *> getCommendation() const;
 	/// Gets generated unit rules.
 	Unit *getUnit(const std::string &name) const;
 	/// Gets alien race rules.

@@ -1151,7 +1151,7 @@ interfaces:
         pos: [300, -16]
         color: 16
       - id: icons
-        size: [1000, 120] #320, 56
+        size: [320, 56]
       - id: numLayers
         color: 15
       - id: warning

@@ -50,7 +50,6 @@
 #include "AlienStrategy.h"
 #include "AlienMission.h"
 #include "../Mod/RuleResearch.h"
-#include "../Mod/RuleRegion.h"
 #include "../Mod/ArticleDefinition.h"
 #include "ResearchProject.h"
 #include "../Mod/RuleManufacture.h"
@@ -58,7 +57,6 @@
 #include "../Mod/Armor.h"
 #include "../Mod/UfoTrajectory.h"
 #include "../Mod/RuleSoldier.h"
-#include "../Engine/RNG.h"
 
 namespace OpenXcom
 {
@@ -626,19 +624,6 @@ void SaveConverter::loadDatMissions()
 			node["nextUfoCounter"] = ufoCounter;
 			node["spawnCountdown"] = spawn;
 			node["uniqueID"] = _save->getId("ALIEN_MISSIONS");
-			if (m->getRules().getObjective() == OBJECTIVE_SITE)
-			{
-				if (_mod->getRegion(_idRegions[region])->getMissionZones().size() >= 3)
-				{
-					// pick a city for terror missions
-					node["missionSiteZone"] = RNG::generate(0, _mod->getRegion(_idRegions[region])->getMissionZones().at(3).areas.size() - 1); 
-				}
-				else
-				{
-					// try to account for TFTD's artefacts and such
-					node["missionSiteZone"] = RNG::generate(0, _mod->getRegion(_idRegions[region])->getMissionZones().at(0).areas.size() - 1);
-				}
-			}
 			m->load(node, *_save);
 			_save->getAlienMissions().push_back(m);
 			_missions[std::make_pair(mission, region)] = m;

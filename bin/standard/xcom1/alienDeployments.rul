@@ -836,8 +836,7 @@ alienDeployments:
     alertBackground: BACK03.SCR
     briefing:
       palette: 2
-      music: GMENBASE
-      background: HDBACK03.PNG
+      music: GMENBASE    
     markerName: STR_TERROR_SITE
     duration: [4, 10]
     despawnPenalty: 1000
@@ -995,7 +994,7 @@ alienDeployments:
     script: ALIENBASE
     briefing:
       textOffset: -16
-      background: HDBACK01.PNG
+      background: BACK01.SCR
       showTarget: false
     objectiveType: 3
     objectiveComplete: [STR_ALIEN_BASE_CONTROL_DESTROYED, 500]
@@ -1157,7 +1156,7 @@ alienDeployments:
     shade: 5
     briefing:
       palette: 0
-      background: HDBACK01.PNG
+      background: BACK01.SCR
       music: GMENBASE
   - type: STR_MARS_CYDONIA_LANDING
     data:
@@ -1236,7 +1235,6 @@ alienDeployments:
       palette: 6
       music: GMNEWMAR
       showTarget: false
-      background: HDBACK01.PNG 
   - type: STR_MARS_THE_FINAL_ASSAULT
     data:
       - alienRank: 0
@@ -1395,7 +1393,7 @@ alienDeployments:
       music: GMNEWMAR
       showTarget: false
       showCraft: false
-      background: HDBACK01.PNG
+      background: BACK01.SCR
     script: BOSSBATTLE
     objectiveType: 14
     objectivesRequired: 1

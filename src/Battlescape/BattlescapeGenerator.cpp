@@ -234,44 +234,40 @@ void BattlescapeGenerator::nextStage()
 			// if it's recoverable, and it's not owned by someone
 			if ((*i)->getRules()->isRecoverable() && !(*i)->getOwner())
 			{
-				// first off: don't count primed grenades on the floor
-				if ((*i)->getFuseTimer() == -1)
+				// protocol 1: all defenders dead, recover all items.
+				if (aliensAlive == 0)
 				{
-					// protocol 1: all defenders dead, recover all items.
-					if (aliensAlive == 0)
+					// any corpses or unconscious units get put in the skyranger, as well as any unresearched items
+					if ((*i)->getUnit() || !_game->getSavedGame()->isResearched((*i)->getRules()->getRequirements()))
 					{
-						// any corpses or unconscious units get put in the skyranger, as well as any unresearched items
-						if ((*i)->getUnit() || !_game->getSavedGame()->isResearched((*i)->getRules()->getRequirements()))
-						{
-							toContainer = takeHomeGuaranteed;
-						}
-						// otherwise it comes with us to stage two
-						else
-						{
-							toContainer = &takeToNextStage;
-						}
+						toContainer = takeHomeGuaranteed;
 					}
-					// protocol 2: some of the aliens survived, meaning we ran to the exit zone.
-					// recover stuff depending on where it was at the end of the mission.
+					// otherwise it comes with us to stage two
 					else
 					{
-						Tile *tile = (*i)->getTile();
-						if (tile)
+						toContainer = &takeToNextStage;
+					}
+				}
+				// protocol 2: some of the aliens survived, meaning we ran to the exit zone.
+				// recover stuff depending on where it was at the end of the mission.
+				else
+				{
+					Tile *tile = (*i)->getTile();
+					if (tile)
+					{
+						// on a tile at least, so i'll give you the benefit of the doubt on this and give it a conditional recovery at this point
+						toContainer = takeHomeConditional;
+						if (tile->getMapData(O_FLOOR))
 						{
-							// on a tile at least, so i'll give you the benefit of the doubt on this and give it a conditional recovery at this point
-							toContainer = takeHomeConditional;
-							if (tile->getMapData(O_FLOOR))
+							// in the skyranger? it goes home.
+							if (tile->getMapData(O_FLOOR)->getSpecialType() == START_POINT)
 							{
-								// in the skyranger? it goes home.
-								if (tile->getMapData(O_FLOOR)->getSpecialType() == START_POINT)
-								{
-									toContainer = takeHomeGuaranteed;
-								}
-								// on the exit grid? it goes to stage two.
-								else if (tile->getMapData(O_FLOOR)->getSpecialType() == END_POINT)
-								{
-									toContainer = &takeToNextStage;
-								}
+								toContainer = takeHomeGuaranteed;
+							}
+							// on the exit grid? it goes to stage two.
+							else if (tile->getMapData(O_FLOOR)->getSpecialType() == END_POINT)
+							{
+								toContainer = &takeToNextStage;
 							}
 						}
 					}
