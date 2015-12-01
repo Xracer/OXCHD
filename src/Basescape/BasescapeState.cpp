@@ -22,6 +22,7 @@
 #include "CraftInfoState.h"
 #include "CraftSoldiersState.h"
 #include "CraftsState.h"
+#include "CraftInfoState.h"
 #include "ManageAlienContainmentState.h"
 #include "ManufactureState.h"
 #include "MonthlyCostsState.h"
@@ -309,6 +310,8 @@ void BasescapeState::btnCraftsClick(Action *)
 	MultiState *state = new MultiState;
 	state->add(new BasescapeState(_base, _globe));
 	state->add(new CraftsState(_base));
+//	state->add(new CraftInfoState(_base))
+
 	/*	if (_base->getCrafts()->at(_lstCrafts->getSelectedRow())->getStatus() != "STR_OUT")
 	{
 	state->add(new CraftInfoState(_base, _lstCrafts->getSelectedRow()));

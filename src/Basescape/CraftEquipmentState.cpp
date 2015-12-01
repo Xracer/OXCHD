@@ -61,17 +61,17 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	bool isNewBattle = _game->getSavedGame()->getMonthsPassed() == -1;
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 164:16, 176);
-	_btnClear = new TextButton(148, 16, 8, 176);
-	_btnInventory = new TextButton(148, 16, 8, 176);
-	_txtTitle = new Text(300, 17, 16, 7);
-	_txtItem = new Text(144, 9, 16, 32);
-	_txtStores = new Text(150, 9, 160, 32);
-	_txtAvailable = new Text(110, 9, 16, 24);
-	_txtUsed = new Text(110, 9, 130, 24);
-	_txtCrew = new Text(71, 9, 244, 24);
-	_lstEquipment = new TextList(288, 128, 8, 40);
+	_window = new Window(this, 450, 200, 700, 403);
+	_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
+	_btnClear = new TextButton(148, 16, 708, 579);
+	_btnInventory = new TextButton(148, 16, 708, 579);
+	_txtTitle = new Text(300, 17, 716, 410);
+	_txtItem = new Text(144, 9, 716, 435);
+	_txtStores = new Text(150, 9, 860, 435);
+	_txtAvailable = new Text(110, 9, 716, 427);
+	_txtUsed = new Text(110, 9, 830, 427);
+	_txtCrew = new Text(71, 9, 944, 427);
+	_lstEquipment = new TextList(288, 128, 708, 443);
 
 	// Set palette
 	setInterface("craftEquipment");
@@ -90,7 +90,7 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	add(_txtCrew, "text", "craftEquipment");
 	add(_lstEquipment, "list", "craftEquipment");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK04.SCR"));

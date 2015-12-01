@@ -47,13 +47,13 @@ namespace OpenXcom
 CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft(craft)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(288, 16, 16, 176);
-	_txtTitle = new Text(300, 17, 16, 7);
-	_txtName = new Text(114, 9, 16, 32);
-	_txtCraft = new Text(76, 9, 130, 32);
-	_txtArmor = new Text(100, 9, 199, 32);
-	_lstSoldiers = new TextList(292, 128, 8, 40);
+	_window = new Window(this, 450, 200, 700, 403);
+	_btnOk = new TextButton(288, 16, 716, 576);
+	_txtTitle = new Text(300, 17, 716, 410);
+	_txtName = new Text(114, 9, 716, 435);
+	_txtCraft = new Text(76, 9, 830, 435);
+	_txtArmor = new Text(100, 9, 899, 435);
+	_lstSoldiers = new TextList(292, 128, 708, 443);
 
 	// Set palette
 	setInterface("craftArmor");
@@ -66,7 +66,7 @@ CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft
 	add(_txtArmor, "text", "craftArmor");
 	add(_lstSoldiers, "list", "craftArmor");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));

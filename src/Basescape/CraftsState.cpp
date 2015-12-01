@@ -46,16 +46,16 @@ namespace OpenXcom
 CraftsState::CraftsState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(288, 16, 16, 176);
-	_txtTitle = new Text(298, 17, 16, 8);
-	_txtBase = new Text(298, 17, 16, 24);
-	_txtName = new Text(94, 9, 16, 40);
-	_txtStatus = new Text(50, 9, 110, 40);
-	_txtWeapon = new Text(50, 17, 160, 40);
-	_txtCrew = new Text(58, 9, 210, 40);
-	_txtHwp = new Text(46, 9, 268, 40);
-	_lstCrafts = new TextList(288, 118, 8, 58);
+	_window = new Window(this, 450, 203, 700, 3);
+	_btnOk = new TextButton(288, 16, 716, 176);
+	_txtTitle = new Text(350, 17, 716, 8);
+	_txtBase = new Text(350, 17, 716, 24);
+	_txtName = new Text(100, 11, 716, 40);
+	_txtStatus = new Text(50, 11, 820, 40);
+	_txtWeapon = new Text(130, 11, 890, 40);
+	_txtCrew = new Text(60, 11, 970, 40);
+	_txtHwp = new Text(30, 11, 1038, 40);
+	_lstCrafts = new TextList(400, 130, 708, 58);
 
 	// Set palette
 	setInterface("craftSelect");
@@ -71,7 +71,7 @@ CraftsState::CraftsState(Base *base) : _base(base)
 	add(_txtHwp, "text", "craftSelect");
 	add(_lstCrafts, "list", "craftSelect");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
@@ -96,7 +96,7 @@ CraftsState::CraftsState(Base *base) : _base(base)
 	_txtCrew->setText(tr("STR_CREW"));
 
 	_txtHwp->setText(tr("STR_HWPS"));
-	_lstCrafts->setColumns(5, 94, 68, 44, 46, 28);
+	_lstCrafts->setColumns(5, 104, 90, 70, 70, 30);
 	_lstCrafts->setSelectable(true);
 	_lstCrafts->setBackground(_window);
 	_lstCrafts->setMargin(8);
