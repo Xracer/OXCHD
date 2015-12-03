@@ -45,15 +45,15 @@ namespace OpenXcom
 CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base), _craft(craft), _otherCraftColor(0)
 {
 	// Create objects
-	_window = new Window(this, 450, 200, 700, 403);
-	_btnOk = new TextButton(288, 16, 716, 579);
-	_txtTitle = new Text(300, 17, 716, 410);
-	_txtName = new Text(114, 9, 716, 435);
-	_txtRank = new Text(102, 9, 822, 435);
-	_txtCraft = new Text(84, 9, 924, 435);
-	_txtAvailable = new Text(110, 9, 716, 427);
-	_txtUsed = new Text(110, 9, 822, 427);
-	_lstSoldiers = new TextList(288, 128, 708, 443);
+	_window = new Window(this, 550, 200, 700, 323);
+	_btnOk = new TextButton(288, 16, 716, 499);
+	_txtTitle = new Text(300, 17, 716, 330);
+	_txtName = new Text(114, 9, 716, 355);
+	_txtRank = new Text(102, 9, 822, 355);
+	_txtCraft = new Text(84, 9, 924, 355);
+	_txtAvailable = new Text(110, 9, 716, 347);
+	_txtUsed = new Text(110, 9, 822, 347);
+	_lstSoldiers = new TextList(288, 128, 708, 363);
 
 	// Set palette
 	setInterface("craftSoldiers");

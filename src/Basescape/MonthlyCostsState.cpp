@@ -42,7 +42,7 @@ namespace OpenXcom
 MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 450, 172, 700, 210, POPUP_BOTH);
+	_window = new Window(this, 550, 172, 700, 210, POPUP_BOTH);
 	_txtTitle = new Text(440, 15, 705, 220);
 	_txtCost = new Text(80, 11, 855, 235);
 	_txtQuantity = new Text(55, 11, 945, 235);

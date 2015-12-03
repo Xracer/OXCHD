@@ -41,7 +41,7 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 450, 200, 700, 385, POPUP_BOTH);
+	_window = new Window(this, 550, 200, 700, 385, POPUP_BOTH);
 	_txtTitle = new Text(440, 17, 705, 395);
 	_txtItem = new Text(142, 11, 705, 412);
 	_txtQuantity = new Text(88, 11, 895, 412);

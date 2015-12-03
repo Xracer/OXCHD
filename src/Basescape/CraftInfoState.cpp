@@ -53,30 +53,30 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 	// Create objects
 	if (_game->getSavedGame()->getMonthsPassed() != -1)
 	{
-		_window = new Window(this, 450, 203, 700, 203, POPUP_BOTH);
+		_window = new Window(this, 550, 200, 700, 123, POPUP_BOTH);
 	}
 	else
 	{
-		_window = new Window(this, 450, 203, 700, 203, POPUP_NONE);
+		_window = new Window(this, 500, 200, 700, 123, POPUP_NONE);
 	}
-	_btnOk = new TextButton(64, 24, 828, 368);
-	_btnW1 = new TextButton(24, 32, 714, 248);
-	_btnW2 = new TextButton(24, 32, 982, 248);
-	_btnCrew = new TextButton(75, 16, 714, 296);
-	_btnEquip = new TextButton(75, 16, 714, 320);
-	_btnArmor = new TextButton(75, 16, 714, 344);
-	_edtCraft = new TextEdit(this, 140, 16, 780, 208);
-	_txtDamage = new Text(100, 17, 714, 224);
-	_txtFuel = new Text(82, 17, 928, 224);
-	_txtW1Name = new Text(95, 16, 746, 248);
-	_txtW1Ammo = new Text(75, 24, 746, 264);
-	_txtW2Name = new Text(95, 16, 884, 248);
-	_txtW2Ammo = new Text(75, 24, 904, 264);
-	_sprite = new Surface(32, 40, 844, 252);
-	_weapon1 = new Surface(15, 17, 821, 263);
-	_weapon2 = new Surface(15, 17, 884, 263);
-	_crew = new Surface(220, 18, 795, 296);
-	_equip = new Surface(220, 18, 795, 321);
+	_btnOk = new TextButton(64, 24, 828, 288);
+	_btnW1 = new TextButton(24, 32, 714, 168);
+	_btnW2 = new TextButton(24, 32, 982, 168);
+	_btnCrew = new TextButton(75, 16, 714, 216);
+	_btnEquip = new TextButton(75, 16, 714, 240);
+	_btnArmor = new TextButton(75, 16, 714, 264);
+	_edtCraft = new TextEdit(this, 140, 16, 780, 128);
+	_txtDamage = new Text(100, 17, 714, 144);
+	_txtFuel = new Text(82, 17, 928, 144);
+	_txtW1Name = new Text(95, 16, 746, 168);
+	_txtW1Ammo = new Text(75, 24, 746, 184);
+	_txtW2Name = new Text(95, 16, 884, 168);
+	_txtW2Ammo = new Text(75, 24, 904, 184);
+	_sprite = new Surface(32, 40, 844, 172);
+	_weapon1 = new Surface(15, 17, 821, 183);
+	_weapon2 = new Surface(15, 17, 884, 183);
+	_crew = new Surface(220, 18, 795, 216);
+	_equip = new Surface(220, 18, 795, 241);
 
 	// Set palette
 	setInterface("craftInfo");

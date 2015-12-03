@@ -31,6 +31,7 @@ class Text;
 class TextEdit;
 class Surface;
 class Craft;
+class Globe;
 
 /**
  * Craft Info screen that shows all the

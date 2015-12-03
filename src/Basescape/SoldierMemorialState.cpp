@@ -44,7 +44,7 @@ namespace OpenXcom
 SoldierMemorialState::SoldierMemorialState()
 {
 	// Create objects
-	_window = new Window(this, 450, 350, 700, 358);
+	_window = new Window(this, 550, 350, 700, 358);
 	_txtTitle = new Text(440, 17, 705, 368);
 	_txtName = new Text(150, 11, 705, 398);
 	_txtRank = new Text(100, 11, 855, 398);

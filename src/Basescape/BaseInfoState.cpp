@@ -49,7 +49,7 @@ namespace OpenXcom
 BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _state(state)
 {
 	// Create objects
-	_window = new Window(this, 450, 203, 700, 3, POPUP_BOTH);
+	_window = new Window(this, 550, 203, 700, 3, POPUP_BOTH);
 	_bg = new Surface(400, 203, 700, 3);
 	//_edtBase = new TextEdit(this, 127, 16, 8, 8);
 

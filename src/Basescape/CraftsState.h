@@ -29,6 +29,7 @@ class Window;
 class Text;
 class TextList;
 class Base;
+class Globe;
 
 /**
  * Equip Craft screen that lets the player
@@ -42,9 +43,10 @@ private:
 	Text *_txtTitle, *_txtBase, *_txtName, *_txtStatus, *_txtWeapon, *_txtCrew, *_txtHwp;
 	TextList *_lstCrafts;
 	Base *_base;
+	Globe *_globe;
 public:
 	/// Creates the Crafts state.
-	CraftsState(Base *base);
+	CraftsState(Base *base, Globe *globe);
 	/// Cleans up the Crafts state.
 	~CraftsState();
 	/// Updates the craft info.

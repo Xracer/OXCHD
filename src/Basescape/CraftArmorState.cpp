@@ -47,7 +47,7 @@ namespace OpenXcom
 CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft(craft)
 {
 	// Create objects
-	_window = new Window(this, 450, 200, 700, 403);
+	_window = new Window(this, 550, 200, 700, 723);
 	_btnOk = new TextButton(288, 16, 716, 576);
 	_txtTitle = new Text(300, 17, 716, 410);
 	_txtName = new Text(114, 9, 716, 435);

@@ -61,7 +61,7 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	bool isNewBattle = _game->getSavedGame()->getMonthsPassed() == -1;
 
 	// Create objects
-	_window = new Window(this, 450, 200, 700, 403);
+	_window = new Window(this, 550, 200, 700, 523);
 	_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
 	_btnClear = new TextButton(148, 16, 708, 579);
 	_btnInventory = new TextButton(148, 16, 708, 579);

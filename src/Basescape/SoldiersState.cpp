@@ -44,7 +44,7 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 	bool isPsiBtnVisible = Options::anytimePsiTraining && _base->getAvailablePsiLabs() > 0;
 
 	// Create objects
-	_window = new Window(this, 450, 350, 700, 3);
+	_window = new Window(this, 550, 350, 700, 3);
 
 	_txtTitle = new Text(440, 17, 705, 13);
 	_txtName = new Text(150, 11, 705, 30);
