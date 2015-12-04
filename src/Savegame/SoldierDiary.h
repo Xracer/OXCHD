@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -18,15 +18,18 @@
  */
 #ifndef OPENXCOM_SOLDIERDIARY_H
 #define OPENXCOM_SOLDIERDIARY_H
+
 #include <yaml-cpp/yaml.h>
-#include "GameTime.h"
 #include "BattleUnit.h"
 #include "SavedGame.h"
 #include "../Mod/Mod.h"
+
 namespace OpenXcom
 {
-class GameTime;
+
 class Mod;
+struct BattleUnitKills;
+
 /**
  * Each entry will be its own commendation.
  */
@@ -65,6 +68,7 @@ public:
 	// Sets _isNew to true.
 	void addDecoration();
 };
+
 class SoldierDiary
 {
 private:
@@ -72,17 +76,17 @@ private:
 	std::vector<BattleUnitKills*> _killList;
     std::vector<int> _missionIdList;
 	std::map<std::string, int> _regionTotal, _countryTotal, _typeTotal, _UFOTotal;
-	int _scoreTotal, _killTotal, _missionTotal, _winTotal, _stunTotal, _daysWoundedTotal, _baseDefenseMissionTotal, _totalShotByFriendlyCounter, _totalShotFriendlyCounter, _loneSurvivorTotal,
+	int _scoreTotal, _killTotal, _winTotal, _stunTotal, _daysWoundedTotal, _baseDefenseMissionTotal, _totalShotByFriendlyCounter, _totalShotFriendlyCounter, _loneSurvivorTotal,
 		_terrorMissionTotal, _nightMissionTotal, _nightTerrorMissionTotal, _monthsService, _unconciousTotal, _shotAtCounterTotal, _hitCounterTotal, _ironManTotal,
 		_importantMissionTotal, _longDistanceHitCounterTotal, _lowAccuracyHitCounterTotal, _shotsFiredCounterTotal, _shotsLandedCounterTotal, _shotAtCounter10in1Mission,
 		_hitCounter5in1Mission, _reactionFireTotal, _timesWoundedTotal, _valiantCruxTotal, _KIA, _trapKillTotal, _alienBaseAssaultTotal, _allAliensKilledTotal, _allAliensStunnedTotal,
         _woundsHealedTotal, _allUFOs, _allMissionTypes, _statGainTotal, _revivedUnitTotal, _wholeMedikitTotal, _braveryGainTotal, _bestOfRank, _MIA, _martyrKillsTotal, _postMortemKills,
-        _slaveKillsTotal, _panickTotal, _controlTotal;
+        _slaveKillsTotal, _panickTotal, _controlTotal, _lootValueTotal;
     bool _bestSoldier, _globeTrotter;
 	void manageModularCommendations(std::map<std::string, int> &nextCommendationLevel, std::map<std::string, int> &modularCommendations, std::pair<std::string, int> statTotal, int criteria);
 	void awardCommendation(std::string type, std::string noun = "noNoun");
 public:
-	/// Creates a new soldier-equipment layout item and loads its contents from YAML.
+	/// Creates a new soldier diary and loads its contents from YAML.
 	SoldierDiary(const YAML::Node& node);
 	/// Construct a diary.
 	SoldierDiary();
@@ -93,7 +97,7 @@ public:
 	/// Save a diary.
 	YAML::Node save() const;
 	/// Update the diary statistics.
-	void updateDiary(BattleUnitStatistics *unitStatistics, MissionStatistics *missionStatistics, Mod *mod);
+	void updateDiary(BattleUnitStatistics *unitStatistics, MissionStatistics *missionStatistics, Mod *rules);
 	/// Get the list of kills, mapped by rank.
 	std::map<std::string, int> getAlienRankTotal();
 	/// Get the list of kills, mapped by race.
@@ -120,10 +124,10 @@ public:
 	int getWinTotal() const;
 	/// Get the total number of stuns.
 	int getStunTotal() const;
-	/// Get the total number of psi panicks.
-	int getPanickTotal() const;
-	/// Get the total number of psi mind controls.
-	int getControlTotal() const;
+    /// Get the total number of psi panicks.
+    int getPanickTotal() const;
+    /// Get the total number of psi mind controls.
+    int getControlTotal() const;
 	/// Get the total number of days wounded.
 	int getDaysWoundedTotal() const;
 	/// Get the solder's commendations.
@@ -132,18 +136,18 @@ public:
 	bool manageCommendations(Mod *rules);
 	/// Increment the soldier's service time.
 	void addMonthlyService();
-	/// Get the mission id list.
-	std::vector<int> &getMissionIdList();
-	/// Get the kill list.
-	std::vector<BattleUnitKills*> &getKills();
-	/// Award special commendation to the original 8 soldiers.
-	void awardOriginalEightCommendation();
-	/// Award post-humous best-of rank commendation.
-	void awardBestOfRank(SoldierRank rank);
-	/// Award post-humous best overall commendation.
-	void awardBestOverall();
-	/// Award post-humous kills commendation.
-	void awardPostMortemKill(int kills);
+    /// Get the mission id list.
+    std::vector<int> &getMissionIdList();
+    /// Get the kill list.
+    std::vector<BattleUnitKills*> &getKills();
+    /// Award special commendation to the original 8 soldiers.
+    void awardOriginalEightCommendation();
+    /// Award post-humous best-of rank commendation.
+    void awardBestOfRank(SoldierRank rank);
+    /// Award post-humous best overall commendation.
+    void awardBestOverall();
+    /// Award post-humous kills commendation.
+    void awardPostMortemKill(int kills);
 };
 }
 #endif
