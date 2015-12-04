@@ -36,6 +36,7 @@
 #include "Camera.h"
 #include "Explosion.h"
 #include "BattlescapeState.h"
+#include "../Savegame/BattleUnitStatistics.h"
 
 namespace OpenXcom
 {
@@ -279,16 +280,6 @@ bool ProjectileFlyBState::createNewProjectile()
 
 	if (_action.type != BA_THROW || _action.type != BA_LAUNCH)
 		_unit->getStatistics()->shotsFiredCounter++;
-
-	int bulletSprite = -1;
-	if (_action.type != BA_THROW)
-	{
-		bulletSprite = _ammo->getRules()->getBulletSprite();
-		if (bulletSprite == -1)
-		{
-			bulletSprite = _action.weapon->getRules()->getBulletSprite();
-		}
-	}
 
 	// create a new projectile
 	Projectile *projectile = new Projectile(_parent->getMod(), _parent->getSave(), _action, _origin, _targetVoxel, _ammo);
@@ -622,6 +613,13 @@ void ProjectileFlyBState::think()
 									_unit->setTurnsSinceSpotted(0);
 								}
 							}
+							// Record the last unit to hit our victim. If a victim dies without warning*, this unit gets the credit.
+							// *Because the unit died in a fire or bled out.
+							victim->setMurdererId(_unit->getId());
+							if (_action.weapon != 0)
+								victim->setMurdererWeapon(_action.weapon->getRules()->getName());
+							if (_ammo != 0)
+								victim->setMurdererWeaponAmmo(_ammo->getRules()->getName());
 						}
 					}
 				}

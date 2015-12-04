@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -20,6 +20,8 @@
 #define OPENXCOM_SOLDIERDIARYPERFORMANCESTATE_H
 
 #include "../Engine/State.h"
+#include <vector>
+#include <string>
 
 namespace OpenXcom
 {
@@ -34,8 +36,10 @@ class Surface;
 class SurfaceSet;
 class Soldier;
 
+enum SoldierDiaryDisplay { DIARY_KILLS, DIARY_MISSIONS, DIARY_COMMENDATIONS };
+
 /**
- * Diary screen that lists totals.
+ * Diary screen that lists soldier totals.
  */
 class SoldierDiaryPerformanceState : public State
 {
@@ -48,23 +52,20 @@ private:
 
 	TextButton *_btnOk, *_btnPrev, *_btnNext, *_btnKills, *_btnMissions, *_btnCommendations;
 	Window *_window;
-	Text *_txtTitle, *_txtRank, *_txtRace, *_txtWeapon;
-	Text *_txtLocation, *_txtType, *_txtUFO;
-	Text *_txtMedalName, *_txtMedalLevel, *_txtMedalInfo;
-	TextList *_lstRank, *_lstRace, *_lstWeapon, *_lstKillTotals;
-	TextList *_lstLocation, *_lstType, *_lstUFO, *_lstMissionTotals;
-	TextList *_lstCommendations;
+	Text *_txtTitle, *_txtMedalName, *_txtMedalLevel, *_txtMedalInfo;
+	TextList *_lstPerformance, *_lstKillTotals, *_lstMissionTotals, *_lstCommendations;
 	std::vector<std::wstring> _commendationsListEntry;
 	std::vector<Surface*> _commendations, _commendationDecorations;
 	SurfaceSet *_commendationSprite, *_commendationDecoration;
 
-	int _display, _lastScrollPos; // 0 displays kills, 1 displays missions, 2 displays commendations
-	bool _displayKills, _displayMissions, _displayCommendations;
+	SoldierDiaryDisplay _display;
+	int _lastScrollPos;
+	TextButton *_group;
 
 public:
-	/// Creates the Soldiers state.
-	SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryState, int display);
-	/// Cleans up the Soldiers state.
+	/// Creates the Soldier Diary Totals state.
+	SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryState, SoldierDiaryDisplay display);
+	/// Cleans up the Soldier Diary Totals state.
 	~SoldierDiaryPerformanceState();
 	/// Updates the soldier info.
 	void init();

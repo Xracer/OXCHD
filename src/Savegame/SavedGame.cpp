@@ -52,6 +52,8 @@
 #include "AlienMission.h"
 #include "../Mod/RuleRegion.h"
 #include "../Mod/RuleSoldier.h"
+#include "MissionStatistics.h"
+#include "SoldierDeath.h"
 
 namespace OpenXcom
 {
@@ -507,11 +509,22 @@ void SavedGame::save(const std::string &filename) const
 		brief["turn"] = _battleGame->getTurn();
 	}
 
+	// only save mods that work with the current master
 	std::vector<std::string> activeMods;
+	std::string curMasterId;
 	for (std::vector< std::pair<std::string, bool> >::iterator i = Options::mods.begin(); i != Options::mods.end(); ++i)
 	{
 		if (i->second)
 		{
+			ModInfo modInfo = Options::getModInfos().find(i->first)->second;
+			if (modInfo.isMaster())
+			{
+				curMasterId = i->first;
+			}
+			if (!modInfo.getMaster().empty() && modInfo.getMaster() != curMasterId)
+			{
+				continue;
+			}
 			activeMods.push_back(i->first);
 		}
 	}
@@ -633,6 +646,7 @@ int SavedGame::getDifficultyCoefficient() const
 
 	return Mod::DIFFICULTY_COEFFICIENT[_difficulty];
 }
+
 /**
  * Changes the game's difficulty to a new level.
  * @param difficulty New difficulty.
@@ -1341,6 +1355,13 @@ Soldier *SavedGame::getSoldier(int id) const
 			}
 		}
 	}
+	for (std::vector<Soldier*>::const_iterator j = _deadSoldiers.begin(); j != _deadSoldiers.end(); ++j)
+	{
+		if ((*j)->getId() == id)
+		{
+			return (*j);
+		}
+	}
 	return 0;
 }
 
@@ -1474,6 +1495,7 @@ void SavedGame::processSoldier(Soldier *soldier, PromotionInfo &soldierData)
 		break;
 	}
 }
+
 /**
  * Checks how many soldiers of a rank exist and which one has the highest score.
  * @param soldiers full list of live soldiers.
@@ -1618,6 +1640,7 @@ std::vector<int64_t> &SavedGame::getExpenditures()
 {
 	return _expenditures;
 }
+
 /**
  * return if the player has been
  * warned about poor performance.
@@ -1787,15 +1810,6 @@ std::vector<Soldier*> *SavedGame::getDeadSoldiers()
 }
 
 /**
- * Returns the list of dead soldiers.
- * @return Pointer to soldier list.
- */
-std::vector<MissionStatistics*> *SavedGame::getMissionStatistics()
-{
-	return &_missionStatistics;
-}
-
-/**
  * Sets the last selected armour.
  * @param value The new value for last selected armor - Armor type string.
  */
@@ -1809,7 +1823,7 @@ void SavedGame::setLastSelectedArmor(const std::string &value)
  * Gets the last selected armour
  * @return last used armor type string
  */
-std::string SavedGame::getLastSelectedArmor()
+std::string SavedGame::getLastSelectedArmor() const
 {
 	return _lastselectedArmor;
 }
@@ -1833,5 +1847,36 @@ Craft *SavedGame::findCraftByUniqueId(const CraftId& craftId) const
 	return NULL;
 }
 
+/**
+ * Returns the list of mission statistics.
+ * @return Pointer to statistics list.
+ */
+std::vector<MissionStatistics*> *SavedGame::getMissionStatistics()
+{
+	return &_missionStatistics;
+}
+
+/**
+ * Registers a soldier's death in the memorial.
+ * @param soldier Pointer to dead soldier.
+ * @param cause Pointer to cause of death, NULL if missing in action.
+ */
+std::vector<Soldier*>::iterator SavedGame::killSoldier(Soldier *soldier, BattleUnitKills *cause)
+{
+	std::vector<Soldier*>::iterator j;
+	for (std::vector<Base*>::const_iterator i = _bases.begin(); i != _bases.end(); ++i)
+	{
+		for (j = (*i)->getSoldiers()->begin(); j != (*i)->getSoldiers()->end(); ++j)
+		{
+			if ((*j) == soldier)
+			{
+				soldier->die(new SoldierDeath(*_time, cause));
+				_deadSoldiers.push_back(soldier);
+				return (*i)->getSoldiers()->erase(j);
+			}
+		}
+	}
+	return j;
+}
 
 }

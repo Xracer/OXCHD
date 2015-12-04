@@ -34,7 +34,6 @@
 #include "../Savegame/Craft.h"
 #include "../Savegame/Soldier.h"
 #include "../Savegame/SoldierDiary.h"
-#include "../Savegame/ItemContainer.h"
 #include "../Engine/SurfaceSet.h"
 #include "../Mod/Armor.h"
 #include "../Menu/ErrorMessageState.h"
@@ -273,6 +272,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 
 	_txtPsionic->setColor(Palette::blockOffset(15)+1);
 */
+
 	_txtPsionic->setText(tr("STR_IN_PSIONIC_TRAINING"));
 
 	_txtTimeUnits->setText(tr("STR_TIME_UNITS"));
@@ -466,7 +466,7 @@ void SoldierInfoState::init()
 
 	if (current->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
 	{
-		std::wstringstream ss14;
+		std::wostringstream ss14;
 		ss14 << withArmor.psiStrength;
 		_numPsiStrength->setText(ss14.str());
 		_barPsiStrength->setMax(current->psiStrength);
@@ -486,7 +486,7 @@ void SoldierInfoState::init()
 
 	if (current->psiSkill > 0)
 	{
-		std::wstringstream ss15;
+		std::wostringstream ss15;
 		ss15 << withArmor.psiSkill;
 		_numPsiSkill->setText(ss15.str());
 		_barPsiSkill->setMax(current->psiSkill);
@@ -557,7 +557,7 @@ void SoldierInfoState::btnOkClick(Action *)
 	if (_game->getSavedGame()->getMonthsPassed() > -1 && Options::storageLimitsEnforced && _base != 0 && _base->storesOverfull())
 	{
 		_game->pushState(new SellState(_base));
-		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), _palette, _game->getMod()->getInterface("soldierInfo")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("soldierInfo")->getElement("errorPalette")->color));
+		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()), _palette, _game->getMod()->getInterface("soldierInfo")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("soldierInfo")->getElement("errorPalette")->color));
 	}
 }
 

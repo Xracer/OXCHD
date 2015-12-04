@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,11 +17,9 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SoldierDiaryMissionState.h"
-#include <sstream>
 #include "../Mod/Mod.h"
 #include "../Engine/Game.h"
 #include "../Engine/Language.h"
-#include "../Engine/Palette.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
@@ -29,177 +27,119 @@
 #include "../Interface/TextList.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Soldier.h"
-#include "../Savegame/Base.h"
 #include "../Savegame/SoldierDiary.h"
+#include "../Savegame/MissionStatistics.h"
+#include "../Savegame/BattleUnitStatistics.h"
 
 namespace OpenXcom
 {
 
 /**
  * Initializes all the elements in the Soldier Diary Mission window.
- * @param game Pointer to the core game.
- * @param base Pointer to the base to get info from.
- * @param soldier ID of the selected soldier.
- * @param row number to get mission info from.
+ * @param soldier Pointer to the selected soldier.
+ * @param rowEntry number to get mission info from.
  */
-SoldierDiaryMissionState::SoldierDiaryMissionState(Base *base, size_t soldierId, int rowEntry) : _base(base), _soldierId(soldierId), _rowEntry(rowEntry)
+SoldierDiaryMissionState::SoldierDiaryMissionState(Soldier *soldier, int rowEntry) : _soldier(soldier), _rowEntry(rowEntry)
 {
-	if (_base == 0)
-	{
-		_list = _game->getSavedGame()->getDeadSoldiers();
-	}
-	else
-	{
-		_list = _base->getSoldiers();
-	}
-
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 232, 128, 44, 36, POPUP_BOTH);
-	_btnOk = new TextButton(180, 16, 70, 140);
-	_txtTitle = new Text(222, 9, 49, 44);
-	_txtScore = new Text(222, 9, 49, 62);
-	_txtMissionType= new Text(222, 9, 49, 71);
-	_txtUFO = new Text(222, 9, 49, 80);
-	_txtKills = new Text(130, 9, 187, 62);
-	_txtRace = new Text(130, 9, 187, 71);
-	_txtDaylight = new Text(130, 9, 187, 80);
-	_txtDaysWounded = new Text(130, 9, 187, 89);
-	_lstKills = new TextList(200, 32, 49, 102);
+	_window = new Window(this, 272, 128, 24, 36, POPUP_BOTH);
+	_btnOk = new TextButton(220, 16, 50, 140);
+	_txtTitle = new Text(262, 9, 29, 44);
+	_txtUFO = new Text(262, 9, 29, 52);
+	_txtScore = new Text(180, 9, 29, 68);
+	_txtKills = new Text(120, 9, 169, 68);
+	_txtLocation = new Text(180, 9, 29, 76);
+	_txtRace = new Text(120, 9, 169, 76);
+	_txtDaylight = new Text(120, 9, 169, 84);
+	_txtDaysWounded = new Text(180, 9, 29, 84);
+	_txtNoRecord = new Text(240, 9, 29, 100);
+	_lstKills = new TextList(240, 32, 29, 100);
 
 	// Set palette
-	setPalette("PAL_BASESCAPE");
+	setInterface("soldierMission");
 
-	add(_window);
-	add(_btnOk);
-	add(_txtTitle);
-	add(_txtScore);
-	add(_txtKills);
-	add(_txtMissionType);
-	add(_txtUFO);
-	add(_txtRace);
-	add(_txtDaylight);
-	add(_txtDaysWounded);
-	add(_lstKills);
+	add(_window, "window", "soldierMission");
+	add(_btnOk, "button", "soldierMission");
+	add(_txtTitle, "text", "soldierMission");
+	add(_txtUFO, "text", "soldierMission");
+	add(_txtScore, "text", "soldierMission");
+	add(_txtKills, "text", "soldierMission");
+	add(_txtLocation, "text", "soldierMission");
+	add(_txtRace, "text", "soldierMission");
+	add(_txtDaylight, "text", "soldierMission");
+	add(_txtDaysWounded, "text", "soldierMission");
+	add(_txtNoRecord, "text", "soldierMission");
+	add(_lstKills, "list", "soldierMission");
 
 	centerAllSurfaces();
 
 	// Set up objects
-	if (_list->empty())
-	{
-		_game->popState();
-		return;
-	}
-	if (_soldierId >= _list->size())
-	{
-		_soldierId = 0;
-	}
-	_soldier = _list->at(_soldierId);
 	std::vector<MissionStatistics*> *missionStatistics = _game->getSavedGame()->getMissionStatistics();
-    int missionId = _soldier->getDiary()->getMissionIdList().at(_rowEntry);
+	unsigned int missionId = _soldier->getDiary()->getMissionIdList().at(_rowEntry);
 	if (missionId > missionStatistics->size())
 	{
 		missionId = 0;
 	}
 	int daysWounded = missionStatistics->at(missionId)->injuryList[_soldier->getId()];
     
-//	_window->setColor(Palette::blockOffset(13)+10);
-	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("BACK16.SCR"));
 
-//	_btnOk->setColor(Palette::blockOffset(13)+5);
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&SoldierDiaryMissionState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&SoldierDiaryMissionState::btnOkClick, Options::keyCancel);
 
-//	_txtTitle->setColor(Palette::blockOffset(13)+5);
 	_txtTitle->setAlign(ALIGN_CENTER);
-	_txtTitle->setText(tr("STR_MISSION_DETAILS"));
+	_txtTitle->setText(tr(missionStatistics->at(missionId)->type));
 
-//	_txtScore->setColor(Palette::blockOffset(13)+5);
-//	_txtScore->setSecondaryColor(Palette::blockOffset(13));
-	_txtScore->setAlign(ALIGN_LEFT);
+	_txtUFO->setAlign(ALIGN_CENTER);
+	_txtUFO->setText(tr(missionStatistics->at(missionId)->ufo));
+	_txtUFO->setVisible(missionStatistics->at(missionId)->ufo != "NO_UFO");
+
 	_txtScore->setText(tr("STR_SCORE_VALUE").arg(missionStatistics->at(missionId)->score));
 
-//	_txtMissionType->setColor(Palette::blockOffset(13)+5);
-//	_txtMissionType->setSecondaryColor(Palette::blockOffset(13));
-	_txtMissionType->setText(tr("STR_MISSION_TYPE").arg(tr(missionStatistics->at(missionId)->getMissionTypeLowerCase())));
+	_txtLocation->setText(tr("STR_LOCATION").arg(tr(missionStatistics->at(missionId)->getLocationString())));
 
-//	_txtUFO->setColor(Palette::blockOffset(13)+5);
-//	_txtUFO->setSecondaryColor(Palette::blockOffset(13));
-	_txtUFO->setText(tr("STR_UFO_TYPE").arg(tr(missionStatistics->at(missionId)->ufo)));
-	_txtUFO->setVisible(true);
-	if (missionStatistics->at(missionId)->ufo == "NO_UFO") _txtUFO->setVisible(false);
-
-//	_txtRace->setColor(Palette::blockOffset(13)+5);
-//	_txtRace->setSecondaryColor(Palette::blockOffset(13));
 	_txtRace->setText(tr("STR_RACE_TYPE").arg(tr(missionStatistics->at(missionId)->alienRace)));
-	_txtRace->setVisible(true);
-	if (missionStatistics->at(missionId)->alienRace == "STR_UNKNOWN") _txtUFO->setVisible(false);
+	_txtRace->setVisible(missionStatistics->at(missionId)->alienRace != "STR_UNKNOWN");
 
-//	_txtDaylight->setColor(Palette::blockOffset(13)+5);
-//	_txtDaylight->setSecondaryColor(Palette::blockOffset(13));
-	if (missionStatistics->at(missionId)->daylight <= 5)
-	{
-		_txtDaylight->setText(tr("STR_DAYLIGHT_TYPE").arg(tr("STR_DAY")));
-	}
-	else
-	{
-		_txtDaylight->setText(tr("STR_DAYLIGHT_TYPE").arg(tr("STR_NIGHT")));
-	}
+	_txtDaylight->setText(tr("STR_DAYLIGHT_TYPE").arg(tr(missionStatistics->at(missionId)->getDaylightString())));
 
-//	_txtDaysWounded->setColor(Palette::blockOffset(13)+5);
-//	_txtDaysWounded->setSecondaryColor(Palette::blockOffset(13));
 	_txtDaysWounded->setText(tr("STR_DAYS_WOUNDED").arg(daysWounded));
-	if (daysWounded == 0) _txtDaysWounded->setVisible(false);
+	_txtDaysWounded->setVisible(daysWounded != 0);
 
-//	_lstKills->setColor(Palette::blockOffset(13));
-//	_lstKills->setArrowColor(Palette::blockOffset(13)+5);
-	_lstKills->setColumns(3, 40, 90, 80);
-	_lstKills->setSelectable(false);
-	_lstKills->setBackground(_window);
-	_lstKills->setMargin(8);
+	_lstKills->setColumns(3, 60, 95, 85);
 
-	int count = 0;
+	int kills = 0;
     bool stunOrKill = false;
-	std::wstringstream wssKills;
 
-	for (std::vector<BattleUnitKills*>::iterator j = _soldier->getDiary()->getKills().begin() ; j != _soldier->getDiary()->getKills().end() ; ++j)
+	for (std::vector<BattleUnitKills*>::iterator i = _soldier->getDiary()->getKills().begin() ; i != _soldier->getDiary()->getKills().end() ; ++i)
 	{
-		if ((*j)->mission != missionId) continue;
-		std::wstringstream wssRank, wssRace, wssWeapon, wssAmmo;
+		if ((unsigned int)(*i)->mission != missionId) continue;
 
-		wssRace << tr((*j)->race.c_str());
-		wssRank << tr((*j)->rank.c_str());
-		wssWeapon << tr((*j)->weapon.c_str());
-
-		std::wstringstream wssUnit, wssStatus;
-		wssUnit << wssRace.str().c_str() << " " << wssRank.str().c_str();
-
-		if ((*j)->getUnitStatusString() == "STATUS_DEAD")
+		switch ((*i)->status)
 		{
-			wssStatus << tr("STR_KILLED").c_str();
-            count++;
-            stunOrKill = true;
-		}
-		else
-		{
-			wssStatus << tr("STR_STUNNED").c_str();
-            stunOrKill = true;
+		case STATUS_DEAD:
+			kills++;
+		case STATUS_UNCONSCIOUS:
+		case STATUS_PANICKING:
+		case STATUS_TURNING:
+			stunOrKill = true;
+		default:
+			break;
 		}
 
-		_lstKills->addRow(3, wssStatus.str().c_str(), wssUnit.str().c_str(), wssWeapon.str().c_str());
-	}
-	if (!stunOrKill)
-	{
-		wssKills << tr("STR_NO_KILLS");
-		_lstKills->addRow(1, wssKills.str().c_str());
+		_lstKills->addRow(3, tr((*i)->getKillStatusString()).c_str(),
+							 (*i)->getUnitName(_game->getLanguage()).c_str(),
+							 tr((*i)->weapon).c_str());
 	}
 
-	_txtKills->setColor(Palette::blockOffset(13)+5);
-	_txtKills->setSecondaryColor(Palette::blockOffset(13));
-	_txtKills->setAlign(ALIGN_LEFT);
-	_txtKills->setText(tr("STR_KILLS").arg(count));
+	_txtNoRecord->setAlign(ALIGN_CENTER);
+	_txtNoRecord->setText(tr("STR_NO_RECORD"));
+	_txtNoRecord->setVisible(!stunOrKill);
+
+	_txtKills->setText(tr("STR_KILLS").arg(kills));
 }
 
 /**

@@ -1015,6 +1015,7 @@ void BattlescapeState::selectPreviousPlayerUnit(bool checkReselect, bool setRese
 		_battleGame->setupCursor();
 	}
 }
+
 /**
  * Shows/hides all map layers.
  * @param action Pointer to an action.
@@ -1047,6 +1048,7 @@ void BattlescapeState::btnEndTurnClick(Action *)
 		_battleGame->requestEndTurn();
 	}
 }
+
 /**
  * Aborts the game.
  * @param action Pointer to an action.
@@ -1563,8 +1565,7 @@ inline void BattlescapeState::handle(Action *action)
 					}
 				}
 				// quick save and quick load
-				// not works in debug mode to prevent conflict in hotkeys by default
-				else if (!_game->getSavedGame()->isIronman())
+				if (!_game->getSavedGame()->isIronman())
 				{
 					if (action->getDetails()->key.keysym.sym == Options::keyQuickSave)
 					{

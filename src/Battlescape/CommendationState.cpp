@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -19,27 +19,23 @@
 #include "CommendationState.h"
 #include <sstream>
 #include "../Engine/Game.h"
+#include "../Mod/Mod.h"
 #include "../Engine/Language.h"
-#include "../Engine/Palette.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
 #include "../Interface/Text.h"
 #include "../Interface/TextList.h"
-#include "../Mod/Mod.h"
-#include "../Mod/RuleCommendations.h"
-#include "../Savegame/SavedGame.h"
-#include "../Savegame/Base.h"
 #include "../Savegame/Soldier.h"
 #include "../Savegame/SoldierDiary.h"
 #include "../Engine/Options.h"
-
+#include "../Mod/RuleCommendations.h"
 
 namespace OpenXcom
 {
 
 /**
  * Initializes all the elements in the Medals screen.
- * @param game Pointer to the core game.
+ * @param soldiersMedalled List of soldiers with medals.
  */
 CommendationState::CommendationState(std::vector<Soldier*> soldiersMedalled)
 {
@@ -50,31 +46,27 @@ CommendationState::CommendationState(std::vector<Soldier*> soldiersMedalled)
 	_lstSoldiers = new TextList(288, 128, 8, 32);
 
 	// Set palette
-	setPalette("PAL_GEOSCAPE", 0);
+	setInterface("commendations");
 
-	add(_window);
-	add(_btnOk);
-	add(_txtTitle);
-	add(_lstSoldiers);
+	add(_window, "window", "commendations");
+	add(_btnOk, "button", "commendations");
+	add(_txtTitle, "heading", "commendations");
+	add(_lstSoldiers, "list", "commendations");
 
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setColor(Palette::blockOffset(15)-1);
 	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
 
-	_btnOk->setColor(Palette::blockOffset(15)-1);
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&CommendationState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&CommendationState::btnOkClick, Options::keyOk);
 	_btnOk->onKeyboardPress((ActionHandler)&CommendationState::btnOkClick, Options::keyCancel);
 
-	_txtTitle->setColor(Palette::blockOffset(8)+5);
 	_txtTitle->setText(tr("STR_MEDALS"));
 	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setBig();
 
-	_lstSoldiers->setColor(Palette::blockOffset(8)+10);
 	_lstSoldiers->setColumns(2, 204, 84);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
@@ -115,9 +107,9 @@ CommendationState::CommendationState(std::vector<Soldier*> soldiersMedalled)
 					}
 
 					// Soldier name
-					std::wstringstream wss;
-					wss << "   ";
-					wss << (*s)->getName().c_str();
+					std::wostringstream wssName;
+					wssName << "   ";
+					wssName << (*s)->getName();
 					// Decoration level name
 					int skipCounter = 0;
 					int lastInt = -2;
@@ -142,8 +134,7 @@ CommendationState::CommendationState(std::vector<Soldier*> soldiersMedalled)
 						}
 						vectorIterator++;
 					}
-					_lstSoldiers->addRow(2, wss.str().c_str(), tr((*soldierComm)->getDecorationLevelName(skipCounter)).c_str());
-					// _lstSoldiers->setRowColor(row, Palette::blockOffset(8)+10);
+					_lstSoldiers->addRow(2, wssName.str().c_str(), tr((*soldierComm)->getDecorationLevelName(skipCounter)).c_str());
 					break;
 				}
 			}
@@ -153,13 +144,13 @@ CommendationState::CommendationState(std::vector<Soldier*> soldiersMedalled)
 			// Medal name
 			if (modularCommendation)
 			{
-				_lstSoldiers->setCellText(titleRow, 0, tr((*commList).first).arg(tr(noun).c_str()).c_str());
+				_lstSoldiers->setCellText(titleRow, 0, tr((*commList).first).arg(tr(noun)));
 			}
 			else
 			{
-				_lstSoldiers->setCellText(titleRow, 0, tr((*commList).first).c_str());
+				_lstSoldiers->setCellText(titleRow, 0, tr((*commList).first));
 			}
-			_lstSoldiers->setRowColor(titleRow, Palette::blockOffset(15)-1);
+			_lstSoldiers->setRowColor(titleRow, _lstSoldiers->getSecondaryColor());
 			titleChosen = true;
 		}
 		if (noun == "noNoun")

@@ -38,6 +38,9 @@
 #include "../Battlescape/CommendationState.h"
 #include "../Savegame/SoldierDiary.h"
 #include "../Menu/CutsceneState.h"
+#include "../Savegame/Base.h"
+#include "../Battlescape/CommendationState.h"
+#include "../Savegame/SoldierDiary.h"
 #include "../Menu/SaveGameState.h"
 #include "../Mod/RuleInterface.h"
 
@@ -222,6 +225,7 @@ MonthlyReportState::MonthlyReportState(bool psi, Globe *globe) : _psi(psi), _gam
 
 	_txtDesc->setText(ss5.str());
 }
+
 /**
  *
  */

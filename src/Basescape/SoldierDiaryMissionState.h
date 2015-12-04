@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2015 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -19,8 +19,8 @@
 #ifndef OPENXCOM_SOLDIERDIARYMISSIONSTATE_H
 #define OPENXCOM_SOLDIERDIARYMISSIONSTATE_H
 
-#include <vector>
 #include "../Engine/State.h"
+#include <vector>
 
 namespace OpenXcom
 {
@@ -33,26 +33,24 @@ class TextList;
 class Soldier;
 
 /**
- * Select Mission window that shows 
+ * Diary window that shows 
  * mission details for a soldier.
  */
 class SoldierDiaryMissionState : public State
 {
 private:
-	Base *_base;
-	size_t _soldierId;
 	Soldier *_soldier;
-	std::vector<Soldier*> *_list;
 
 	TextButton *_btnOk;
 	Window *_window;
-	Text *_txtTitle, *_txtScore, *_txtKills, *_txtMissionType, *_txtUFO, *_txtRace, *_txtDaylight, *_txtDaysWounded;
+	Text *_txtTitle, *_txtUFO, *_txtScore, *_txtKills, *_txtLocation, *_txtRace, *_txtDaylight, *_txtDaysWounded;
+	Text *_txtNoRecord;
 	TextList *_lstKills;
 
 	int _rowEntry;
 public:
 	/// Creates the Soldier Diary Mission state.
-	SoldierDiaryMissionState(Base *base, size_t soldierId, int rowEntry);
+	SoldierDiaryMissionState(Soldier *soldier, int rowEntry);
 	/// Cleans up the Soldier Diary Mission state.
 	~SoldierDiaryMissionState();
 	/// Handler for clicking the Cancel button.
