@@ -112,9 +112,9 @@ GraphsState::GraphsState() : _butRegionsOffset(0), _butCountriesOffset(0)
 		// initially add the GRAPH_MAX_BUTTONS having the first regions information
 		if (offset < GRAPH_MAX_BUTTONS)
 		{
-			_btnRegions.push_back(new ToggleTextButton(105, 16, 165, 105 + offset * 18)); //controls size location of icon list buttons of the countries,  offset * 18 -> 100 + (offset * 18) controls the location of the icon list y
+			_btnRegions.push_back(new ToggleTextButton(105, 16, 165, 105 + offset * 18)); //controls size location of icon list buttons of the countries,  offset * 18 -> 105 + (offset * 18) controls the location of the icon list y
 			_btnRegions.at(offset)->setText(tr((*iter)->getRules()->getType()));
-			_btnRegions.at(offset)->setInvertColor(13 + (8*offset));
+			_btnRegions.at(offset)->setInvertColor(13 + (8 * offset));
 			_btnRegions.at(offset)->onMousePress((ActionHandler)&GraphsState::btnRegionListClick);
 			_btnRegions.at(offset)->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELUP);
 			_btnRegions.at(offset)->onMousePress((ActionHandler)&GraphsState::shiftButtons, SDL_BUTTON_WHEELDOWN);
@@ -488,8 +488,8 @@ void GraphsState::btnFinanceClick(Action *)
  */
 void GraphsState::btnRegionListClick(Action * action)
 {
-	size_t number = (action->getSender()->getY()-_game->getScreen()->getDY())/11; // i think this shoudl be 18 not 11 ***NEED TO TEST***
-	ToggleTextButton *button = 0; //I think this is the start of the list for buttons
+	size_t number = (action->getSender()->getY()-_game->getScreen()->getDY())/11; // i think this should be 18 not 11 ***NEED TO TEST***
+	ToggleTextButton *button = 0; //This is the start of the list for buttons
 
 	if ((_regionToggles.size() <= GRAPH_MAX_BUTTONS + 1 && number == _regionToggles.size()-1)||(_regionToggles.size() > GRAPH_MAX_BUTTONS + 1 && number == GRAPH_MAX_BUTTONS))
 	{
@@ -712,7 +712,7 @@ void GraphsState::drawCountryLines()
 	range = upperLimit - lowerLimit;
 	double units = range / 126;
 
-	// draw country lines *** HERE IS WHERE THE SHIT HIT THE FAN ***
+	// draw country lines *** HERE IS WHERE THE SHIT HITS THE FAN ***
 	for (size_t entry = 0; entry != _game->getSavedGame()->getCountries()->size(); ++entry)
 	{
 		Country *country = _game->getSavedGame()->getCountries()->at(entry);
@@ -723,7 +723,7 @@ void GraphsState::drawCountryLines()
 		int reduction = 0;
 		for (size_t iter = 0; iter != 12; ++iter)
 		{
-			int x = 560 - (iter*35); // TEST 312 -> 560 iter*17 is where our nodes are so need to make it 35
+			int x = 560 - (iter*35); // TEST 312 -> 560; iter*17 is where our nodes are so need to make it 35
 			int y = 275 - (-lowerLimit / units); //TEST 175 -> 275
 			if (_alien)
 			{
@@ -759,11 +759,11 @@ void GraphsState::drawCountryLines()
 			if (entry % 2)
 			offset = 8;
 			if (newLineVector.size() > 1 && _alien)
-			_alienCountryLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //chaning all 17 -> 35
+			_alienCountryLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //changing all 17 -> 35
 			else if (newLineVector.size() > 1 && _income)
-				_incomeLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //chaning all 17 -> 35
+				_incomeLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //changing all 17 -> 35
 			else if (newLineVector.size() > 1)
-				_xcomCountryLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //chaning all 17 -> 35
+				_xcomCountryLines.at(entry)->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), Palette::blockOffset((entry/2)+1)+offset); //changing all 17 -> 35
 			}
 		if (_alien)
 			_alienCountryLines.at(entry)->setVisible(_countryToggles.at(entry)->_pushed);
@@ -795,11 +795,11 @@ void GraphsState::drawCountryLines()
 		if (newLineVector.size() > 1)
 		{
 			if (_alien)
-				_alienCountryLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //chaning all 17 -> 35
+				_alienCountryLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //changing all 17 -> 35
 			else if (_income)
-				_incomeLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //chaning all 17 -> 35
+				_incomeLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //changing all 17 -> 35
 			else
-				_xcomCountryLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //chaning all 17 -> 35
+				_xcomCountryLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //changing all 17 -> 35
 		}
 	}
 	if (_alien)
@@ -952,9 +952,9 @@ void GraphsState::drawRegionLines()
 		if (newLineVector.size() > 1)
 		{
 			if (_alien)
-				_alienRegionLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //chaning all 17 -> 35
+				_alienRegionLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //changing all 17 -> 35
 			else
-				_xcomRegionLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //chaning all 17 -> 35
+				_xcomRegionLines.back()->drawLine(x, y, x+35, newLineVector.at(newLineVector.size()-2), color); //changing all 17 -> 35
 		}
 	}
 	if (_alien)

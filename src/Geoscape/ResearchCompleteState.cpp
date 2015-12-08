@@ -40,11 +40,11 @@ ResearchCompleteState::ResearchCompleteState(const RuleResearch * research, cons
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 230, 140, 45, 30, POPUP_BOTH);
-	_btnOk = new TextButton(80, 16, 64, 146);
-	_btnReport = new TextButton(80, 16, 176, 146);
-	_txtTitle = new Text(230, 17, 45, 70);
-	_txtResearch = new Text(230, 32, 45, 96);
+	_window = new Window(this, 300, 200, 300, 200, POPUP_BOTH);
+	_btnOk = new TextButton(100, 18, 164, 160);
+	_btnReport = new TextButton(100, 18, 276, 160);
+	_txtTitle = new Text(230, 17, 200, 70);
+	_txtResearch = new Text(230, 32, 200, 96);
 
 	// Set palette
 	setInterface("geoResearch");
@@ -58,7 +58,7 @@ ResearchCompleteState::ResearchCompleteState(const RuleResearch * research, cons
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK05.PNG"));
 
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&ResearchCompleteState::btnOkClick);
