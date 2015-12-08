@@ -89,7 +89,7 @@ void create()
 	_info.push_back(OptionInfo("useXBRZFilter", &useXBRZFilter, false));
 	_info.push_back(OptionInfo("useOpenGL", &useOpenGL, false));
 	_info.push_back(OptionInfo("checkOpenGLErrors", &checkOpenGLErrors, false));
-	_info.push_back(OptionInfo("useOpenGLShader", &useOpenGLShader, "Shaders/Openxcom.OpenGL.shader"));
+	_info.push_back(OptionInfo("useOpenGLShader", &useOpenGLShader, "Shaders/Raw.OpenGL.shader"));
 	_info.push_back(OptionInfo("vSyncForOpenGL", &vSyncForOpenGL, true));
 	_info.push_back(OptionInfo("useOpenGLSmoothing", &useOpenGLSmoothing, true));
 	_info.push_back(OptionInfo("debug", &debug, false));
@@ -275,8 +275,8 @@ void create()
 	_info.push_back(OptionInfo("keyInvClear", &keyInvClear, SDLK_x, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
 
 #ifdef __MORPHOS__
-	_info.push_back(OptionInfo("FPS", &FPS, 15));
-	_info.push_back(OptionInfo("FPS_INACTIVE", &FPSInactive, 15));
+	_info.push_back(OptionInfo("FPS", &FPS, 15, "STR_FPS_LIMIT", "STR_GENERAL"));
+	_info.push_back(OptionInfo("FPSInactive", &FPSInactive, 15, "STR_FPS_INACTIVE_LIMIT", "STR_GENERAL"));
 #else
 	_info.push_back(OptionInfo("FPS", &FPS, 60, "STR_FPS_LIMIT", "STR_GENERAL"));
 	_info.push_back(OptionInfo("FPSInactive", &FPSInactive, 30, "STR_FPS_INACTIVE_LIMIT", "STR_GENERAL"));
@@ -305,13 +305,11 @@ static bool _ufoIsInstalled()
 
 static bool _tftdIsInstalled()
 {
-	// ensure both the resource data and the mod data is in place
 	return _gameIsInstalled("TFTD");
 }
 
 static void _setDefaultMods()
 {
-	// try to find xcom1
 	bool haveUfo = _ufoIsInstalled();
 	if (haveUfo)
 	{
@@ -529,6 +527,14 @@ bool init(int argc, char *argv[])
 	Log(LOG_INFO) << "Config folder is: " << _configFolder;
 	Log(LOG_INFO) << "Options loaded successfully.";
 
+	// pick up stuff in common
+	FileMap::load("common", CrossPlatform::searchDataFolder("common"), true);
+
+	return true;
+}
+
+void updateMods()
+{
 	std::string modPath = CrossPlatform::searchDataFolder("standard");
 	Log(LOG_INFO) << "Scanning standard mods in '" << modPath << "'...";
 	_scanMods(modPath);
@@ -541,8 +547,8 @@ bool init(int argc, char *argv[])
 	{
 		std::map<std::string, ModInfo>::const_iterator modIt = _modInfos.find(i->first);
 		if (_modInfos.end() == modIt
-		 || (i->first == "xcom1" && !_ufoIsInstalled())
-		 || (i->first == "xcom2" && !_tftdIsInstalled()))
+			|| (i->first == "xcom1" && !_ufoIsInstalled())
+			|| (i->first == "xcom2" && !_tftdIsInstalled()))
 		{
 			Log(LOG_INFO) << "removing references to missing mod: " << i->first;
 			i = mods.erase(i);
@@ -620,6 +626,7 @@ bool init(int argc, char *argv[])
 		if (inactiveMaster.empty())
 		{
 			Log(LOG_ERROR) << "no mod masters available";
+			throw Exception("No X-COM installations found");
 		}
 		else
 		{
@@ -630,8 +637,6 @@ bool init(int argc, char *argv[])
 
 	mapResources();
 	userSplitMasters();
-
-	return true;
 }
 
 std::string getActiveMaster()
@@ -690,8 +695,16 @@ static void _loadMod(const ModInfo &modInfo, std::set<std::string> circDepCheck)
 	{
 		// add self to circDepCheck so we can avoid circular dependencies
 		circDepCheck.insert(modInfo.getId());
-		const ModInfo &masterInfo = _modInfos.find(modInfo.getMaster())->second;
-		_loadMod(masterInfo, circDepCheck);
+		std::map<std::string, ModInfo>::const_iterator it = _modInfos.find(modInfo.getMaster());
+		if (it != _modInfos.end())
+		{
+			const ModInfo &masterInfo = it->second;
+			_loadMod(masterInfo, circDepCheck);
+		}
+		else
+		{
+			throw Exception(modInfo.getId() + " mod requires " + modInfo.getMaster() + " master");
+		}
 	}
 }
 
@@ -900,7 +913,7 @@ void load(const std::string &filename)
 			_setDefaultMods();
 		}
 	}
-	catch (YAML::Exception e)
+	catch (YAML::Exception &e)
 	{
 		Log(LOG_WARNING) << e.what();
 	}
@@ -942,7 +955,7 @@ void save(const std::string &filename)
 
 		sav << out.c_str();
 	}
-	catch (YAML::Exception e)
+	catch (YAML::Exception &e)
 	{
 		Log(LOG_WARNING) << e.what();
 	}
