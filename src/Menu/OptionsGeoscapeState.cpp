@@ -40,24 +40,24 @@ OptionsGeoscapeState::OptionsGeoscapeState(OptionsOrigin origin) : OptionsBaseSt
 
 	// Create objects
 	_txtDragScroll = new Text(114, 11, 526, 128);
-	_cbxDragScroll = new ComboBox(this, 110, 18, 526, 140);
+	_cbxDragScroll = new ComboBox(this, 130, 18, 526, 140);
 
 	_txtScrollSpeed = new Text(114, 11, 388, 128);
-	_slrScrollSpeed = new Slider(110, 18, 388, 140);
+	_slrScrollSpeed = new Slider(130, 18, 388, 140);
 
 	_txtDogfightSpeed = new Text(114, 11, 526, 162);
-	_slrDogfightSpeed = new Slider(110, 18, 526, 174);
+	_slrDogfightSpeed = new Slider(130, 18, 526, 174);
 
 	_txtClockSpeed = new Text(114, 11, 388, 162);
-	_slrClockSpeed = new Slider(110, 18, 388, 174);
+	_slrClockSpeed = new Slider(130, 18, 388, 174);
 
 	_txtGlobeDetails = new Text(114, 11, 388, 202);
-	_btnGlobeCountries = new ToggleTextButton(110, 18, 388, 214);
-	_btnGlobeRadars = new ToggleTextButton(110, 18, 388, 234);
-	_btnGlobePaths = new ToggleTextButton(110, 18, 388, 254);
+	_btnGlobeCountries = new ToggleTextButton(130, 18, 388, 214);
+	_btnGlobeRadars = new ToggleTextButton(130, 18, 388, 234);
+	_btnGlobePaths = new ToggleTextButton(130, 18, 388, 254);
 
 	_txtOptions = new Text(114, 11, 526, 202);
-	_btnShowFunds = new ToggleTextButton(104, 18, 526, 214);
+	_btnShowFunds = new ToggleTextButton(130, 18, 526, 214);
 
 	add(_txtScrollSpeed, "text", "geoscapeMenu");
 	add(_slrScrollSpeed, "button", "geoscapeMenu");

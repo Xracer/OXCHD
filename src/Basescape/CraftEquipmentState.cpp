@@ -61,17 +61,18 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	bool isNewBattle = _game->getSavedGame()->getMonthsPassed() == -1;
 
 	// Create objects
-	_window = new Window(this, 550, 200, 700, 523);
-	_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
-	_btnClear = new TextButton(148, 16, 708, 579);
-	_btnInventory = new TextButton(148, 16, 708, 579);
-	_txtTitle = new Text(300, 17, 716, 410);
-	_txtItem = new Text(144, 9, 716, 435);
-	_txtStores = new Text(150, 9, 860, 435);
-	_txtAvailable = new Text(110, 9, 716, 427);
-	_txtUsed = new Text(110, 9, 830, 427);
-	_txtCrew = new Text(71, 9, 944, 427);
-	_lstEquipment = new TextList(288, 128, 708, 443);
+	_window = new Window(this, 550, 170, 700, 563);
+	//_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
+	_btnClear = new TextButton(148, 18, 708, 693);
+	_btnInventory = new TextButton(148, 18, 708, 708);
+	_txtTitle = new Text(300, 17, 716, 569);
+	_txtItem = new Text(144, 11, 716, 599);
+	_txtStores = new Text(150, 11, 860, 599);
+	_txtCraft = new Text(100, 11, 970, 599);
+	_txtAvailable = new Text(130, 11, 716, 587);
+	_txtUsed = new Text(130, 11, 846, 587);
+	_txtCrew = new Text(80, 11, 976, 587);
+	_lstEquipment = new TextList(450, 120, 708, 610);
 
 	// Set palette
 	setInterface("craftEquipment");
@@ -79,12 +80,13 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	_ammoColor = _game->getMod()->getInterface("craftEquipment")->getElement("ammoColor")->color;
 
 	add(_window, "window", "craftEquipment");
-	add(_btnOk, "button", "craftEquipment");
+	//add(_btnOk, "button", "craftEquipment");
 	add(_btnClear, "button", "craftEquipment");
 	add(_btnInventory, "button", "craftEquipment");
 	add(_txtTitle, "text", "craftEquipment");
 	add(_txtItem, "text", "craftEquipment");
 	add(_txtStores, "text", "craftEquipment");
+	add(_txtCraft, "text", "craftEquipment");
 	add(_txtAvailable, "text", "craftEquipment");
 	add(_txtUsed, "text", "craftEquipment");
 	add(_txtCrew, "text", "craftEquipment");
@@ -95,9 +97,9 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK04.SCR"));
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&CraftEquipmentState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&CraftEquipmentState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&CraftEquipmentState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&CraftEquipmentState::btnOkClick, Options::keyCancel);
 
 	_btnClear->setText(tr("STR_UNLOAD_CRAFT"));
 	_btnClear->onMouseClick((ActionHandler)&CraftEquipmentState::btnClearClick);
@@ -114,6 +116,8 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 
 	_txtStores->setText(tr("STR_STORES"));
 
+	_txtCraft->setText(tr("STR_CRAFT_LC"));
+
 	_txtAvailable->setText(tr("STR_SPACE_AVAILABLE").arg(c->getSpaceAvailable()));
 
 	_txtUsed->setText(tr("STR_SPACE_USED").arg(c->getSpaceUsed()));
@@ -122,8 +126,8 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	ss3 << tr("STR_SOLDIERS_UC") << ">" << L'\x01'<< c->getNumSoldiers();
 	_txtCrew->setText(ss3.str());
 
-	_lstEquipment->setArrowColumn(203, ARROW_HORIZONTAL);
-	_lstEquipment->setColumns(3, 156, 83, 41);
+	_lstEquipment->setArrowColumn(240, ARROW_HORIZONTAL);
+	_lstEquipment->setColumns(3, 170, 100, 50);
 	_lstEquipment->setSelectable(true);
 	_lstEquipment->setBackground(_window);
 	_lstEquipment->setMargin(8);
@@ -238,11 +242,11 @@ void CraftEquipmentState::think()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftEquipmentState::btnOkClick(Action *)
 {
 	_game->popState();
-}
+}*/
 
 /**
  * Starts moving the item to the base.

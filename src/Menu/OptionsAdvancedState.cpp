@@ -41,7 +41,7 @@ OptionsAdvancedState::OptionsAdvancedState(OptionsOrigin origin) : OptionsBaseSt
 	setCategory(_btnAdvanced);
 
 	// Create objects
-	_lstOptions = new TextList(300, 200, 388, 128);
+	_lstOptions = new TextList(250, 200, 388, 128);
 	
 	if (origin != OPT_BATTLESCAPE)
 	{

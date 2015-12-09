@@ -45,21 +45,21 @@ namespace OpenXcom
 CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base), _craft(craft), _otherCraftColor(0)
 {
 	// Create objects
-	_window = new Window(this, 550, 200, 700, 323);
-	_btnOk = new TextButton(288, 16, 716, 499);
-	_txtTitle = new Text(300, 17, 716, 330);
-	_txtName = new Text(114, 9, 716, 355);
-	_txtRank = new Text(102, 9, 822, 355);
-	_txtCraft = new Text(84, 9, 924, 355);
-	_txtAvailable = new Text(110, 9, 716, 347);
-	_txtUsed = new Text(110, 9, 822, 347);
-	_lstSoldiers = new TextList(288, 128, 708, 363);
+	_window = new Window(this, 550, 170, 700, 223);
+//	_btnOk = new TextButton(288, 16, 716, 499);
+	_txtTitle = new Text(300, 17, 716, 229);
+	_txtName = new Text(150, 11, 716, 258);
+	_txtRank = new Text(120, 11, 866, 258);
+	_txtCraft = new Text(100, 11, 986, 258);
+	_txtAvailable = new Text(150, 11, 716, 246);
+	_txtUsed = new Text(110, 11, 922, 246);
+	_lstSoldiers = new TextList(425, 120, 708, 270);
 
 	// Set palette
 	setInterface("craftSoldiers");
 
 	add(_window, "window", "craftSoldiers");
-	add(_btnOk, "button", "craftSoldiers");
+//	add(_btnOk, "button", "craftSoldiers");
 	add(_txtTitle, "text", "craftSoldiers");
 	add(_txtName, "text", "craftSoldiers");
 	add(_txtRank, "text", "craftSoldiers");
@@ -75,9 +75,9 @@ CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base),
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&CraftSoldiersState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&CraftSoldiersState::btnOkClick, Options::keyCancel);
+//	_btnOk->setText(tr("STR_OK"));
+//	_btnOk->onMouseClick((ActionHandler)&CraftSoldiersState::btnOkClick);
+//	_btnOk->onKeyboardPress((ActionHandler)&CraftSoldiersState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	Craft *c = _base->getCrafts()->at(_craft);
@@ -89,8 +89,8 @@ CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base),
 
 	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_lstSoldiers->setArrowColumn(192, ARROW_VERTICAL);
-	_lstSoldiers->setColumns(3, 106, 102, 72);
+	_lstSoldiers->setArrowColumn(250, ARROW_VERTICAL);
+	_lstSoldiers->setColumns(3, 150, 120, 105);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
@@ -110,11 +110,11 @@ CraftSoldiersState::~CraftSoldiersState()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftSoldiersState::btnOkClick(Action *)
 {
 	_game->popState();
-}
+}*/
 
 /**
  * Shows the soldiers in a list at specified offset/scroll.

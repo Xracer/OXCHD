@@ -43,8 +43,8 @@ OptionsModsState::OptionsModsState(OptionsOrigin origin) : OptionsBaseState(orig
 
 	// Create objects
 	_txtMaster = new Text(114, 11, 388, 128);
-	_cbxMasters = new ComboBox(this, 300, 20, 388, 140);
-	_lstMods = new TextList(300, 160, 388, 166);
+	_cbxMasters = new ComboBox(this, 265, 20, 388, 140);
+	_lstMods = new TextList(250, 160, 388, 166);
 
 	add(_txtMaster, "text", "modsMenu");
 	add(_lstMods, "optionLists", "modsMenu");

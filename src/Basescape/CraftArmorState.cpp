@@ -47,19 +47,19 @@ namespace OpenXcom
 CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft(craft)
 {
 	// Create objects
-	_window = new Window(this, 550, 200, 700, 723);
-	_btnOk = new TextButton(288, 16, 716, 576);
-	_txtTitle = new Text(300, 17, 716, 410);
-	_txtName = new Text(114, 9, 716, 435);
-	_txtCraft = new Text(76, 9, 830, 435);
-	_txtArmor = new Text(100, 9, 899, 435);
-	_lstSoldiers = new TextList(292, 128, 708, 443);
+	_window = new Window(this, 550, 170, 700, 393);
+	//_btnOk = new TextButton(288, 16, 716, 576);
+	_txtTitle = new Text(300, 17, 716, 399);
+	_txtName = new Text(114, 11, 716, 416);
+	_txtCraft = new Text(76, 11, 830, 416);
+	_txtArmor = new Text(100, 11, 899, 416);
+	_lstSoldiers = new TextList(425, 130, 708, 420);
 
 	// Set palette
 	setInterface("craftArmor");
 
 	add(_window, "window", "craftArmor");
-	add(_btnOk, "button", "craftArmor");
+	//add(_btnOk, "button", "craftArmor");
 	add(_txtTitle, "text", "craftArmor");
 	add(_txtName, "text", "craftArmor");
 	add(_txtCraft, "text", "craftArmor");
@@ -71,9 +71,9 @@ CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&CraftArmorState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&CraftArmorState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&CraftArmorState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&CraftArmorState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setText(tr("STR_SELECT_ARMOR"));
@@ -84,7 +84,7 @@ CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft
 
 	_txtArmor->setText(tr("STR_ARMOR"));
 
-	_lstSoldiers->setColumns(3, 114, 69, 101);
+	_lstSoldiers->setColumns(3, 150, 120, 105);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
@@ -141,11 +141,11 @@ void CraftArmorState::init()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftArmorState::btnOkClick(Action *)
 {
 	_game->popState();
-}
+}*/
 
 /**
  * Shows the Select Armor window.
