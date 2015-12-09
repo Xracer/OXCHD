@@ -47,32 +47,32 @@ OptionsVideoState::OptionsVideoState(OptionsOrigin origin) : OptionsBaseState(or
 	setCategory(_btnVideo);
 
 	// Create objects
-	_displaySurface = new InteractiveSurface(110, 32, 94, 18);
-	_txtDisplayResolution = new Text(114, 9, 94, 8);
-	_txtDisplayWidth = new TextEdit(this, 40, 17, 94, 26);
-	_txtDisplayX = new Text(16, 17, 132, 26);
-	_txtDisplayHeight = new TextEdit(this, 40, 17, 144, 26);
-	_btnDisplayResolutionUp = new ArrowButton(ARROW_BIG_UP, 14, 14, 186, 18);
-	_btnDisplayResolutionDown = new ArrowButton(ARROW_BIG_DOWN, 14, 14, 186, 36);
+	_displaySurface = new InteractiveSurface(110, 32, 388, 142);
+	_txtDisplayResolution = new Text(114, 13, 388, 128);
+	_txtDisplayWidth = new TextEdit(this, 40, 17, 388, 148);
+	_txtDisplayX = new Text(16, 17, 428, 148);
+	_txtDisplayHeight = new TextEdit(this, 40, 17, 444, 148);
+	_btnDisplayResolutionUp = new ArrowButton(ARROW_BIG_UP, 14, 14, 484, 140);
+	_btnDisplayResolutionDown = new ArrowButton(ARROW_BIG_DOWN, 14, 14, 484, 158);
 
-	_txtLanguage = new Text(114, 9, 94, 52);
-	_cbxLanguage = new ComboBox(this, 104, 16, 94, 62);
+	_txtLanguage = new Text(114, 13, 388, 177);
+	_cbxLanguage = new ComboBox(this, 130, 18, 388, 190);
 
-	_txtFilter = new Text(114, 9, 206, 52);
-	_cbxFilter = new ComboBox(this, 104, 16, 206, 62);
+	_txtFilter = new Text(114, 13, 526, 177);
+	_cbxFilter = new ComboBox(this, 130, 18, 526, 190);
 
-	_txtMode = new Text(114, 9, 206, 22);
-	_cbxDisplayMode = new ComboBox(this, 104, 16, 206, 32);
+	_txtMode = new Text(114, 13, 526, 128);
+	_cbxDisplayMode = new ComboBox(this, 130, 18, 526, 142);
 	
-	_txtGeoScale = new Text(114, 9, 94, 82);
-	_cbxGeoScale = new ComboBox(this, 104, 16, 94, 92);
+	_txtGeoScale = new Text(114, 13, 388, 212);
+	_cbxGeoScale = new ComboBox(this, 130, 18, 388, 225);
 	
-	_txtBattleScale = new Text(114, 9, 94, 112);
-	_cbxBattleScale = new ComboBox(this, 104, 16, 94, 122);
+	_txtBattleScale = new Text(114, 13, 388, 246);
+	_cbxBattleScale = new ComboBox(this, 130, 18, 388, 259);
 
-	_txtOptions = new Text(114, 9, 206, 82);
-	_btnLetterbox = new ToggleTextButton(104, 16, 206, 92);
-	_btnLockMouse = new ToggleTextButton(104, 16, 206, 110);
+	_txtOptions = new Text(114, 13, 526, 212);
+	_btnLetterbox = new ToggleTextButton(130, 18, 526, 225);
+	_btnLockMouse = new ToggleTextButton(130, 18, 526, 246);
 
 	// Get available fullscreen modes
 	_res = SDL_ListModes(NULL, SDL_FULLSCREEN);

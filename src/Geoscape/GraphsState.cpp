@@ -746,7 +746,7 @@ namespace OpenXcom
 			int reduction = 0;
 			for (size_t iter = 0; iter != 12; ++iter)
 			{
-				int x = 560 - (iter * 35); // TEST 312 -> 560; iter*17 is where our nodes are so need to make it 35
+				int x = 700 - (iter * 35); // TEST 312 -> 560; iter*17 is where our nodes are so need to make it 35
 				int y = 275 - (-lowerLimit / units); //TEST 175 -> 275
 				if (_alien)
 				{

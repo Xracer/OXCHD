@@ -46,25 +46,25 @@ OptionsAudioState::OptionsAudioState(OptionsOrigin origin) : OptionsBaseState(or
 	setCategory(_btnAudio);
 
 	// Create objects
-	_txtMusicVolume = new Text(114, 9, 94, 8);
-	_slrMusicVolume = new Slider(104, 16, 94, 18);
+	_txtMusicVolume = new Text(114, 11, 388, 128);
+	_slrMusicVolume = new Slider(130, 18, 388, 140);
 
-	_txtSoundVolume = new Text(114, 9, 206, 8);
-	_slrSoundVolume = new Slider(104, 16, 206, 18);
+	_txtSoundVolume = new Text(114, 11, 526, 128);
+	_slrSoundVolume = new Slider(130, 18, 526, 140);
 
-	_txtUiVolume = new Text(114, 9, 94, 40);
-	_slrUiVolume = new Slider(104, 16, 94, 50);
+	_txtUiVolume = new Text(114, 11, 388, 162);
+	_slrUiVolume = new Slider(130, 18, 388, 174);
 
-	_txtSampleRate = new Text(114, 9, 206, 40);
-	_cbxSampleRate = new ComboBox(this, 104, 16, 206, 50);
+	_txtSampleRate = new Text(114, 11, 526, 162);
+	_cbxSampleRate = new ComboBox(this, 130, 18, 526, 174);
 
-	_txtMusicFormat = new Text(114, 9, 94, 72);
-	_cbxMusicFormat = new ComboBox(this, 104, 16, 94, 82);
-	_txtCurrentMusic = new Text(114, 9, 94, 100);
+	_txtMusicFormat = new Text(114, 11, 388, 194);
+	_cbxMusicFormat = new ComboBox(this, 130, 18, 388, 206);
+	_txtCurrentMusic = new Text(114, 11, 388, 226);
 
-	_txtSoundFormat = new Text(114, 9, 206, 72);
-	_cbxSoundFormat = new ComboBox(this, 104, 16, 206, 82);
-	_txtCurrentSound = new Text(114, 9, 206, 100);
+	_txtSoundFormat = new Text(114, 11, 526, 194);
+	_cbxSoundFormat = new ComboBox(this, 130, 18, 526, 206);
+	_txtCurrentSound = new Text(114, 11, 526, 226);
 
 	add(_txtMusicVolume, "text", "audioMenu");
 	add(_slrMusicVolume, "button", "audioMenu");

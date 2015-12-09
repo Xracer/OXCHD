@@ -41,7 +41,7 @@ OptionsAdvancedState::OptionsAdvancedState(OptionsOrigin origin) : OptionsBaseSt
 	setCategory(_btnAdvanced);
 
 	// Create objects
-	_lstOptions = new TextList(200, 136, 94, 8);
+	_lstOptions = new TextList(300, 200, 388, 128);
 	
 	if (origin != OPT_BATTLESCAPE)
 	{
@@ -54,7 +54,7 @@ OptionsAdvancedState::OptionsAdvancedState(OptionsOrigin origin) : OptionsBaseSt
 	centerAllSurfaces();
 
 	// how much room do we need for YES/NO
-	Text text = Text(100, 9, 0, 0);
+	Text text = Text(275, 15, 0, 0);
 	text.initText(_game->getMod()->getFont("FONT_BIG"), _game->getMod()->getFont("FONT_SMALL"), _game->getLanguage());
 	text.setText(tr("STR_YES"));
 	int yes = text.getTextWidth();

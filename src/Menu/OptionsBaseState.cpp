@@ -55,21 +55,21 @@ namespace OpenXcom
 OptionsBaseState::OptionsBaseState(OptionsOrigin origin) : _origin(origin)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
+	_window = new Window(this, 640, 400, 160, 100);
 
-	_btnVideo = new TextButton(80, 16, 8, 8);
-	_btnAudio = new TextButton(80, 16, 8, 28);
-	_btnControls = new TextButton(80, 16, 8, 48);
-	_btnGeoscape = new TextButton(80, 16, 8, 68);
-	_btnBattlescape = new TextButton(80, 16, 8, 88);
-	_btnAdvanced = new TextButton(80, 16, 8, 108);
-	_btnMods = new TextButton(80, 16, 8, 128);
+	_btnVideo = new TextButton(100, 25, 280, 128);
+	_btnAudio = new TextButton(100, 25, 280, 157);
+	_btnControls = new TextButton(100, 25, 280, 186);
+	_btnGeoscape = new TextButton(100, 25, 280, 215);
+	_btnBattlescape = new TextButton(100, 25, 280, 244);
+	_btnAdvanced = new TextButton(100, 25, 280, 273);
+	_btnMods = new TextButton(100, 25, 280, 302);
 
-	_btnOk = new TextButton(100, 16, 8, 176);
-	_btnCancel = new TextButton(100, 16, 110, 176);
-	_btnDefault = new TextButton(100, 16, 212, 176);
+	_btnOk = new TextButton(160, 25, 235, 440);
+	_btnCancel = new TextButton(160, 25, 400, 440);
+	_btnDefault = new TextButton(160, 25, 565, 440);
 
-	_txtTooltip = new Text(305, 25, 8, 148);
+	_txtTooltip = new Text(350, 40, 280, 335);
 
 	// Set palette
 	setInterface("optionsMenu", false, _game->getSavedGame() ? _game->getSavedGame()->getSavedBattle() : 0);
@@ -91,7 +91,7 @@ OptionsBaseState::OptionsBaseState(OptionsOrigin origin) : _origin(origin)
 	add(_txtTooltip, "tooltip", "optionsMenu");
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setBackground(_game->getMod()->getSurface("HDBACK01.PNG"));
 
 	_btnVideo->setText(tr("STR_VIDEO"));
 	_btnVideo->onMousePress((ActionHandler)&OptionsBaseState::btnGroupPress, SDL_BUTTON_LEFT);

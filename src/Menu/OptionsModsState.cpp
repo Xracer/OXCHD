@@ -42,9 +42,9 @@ OptionsModsState::OptionsModsState(OptionsOrigin origin) : OptionsBaseState(orig
 	setCategory(_btnMods);
 
 	// Create objects
-	_txtMaster = new Text(114, 9, 94, 8);
-	_cbxMasters = new ComboBox(this, 218, 16, 94, 18);
-	_lstMods = new TextList(200, 104, 94, 40);
+	_txtMaster = new Text(114, 11, 388, 128);
+	_cbxMasters = new ComboBox(this, 300, 20, 388, 140);
+	_lstMods = new TextList(300, 160, 388, 166);
 
 	add(_txtMaster, "text", "modsMenu");
 	add(_lstMods, "optionLists", "modsMenu");
@@ -53,7 +53,7 @@ OptionsModsState::OptionsModsState(OptionsOrigin origin) : OptionsBaseState(orig
 	centerAllSurfaces();
 
 	// how much room do we need for YES/NO
-	Text text = Text(100, 9, 0, 0);
+	Text text = Text(275, 15, 0, 0);
 	text.initText(_game->getMod()->getFont("FONT_BIG"), _game->getMod()->getFont("FONT_SMALL"), _game->getLanguage());
 	text.setText(tr("STR_YES"));
 	int yes = text.getTextWidth();
