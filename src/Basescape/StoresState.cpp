@@ -42,21 +42,21 @@ StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
 	_window = new Window(this, 550, 200, 700, 385, POPUP_BOTH);
-	_txtTitle = new Text(440, 17, 705, 395);
+	_txtTitle = new Text(440, 17, 705, 391);
 	_txtItem = new Text(142, 11, 705, 412);
 	_txtQuantity = new Text(88, 11, 895, 412);
 	_txtSpaceUsed = new Text(74, 11, 1020, 412);
-	_lstStores = new TextList(420, 150, 705, 426);
+	_lstStores = new TextList(508, 150, 705, 426);
 
 	// Set palette
-	setInterface("storesInfo");
+	setInterface("hdbaseInfo");
 
-	add(_window, "window", "storesInfo");
-	add(_txtTitle, "text", "storesInfo");
-	add(_txtItem, "text", "storesInfo");
-	add(_txtQuantity, "text", "storesInfo");
-	add(_txtSpaceUsed, "text", "storesInfo");
-	add(_lstStores, "list", "storesInfo");
+	add(_window, "window", "hdbaseInfo");
+	add(_txtTitle, "title", "hdbaseInfo");
+	add(_txtItem, "text1", "hdbaseInfo");
+	add(_txtQuantity, "text1", "hdbaseInfo");
+	add(_txtSpaceUsed, "text1", "hdbaseInfo");
+	add(_lstStores, "list", "hdbaseInfo");
 
 	//centerAllSurfaces();
 
@@ -65,7 +65,7 @@ StoresState::StoresState(Base *base) : _base(base)
 	_window->setThinBorder();
 
 	_txtTitle->setBig();
-	_txtTitle->setAlign(ALIGN_CENTER);
+	_txtTitle->setAlign(ALIGN_LEFT);
 	_txtTitle->setText(tr("STR_STORES"));
 
 	_txtItem->setText(tr("STR_ITEM"));

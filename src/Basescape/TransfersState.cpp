@@ -43,21 +43,21 @@ TransfersState::TransfersState(Base *base) : _base(base)
 
 	// Create objects
 	_window = new Window(this, 550, 150, 700, 588, POPUP_BOTH);
-	_txtTitle = new Text(440, 17, 705, 598);
-	_txtItem = new Text(114, 11, 710, 615);
+	_txtTitle = new Text(440, 17, 705, 594);
+	_txtItem = new Text(114, 11, 705, 615);
 	_txtQuantity = new Text(65, 11, 895, 615);
 	_txtArrivalTime = new Text(118, 11, 1010, 615);
-	_lstTransfers = new TextList(273, 112, 714, 629);
+	_lstTransfers = new TextList(273, 112, 705, 629);
 
 	// Set palette
-	setInterface("transferInfo");
+	setInterface("hdbaseInfo");
 
-	add(_window, "window", "transferInfo");
-	add(_txtTitle, "text", "transferInfo");
-	add(_txtItem, "text", "transferInfo");
-	add(_txtQuantity, "text", "transferInfo");
-	add(_txtArrivalTime, "text", "transferInfo");
-	add(_lstTransfers, "list", "transferInfo");
+	add(_window, "window", "hdbaseInfo");
+	add(_txtTitle, "title", "hdbaseInfo");
+	add(_txtItem, "text1", "hdbaseInfo");
+	add(_txtQuantity, "text1", "hdbaseInfo");
+	add(_txtArrivalTime, "text1", "hdbaseInfo");
+	add(_lstTransfers, "list", "hdbaseInfo");
 
 	//centerAllSurfaces();
 
@@ -66,7 +66,7 @@ TransfersState::TransfersState(Base *base) : _base(base)
 	_window->setThinBorder();
 
 	_txtTitle->setBig();
-	_txtTitle->setAlign(ALIGN_CENTER);
+	_txtTitle->setAlign(ALIGN_LEFT);
 	_txtTitle->setText(tr("STR_TRANSFERS"));
 
 	_txtItem->setText(tr("STR_ITEM"));

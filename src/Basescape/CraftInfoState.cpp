@@ -65,7 +65,7 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 //	_btnCrew = new TextButton(75, 16, 714, 216);
 //	_btnEquip = new TextButton(75, 16, 714, 240);
 //	_btnArmor = new TextButton(75, 16, 714, 264);
-	_edtCraft = new TextEdit(this, 140, 16, 780, 128);
+	_edtCraft = new TextEdit(this, 180, 16, 800, 128);
 	_txtDamage = new Text(300, 12, 714, 144);
 	_txtFuel = new Text(300, 12, 1028, 144);
 	_txtW1Name = new Text(95, 16, 746, 167);
@@ -79,22 +79,22 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 //	_equip = new Surface(220, 18, 795, 241);
 
 	// Set palette
-	setInterface("craftInfo");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftInfo");
-//	add(_btnOk, "button", "craftInfo");
-	add(_btnW1, "button", "craftInfo");
-	add(_btnW2, "button", "craftInfo");
-//	add(_btnCrew, "button", "craftInfo");
-//	add(_btnEquip, "button", "craftInfo");
-//	add(_btnArmor, "button", "craftInfo");
-	add(_edtCraft, "text1", "craftInfo");
-	add(_txtDamage, "text1", "craftInfo");
-	add(_txtFuel, "text1", "craftInfo");
-	add(_txtW1Name, "text2", "craftInfo");
-	add(_txtW1Ammo, "text2", "craftInfo");
-	add(_txtW2Name, "text2", "craftInfo");
-	add(_txtW2Ammo, "text2", "craftInfo");
+	add(_window, "window", "hdcraftInfo");
+//	add(_btnOk, "button", "hdcraftInfo");
+	add(_btnW1, "button", "hdcraftInfo");
+	add(_btnW2, "button", "hdcraftInfo");
+//	add(_btnCrew, "button", "hdcraftInfo");
+//	add(_btnEquip, "button", "hdcraftInfo");
+//	add(_btnArmor, "button", "hdcraftInfo");
+	add(_edtCraft, "title", "hdcraftInfo");
+	add(_txtDamage, "text1", "hdcraftInfo");
+	add(_txtFuel, "text1", "hdcraftInfo");
+	add(_txtW1Name, "text2", "hdcraftInfo");
+	add(_txtW1Ammo, "text2", "hdcraftInfo");
+	add(_txtW2Name, "text2", "hdcraftInfo");
+	add(_txtW2Ammo, "text2", "hdcraftInfo");
 	add(_sprite);
 	add(_weapon1);
 	add(_weapon2);
@@ -105,6 +105,7 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
 	/*
 	_btnOk->setText(tr("STR_OK"));

@@ -52,35 +52,37 @@ namespace OpenXcom
 CraftsState::CraftsState(Base *base, Globe *globe) : _base(base), _globe(globe)
 {
 	// Create objects
-	_window = new Window(this, 550, 120, 700, 3);
+	_window = new Window(this, 550, 110, 700, 3);
 	//_btnOk = new TextButton(288, 16, 716, 176);
-	_txtTitle = new Text(350, 17, 716, 8);
-	_txtBase = new Text(350, 17, 716, 24);
-	_txtName = new Text(100, 11, 716, 40);
-	_txtStatus = new Text(50, 11, 820, 40);
-	_txtWeapon = new Text(130, 11, 890, 40);
-	_txtCrew = new Text(60, 11, 980, 40);
-	_txtHwp = new Text(30, 11, 1048, 40);
-	_lstCrafts = new TextList(400, 100, 708, 58);
+	_txtTitle = new Text(350, 17, 716, 9);
+	_txtBase = new Text(350, 17, 716, 25);
+	_txtName = new Text(110, 11, 716, 40);
+	_txtStatus = new Text(100, 11, 826, 40);
+	_txtWeapon = new Text(90, 11, 910, 40);
+	_txtCrew = new Text(80, 11, 1020, 40);
+	_txtHwp = new Text(50, 11, 1095, 40);
+	_lstCrafts = new TextList(508, 90, 708, 52);
 
 	// Set palette
-	setInterface("craftSelect");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftSelect");
-	//add(_btnOk, "button", "craftSelect");
-	add(_txtTitle, "text", "craftSelect");
-	add(_txtBase, "text", "craftSelect");
-	add(_txtName, "text", "craftSelect");
-	add(_txtStatus, "text", "craftSelect");
-	add(_txtWeapon, "text", "craftSelect");
-	add(_txtCrew, "text", "craftSelect");
-	add(_txtHwp, "text", "craftSelect");
-	add(_lstCrafts, "list", "craftSelect");
+	add(_window, "window", "hdcraftInfo");
+	//add(_btnOk, "button", "hdcraftInfo");
+	add(_txtTitle, "title", "hdcraftInfo");
+	add(_txtBase, "text1", "hdcraftInfo");
+	add(_txtName, "text1", "hdcraftInfo");
+	add(_txtStatus, "text1", "hdcraftInfo");
+	add(_txtWeapon, "text1", "hdcraftInfo");
+	add(_txtCrew, "text1", "hdcraftInfo");
+	add(_txtHwp, "text1", "hdcraftInfo");
+	add(_lstCrafts, "list", "hdcraftInfo");
 
 	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
+
 	/*
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&CraftsState::btnOkClick);
@@ -103,7 +105,7 @@ CraftsState::CraftsState(Base *base, Globe *globe) : _base(base), _globe(globe)
 	_txtCrew->setText(tr("STR_CREW"));
 
 	_txtHwp->setText(tr("STR_HWPS"));
-	_lstCrafts->setColumns(5, 104, 90, 80, 70, 30);
+	_lstCrafts->setColumns(5, 110, 100, 90, 80, 40);
 	_lstCrafts->setSelectable(true);
 	_lstCrafts->setBackground(_window);
 	_lstCrafts->setMargin(8);

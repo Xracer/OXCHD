@@ -851,7 +851,7 @@ interfaces:
       - id: palette
         color: 6     # oxide
       - id: window
-        color: 241   # pink
+        color: 218   # pink
       - id: text1
         color: 241   # pink
         color2: 218  # blue
@@ -1338,3 +1338,56 @@ interfaces:
       - id: buttonEnd
         pos: [220, 140]
         size: [20, 20]
+  - type: hdbaseInfo
+    palette: PAL_BASESCAPE
+    elements:
+      - id: window
+        color: 218   # blue
+      - id: title
+        color: 241   # pink
+      - id: text1
+        color: 241   # pink	
+        color2: 218  # blue
+      - id: text2
+        color: 213   # gold		
+      - id: list
+        color: 218   # blue
+      - id: button
+        color: 218   # blue
+      - id: numbers
+        color: 208   # white
+      - id: list
+        color: 218   # blue
+      - id: personnelBars
+        color: 16    # orange
+      - id: facilityBars
+        color: 48    # light green
+      - id: defenceBar
+        color: 32    # sorta red
+      - id: detectionBars
+        color: 128   # pale blue
+  - type: hdcraftInfo
+    palette: PAL_BASESCAPE
+    elements:
+      - id: palette
+        color: 3     # pink
+      - id: window
+        color: 218   # blue
+      - id: title
+        color: 241   # pink
+      - id: text1
+        color: 241   # pink
+        color2: 208  # white
+      - id: text2
+        color: 218   # blue
+        color2: 213  # gold
+      - id: button
+        color: 218   # blue
+      - id: list
+        color: 218   # blue
+        color2: 208  # white
+        border: 246  # purple
+      - id: button
+        color: 218   # blue
+      - id: other
+        color: 246   # purple

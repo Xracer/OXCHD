@@ -48,32 +48,33 @@ CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base),
 	_window = new Window(this, 550, 170, 700, 223);
 //	_btnOk = new TextButton(288, 16, 716, 499);
 	_txtTitle = new Text(300, 17, 716, 229);
-	_txtName = new Text(150, 11, 716, 258);
-	_txtRank = new Text(120, 11, 866, 258);
-	_txtCraft = new Text(100, 11, 986, 258);
+	_txtName = new Text(200, 11, 716, 258);
+	_txtRank = new Text(120, 11, 916, 258);
+	_txtCraft = new Text(120, 11, 1036, 258);
 	_txtAvailable = new Text(150, 11, 716, 246);
 	_txtUsed = new Text(110, 11, 922, 246);
-	_lstSoldiers = new TextList(425, 120, 708, 270);
+	_lstSoldiers = new TextList(508, 118, 708, 270);
 
 	// Set palette
-	setInterface("craftSoldiers");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftSoldiers");
-//	add(_btnOk, "button", "craftSoldiers");
-	add(_txtTitle, "text", "craftSoldiers");
-	add(_txtName, "text", "craftSoldiers");
-	add(_txtRank, "text", "craftSoldiers");
-	add(_txtCraft, "text", "craftSoldiers");
-	add(_txtAvailable, "text", "craftSoldiers");
-	add(_txtUsed, "text", "craftSoldiers");
-	add(_lstSoldiers, "list", "craftSoldiers");
+	add(_window, "window", "hdcraftInfo");
+//	add(_btnOk, "button", "hdcraftInfo");
+	add(_txtTitle, "title", "hdcraftInfo");
+	add(_txtName, "text1", "hdcraftInfo");
+	add(_txtRank, "text1", "hdcraftInfo");
+	add(_txtCraft, "text1", "hdcraftInfo");
+	add(_txtAvailable, "text1", "hdcraftInfo");
+	add(_txtUsed, "text1", "hdcraftInfo");
+	add(_lstSoldiers, "list", "hdcraftInfo");
 
-	_otherCraftColor = _game->getMod()->getInterface("craftSoldiers")->getElement("otherCraft")->color;
+	_otherCraftColor = _game->getMod()->getInterface("hdcraftInfo")->getElement("other")->color;
 
 	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
+	_window->setThinBorder();
 
 //	_btnOk->setText(tr("STR_OK"));
 //	_btnOk->onMouseClick((ActionHandler)&CraftSoldiersState::btnOkClick);
@@ -89,8 +90,8 @@ CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft) :  _base(base),
 
 	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_lstSoldiers->setArrowColumn(250, ARROW_VERTICAL);
-	_lstSoldiers->setColumns(3, 150, 120, 105);
+	_lstSoldiers->setArrowColumn(280, ARROW_VERTICAL);
+	_lstSoldiers->setColumns(3, 200, 120, 120);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);

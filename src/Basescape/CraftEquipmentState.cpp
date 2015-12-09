@@ -61,41 +61,42 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	bool isNewBattle = _game->getSavedGame()->getMonthsPassed() == -1;
 
 	// Create objects
-	_window = new Window(this, 550, 170, 700, 563);
+	_window = new Window(this, 550, 183, 700, 563);
 	//_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
 	_btnClear = new TextButton(148, 18, 708, 693);
-	_btnInventory = new TextButton(148, 18, 708, 708);
+	_btnInventory = new TextButton(536, 18, 708, 721);
 	_txtTitle = new Text(300, 17, 716, 569);
-	_txtItem = new Text(144, 11, 716, 599);
-	_txtStores = new Text(150, 11, 860, 599);
-	_txtCraft = new Text(100, 11, 970, 599);
+	_txtItem = new Text(200, 11, 716, 599);
+	_txtStores = new Text(150, 11, 900, 599);
+	_txtCraft = new Text(50, 11, 1040, 599);
 	_txtAvailable = new Text(130, 11, 716, 587);
 	_txtUsed = new Text(130, 11, 846, 587);
 	_txtCrew = new Text(80, 11, 976, 587);
-	_lstEquipment = new TextList(450, 120, 708, 610);
+	_lstEquipment = new TextList(508, 108, 708, 610);
 
 	// Set palette
-	setInterface("craftEquipment");
+	setInterface("hdcraftInfo");
 
-	_ammoColor = _game->getMod()->getInterface("craftEquipment")->getElement("ammoColor")->color;
+	_ammoColor = _game->getMod()->getInterface("hdcraftInfo")->getElement("other")->color;
 
-	add(_window, "window", "craftEquipment");
-	//add(_btnOk, "button", "craftEquipment");
-	add(_btnClear, "button", "craftEquipment");
-	add(_btnInventory, "button", "craftEquipment");
-	add(_txtTitle, "text", "craftEquipment");
-	add(_txtItem, "text", "craftEquipment");
-	add(_txtStores, "text", "craftEquipment");
-	add(_txtCraft, "text", "craftEquipment");
-	add(_txtAvailable, "text", "craftEquipment");
-	add(_txtUsed, "text", "craftEquipment");
-	add(_txtCrew, "text", "craftEquipment");
-	add(_lstEquipment, "list", "craftEquipment");
+	add(_window, "window", "hdcraftInfo");
+	//add(_btnOk, "button", "hdcraftInfo");
+	add(_btnClear, "button", "hdcraftInfo");
+	add(_btnInventory, "button", "hdcraftInfo");
+	add(_txtTitle, "text1", "hdcraftInfo");
+	add(_txtItem, "text1", "hdcraftInfo");
+	add(_txtStores, "text1", "hdcraftInfo");
+	add(_txtCraft, "text1", "hdcraftInfo");
+	add(_txtAvailable, "text1", "hdcraftInfo");
+	add(_txtUsed, "text1", "hdcraftInfo");
+	add(_txtCrew, "text1", "hdcraftInfo");
+	add(_lstEquipment, "list", "hdcraftInfo");
 
 	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK04.SCR"));
+	_window->setThinBorder();
 
 	//_btnOk->setText(tr("STR_OK"));
 	//_btnOk->onMouseClick((ActionHandler)&CraftEquipmentState::btnOkClick);
@@ -126,8 +127,8 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	ss3 << tr("STR_SOLDIERS_UC") << ">" << L'\x01'<< c->getNumSoldiers();
 	_txtCrew->setText(ss3.str());
 
-	_lstEquipment->setArrowColumn(240, ARROW_HORIZONTAL);
-	_lstEquipment->setColumns(3, 170, 100, 50);
+	_lstEquipment->setArrowColumn(250, ARROW_HORIZONTAL);
+	_lstEquipment->setColumns(3, 200, 100, 50);
 	_lstEquipment->setSelectable(true);
 	_lstEquipment->setBackground(_window);
 	_lstEquipment->setMargin(8);
