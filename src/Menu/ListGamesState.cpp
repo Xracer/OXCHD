@@ -87,12 +87,12 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 
 	// Create objects
 	_window = new Window(this, 960, 600, 0, 0, POPUP_BOTH);
-	_btnCancel = new TextButton(100, 25, 500, 500);
+	_btnCancel = new TextButton(130, 25, 500, 500);
 	_txtTitle = new Text(960, 17, 0, 50);
 	_txtDelete = new Text(960, 11, 0, 80);
 	_txtName = new Text(150, 11, 50, 100);
-	_txtDate = new Text(110, 11, 504, 100);
-	_lstSaves = new TextList(350, 300, 50, 115);
+	_txtDate = new Text(110, 11, 510, 100);
+	_lstSaves = new TextList(800, 400, 50, 115);
 	_txtDetails = new Text(350, 16, 50, 456);
 	_sortName = new ArrowButton(ARROW_NONE, 14, 11, 50, 100);
 	_sortDate = new ArrowButton(ARROW_NONE, 14, 11, 504, 100);
@@ -128,7 +128,7 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 
 	_txtDate->setText(tr("STR_DATE"));
 
-	_lstSaves->setColumns(3, 350, 100, 50);
+	_lstSaves->setColumns(3, 500, 100, 50);
 	_lstSaves->setSelectable(true);
 	_lstSaves->setBackground(_window);
 	_lstSaves->setMargin(8);

@@ -162,7 +162,6 @@ void CraftsState::lstCraftsClick(Action *)
 
 	if (_base->getCrafts()->at(_lstCrafts->getSelectedRow())->getStatus() != "STR_OUT")
 	{
-
 		_game->popState();
 		MultiState *state = new MultiState;
 		state->add(new BasescapeState(_base, _globe));
@@ -174,6 +173,7 @@ void CraftsState::lstCraftsClick(Action *)
 			state->add(new CraftEquipmentState(_base, _lstCrafts->getSelectedRow()));
 			state->add(new CraftArmorState(_base, _lstCrafts->getSelectedRow()));
 		}
+
 		_game->pushState(state);
 
 		//if (_base->getCrafts()->getNumSoldiers() > 0)

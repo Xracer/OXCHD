@@ -32,6 +32,7 @@
 #include "NewManufactureListState.h"
 #include "PurchaseState.h"
 #include "ResearchState.h"
+#include "ResearchInfoState.h"
 #include "SoldiersState.h"
 #include "SoldierMemorialState.h"
 #include "SellState.h"
@@ -344,6 +345,7 @@ void BasescapeState::btnResearchClick(Action *)
 	MultiState *state = new MultiState;
 	state->add(new BasescapeState(_base, _globe));
 	state->add(new ResearchState(_base));
+	//state->add(new ResearchInfoState(_base, 0));
 	state->add(new NewResearchListState(_base));
 	_game->pushState(state);
 }

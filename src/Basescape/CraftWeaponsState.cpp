@@ -47,13 +47,13 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 220, 160, 50, 20, POPUP_BOTH);
-	_btnCancel = new TextButton(140, 16, 90, 156);
-	_txtTitle = new Text(208, 17, 56, 28);
-	_txtArmament = new Text(76, 9, 66, 52);
-	_txtQuantity = new Text(50, 9, 140, 52);
-	_txtAmmunition = new Text(68, 17, 200, 44);
-	_lstWeapons = new TextList(188, 80, 58, 68);
+	_window = new Window(this, 330, 200, 750, 250, POPUP_BOTH);
+	_btnCancel = new TextButton(140, 16, 790, 386);
+	_txtTitle = new Text(300, 17, 756, 258);
+	_txtArmament = new Text(90, 11, 766, 274);
+	_txtQuantity = new Text(70, 11, 860, 274);
+	_txtAmmunition = new Text(150, 17, 925, 274);
+	_lstWeapons = new TextList(280, 120, 758, 298);
 
 	// Set palette
 	setInterface("craftWeapons");
@@ -66,7 +66,7 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	add(_txtAmmunition, "text", "craftWeapons");
 	add(_lstWeapons, "list", "craftWeapons");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
@@ -87,7 +87,7 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_txtAmmunition->setWordWrap(true);
 	_txtAmmunition->setVerticalAlign(ALIGN_BOTTOM);
 
-	_lstWeapons->setColumns(3, 94, 50, 36);
+	_lstWeapons->setColumns(3, 110, 90, 36);
 	_lstWeapons->setSelectable(true);
 	_lstWeapons->setBackground(_window);
 	_lstWeapons->setMargin(8);

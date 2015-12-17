@@ -38,7 +38,7 @@ namespace OpenXcom
 ListLoadState::ListLoadState(OptionsOrigin origin) : ListGamesState(origin, 0, true)
 {
 	// Create objects
-	_btnOld = new TextButton(100, 25, 360, 500);
+	_btnOld = new TextButton(130, 25, 350, 500);
 
 	add(_btnOld, "button", "saveMenus");
 	

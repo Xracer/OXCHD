@@ -43,17 +43,17 @@ namespace OpenXcom
 ResearchState::ResearchState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnNew = new TextButton(148, 16, 8, 176);
-	_btnOk = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtAvailable = new Text(150, 9, 10, 24);
-	_txtAllocated = new Text(150, 9, 160, 24);
-	_txtSpace = new Text(300, 9, 10, 34);
-	_txtProject = new Text(110, 17, 10, 44);
-	_txtScientists = new Text(106, 17, 120, 44);
-	_txtProgress = new Text(84, 9, 226, 44);
-	_lstResearch = new TextList(288, 112, 8, 62);
+	_window = new Window(this, 550, 220, 700, 3);
+	_btnNew = new TextButton(148, 16, 708, 196);
+	_btnOk = new TextButton(148, 16, 864, 196);
+	_txtTitle = new Text(310, 17, 705, 8);
+	_txtAvailable = new Text(150, 11, 710, 24);
+	_txtAllocated = new Text(150, 11, 860, 24);
+	_txtSpace = new Text(300, 11, 710, 35);
+	_txtProject = new Text(200, 17, 710, 46);
+	_txtScientists = new Text(105, 17, 910, 46);
+	_txtProgress = new Text(84, 11, 1000, 46);
+	_lstResearch = new TextList(288, 812, 708, 82);
 
 	// Set palette
 	setInterface("researchMenu");
@@ -70,17 +70,18 @@ ResearchState::ResearchState(Base *base) : _base(base)
 	add(_txtProgress, "text", "researchMenu");
 	add(_lstResearch, "list", "researchMenu");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
-	_btnNew->setText(tr("STR_NEW_PROJECT"));
+/*	_btnNew->setText(tr("STR_NEW_PROJECT"));
 	_btnNew->onMouseClick((ActionHandler)&ResearchState::btnNewClick);
 
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&ResearchState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&ResearchState::btnOkClick, Options::keyCancel);
+*/
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -94,7 +95,7 @@ ResearchState::ResearchState(Base *base) : _base(base)
 
 	_txtProgress->setText(tr("STR_PROGRESS"));
 
-	_lstResearch->setColumns(3, 158, 58, 70);
+	_lstResearch->setColumns(3, 200, 100, 70);
 	_lstResearch->setSelectable(true);
 	_lstResearch->setBackground(_window);
 	_lstResearch->setMargin(2);
@@ -113,7 +114,7 @@ ResearchState::~ResearchState()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void ResearchState::btnOkClick(Action *)
 {
 	_game->popState();
@@ -122,11 +123,11 @@ void ResearchState::btnOkClick(Action *)
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void ResearchState::btnNewClick(Action *)
 {
 	_game->pushState(new NewResearchListState(_base));
-}
+}*/
 
 /**
  * Displays the list of possible ResearchProjects.
