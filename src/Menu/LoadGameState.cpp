@@ -94,7 +94,7 @@ void LoadGameState::buildUi(SDL_Color *palette)
 	_screen = false;
 
 	// Create objects
-	_txtStatus = new Text(320, 19, 450, 92);
+	_txtStatus = new Text(320, 19, 290, 200);
 
 	// Set palette
 	setPalette(palette);

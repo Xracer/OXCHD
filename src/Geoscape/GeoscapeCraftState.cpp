@@ -51,26 +51,26 @@ GeoscapeCraftState::GeoscapeCraftState(Craft *craft, Globe *globe, Waypoint *way
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 240, 184, 8, 8, POPUP_BOTH);
-	_btnBase = new TextButton(212, 12, 22, 124);
-	_btnTarget = new TextButton(212, 12, 22, 140);
-	_btnPatrol = new TextButton(212, 12, 22, 156);
-	_btnCancel = new TextButton(212, 12, 22, 172);
-	_txtTitle = new Text(210, 17, 32, 20);
-	_txtStatus = new Text(210, 17, 32, 36);
-	_txtBase = new Text(210, 9, 32, 52);
-	_txtSpeed = new Text(210, 9, 32, 60);
-	_txtMaxSpeed = new Text(210, 9, 32, 68);
-	_txtAltitude = new Text(210, 9, 32, 76);
-	_txtFuel = new Text(130, 9, 32, 84);
-	_txtDamage = new Text(80, 9, 164, 84);
-	_txtW1Name = new Text(130, 9, 32, 92);
-	_txtW1Ammo = new Text(80, 9, 164, 92);
-	_txtW2Name = new Text(130, 9, 32, 100);
-	_txtW2Ammo = new Text(80, 9, 164, 100);
-	_txtRedirect = new Text(230, 17, 13, 108);
-	_txtSoldier = new Text(60, 9, 164, 68);
-	_txtHWP = new Text(80, 9, 164, 76);
+	_window = new Window(this, 320, 200, 320, 200, POPUP_BOTH);
+	_btnBase = new TextButton(212, 15, 342, 324);
+	_btnTarget = new TextButton(212, 15, 342, 340);
+	_btnPatrol = new TextButton(212, 15, 342, 356);
+	_btnCancel = new TextButton(212, 15, 342, 372);
+	_txtTitle = new Text(210, 17, 352, 220);
+	_txtStatus = new Text(210, 17, 352, 237);
+	_txtBase = new Text(210, 11, 352, 254);
+	_txtSpeed = new Text(210, 11, 352, 265);
+	_txtMaxSpeed = new Text(210, 11, 352, 276);
+	_txtAltitude = new Text(210, 11, 352, 287);
+	_txtFuel = new Text(130, 11, 352, 298);
+	_txtDamage = new Text(80, 11, 490, 298);
+	_txtW1Name = new Text(130, 11, 352, 309);
+	_txtW1Ammo = new Text(80, 11, 490, 309);
+	_txtW2Name = new Text(130, 11, 352, 320);
+	_txtW2Ammo = new Text(80, 11, 490, 320);
+	_txtRedirect = new Text(230, 17, 333, 331);
+	_txtSoldier = new Text(60, 11, 490, 276);
+	_txtHWP = new Text(80, 11, 484, 287);
 
 	// Set palette
 	setInterface("geoCraftScreens");

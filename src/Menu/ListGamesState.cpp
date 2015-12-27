@@ -91,11 +91,11 @@ ListGamesState::ListGamesState(OptionsOrigin origin, int firstValidRow, bool aut
 	_txtTitle = new Text(960, 17, 0, 50);
 	_txtDelete = new Text(960, 11, 0, 80);
 	_txtName = new Text(150, 11, 50, 100);
-	_txtDate = new Text(110, 11, 510, 100);
+	_txtDate = new Text(110, 11, 560, 100);
 	_lstSaves = new TextList(800, 400, 50, 115);
 	_txtDetails = new Text(350, 16, 50, 456);
-	_sortName = new ArrowButton(ARROW_NONE, 14, 11, 50, 100);
-	_sortDate = new ArrowButton(ARROW_NONE, 14, 11, 504, 100);
+	_sortName = new ArrowButton(ARROW_NONE, 15, 11, 50, 100);
+	_sortDate = new ArrowButton(ARROW_NONE, 15, 11, 560, 100);
 
 	// Set palette
 	setInterface("geoscape", true, _game->getSavedGame() ? _game->getSavedGame()->getSavedBattle() : 0);

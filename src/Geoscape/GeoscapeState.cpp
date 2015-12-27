@@ -139,12 +139,12 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btnOptions = new TextButton(65, 52, 1210, 446);
 	_btnFunding = new TextButton(65, 52, 1210, 501);
 
-	_btn5Secs = new TextButton(31, 15, 5, 46);
-	_btn1Min = new TextButton(31, 15, 38, 46);
-	_btn5Mins = new TextButton(31, 15, 71, 46);
-	_btn30Mins = new TextButton(31, 15, 104, 46);
-	_btn1Hour = new TextButton(31, 15, 137, 46);
-	_btn1Day = new TextButton(31, 15, 170, 46);
+	_btn5Secs = new TextButton(33, 17, 5, 51);
+	_btn1Min = new TextButton(33, 17, 43, 51);
+	_btn5Mins = new TextButton(33, 17, 81, 51);
+	_btn30Mins = new TextButton(33, 17, 119, 51);
+	_btn1Hour = new TextButton(33, 17, 157, 51);
+	_btn1Day = new TextButton(33, 17, 195, 51);
 
 	_btnRotateLeft = new InteractiveSurface(17, 50, 1157, 711);
 	_btnRotateRight = new InteractiveSurface(17, 50, 1255, 712);
@@ -153,16 +153,16 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_btnZoomIn = new InteractiveSurface(31, 31, 1222, 699);
 	_btnZoomOut = new InteractiveSurface(31, 31, 1175, 745);
 
-	_txtHour = new Text(20, 20, 54, 25);
-	_txtHourSep = new Text(4, 20, 76, 25);
-	_txtMin = new Text(20, 20, 82, 25);
-	_txtMinSep = new Text(4, 20, 104, 25);
-	_txtSec = new Text(15, 11, 108, 25);
-	_txtWeekday = new Text(100, 20, 5, 8);
-	_txtDay = new Text(50, 20, 105, 8);
-	_txtMonth = new Text(40, 20, 155, 8);
-	_txtYear = new Text(50, 20, 195, 8);
-	_txtFunds = new Text(100, 20, 1070, 12);
+	_txtHour = new Text(20, 20, 74, 30);
+	_txtHourSep = new Text(4, 20, 96, 30);
+	_txtMin = new Text(20, 20, 102, 30);
+	_txtMinSep = new Text(4, 20, 124, 30);
+	_txtSec = new Text(15, 11, 128, 30);
+	_txtWeekday = new Text(100, 20, 5, 13);
+	_txtDay = new Text(50, 20, 105, 13);
+	_txtMonth = new Text(40, 20, 155, 13);
+	_txtYear = new Text(50, 20, 195, 13);
+	_txtFunds = new Text(100, 20, 1070, 13);
 
 	_timeSpeed = _btn5Secs;
 	_gameTimer = new Timer(Options::geoClockSpeed);
@@ -172,7 +172,7 @@ GeoscapeState::GeoscapeState() : _pause(false), _zoomInEffectDone(false), _zoomO
 	_dogfightStartTimer = new Timer(Options::dogfightSpeed);
 	_dogfightTimer = new Timer(Options::dogfightSpeed);
 
-	_txtDebug = new Text(350, 18, 0, 0);
+	_txtDebug = new Text(350, 18, 280, 20);
 
 	// Set palette
 	setInterface("geoscape");
