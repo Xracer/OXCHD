@@ -66,16 +66,16 @@ void ResearchInfoState::buildUi()
 {
 	_screen = false;
 
-	_window = new Window(this, 550, 140, 745, 203); 
-	_txtTitle = new Text(210, 17, 761, 209);
+	_window = new Window(this, 550, 140, 700, 290); 
+	_txtTitle = new Text(210, 17, 710, 296);
 
-	_txtAvailableScientist = new Text(210, 11, 761, 229);
-	_txtAvailableSpace = new Text(210, 11, 761, 239);
-	_txtAllocatedScientist = new Text(210, 17, 761, 249);
-	_txtMore = new Text(110, 17, 785, 269);
-	_txtLess = new Text(110, 17, 785, 289);
-	_btnCancel = new TextButton(90, 16, 761, 314);
-	_btnOk = new TextButton(90, 16, 869, 314);
+	_txtAvailableScientist = new Text(210, 13, 761, 302);
+	_txtAvailableSpace = new Text(210, 13, 761, 312);
+	_txtAllocatedScientist = new Text(210, 19, 761, 322);
+	_txtMore = new Text(110, 19, 785, 340);
+	_txtLess = new Text(110, 19, 785, 355);
+	_btnCancel = new TextButton(90, 19, 710, 377);
+	_btnOk = new TextButton(90, 19, 803, 377);
 
 	_btnMore = new ArrowButton(ARROW_BIG_UP, 13, 14, 895, 269);
 	_btnLess = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 895, 298);

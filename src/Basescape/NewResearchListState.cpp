@@ -41,16 +41,16 @@ NewResearchListState::NewResearchListState(Base *base) : _base(base)
 {
 	_screen = false;
 
-	_window = new Window(this, 230, 140, 745, 246, POPUP_BOTH);
-	_btnOK = new TextButton(214, 16, 753, 252);
-	_txtTitle = new Text(214, 16, 753, 269);
-	_lstResearch = new TextList(198, 88, 753, 285);
+	_window = new Window(this, 545, 140, 700, 250, POPUP_BOTH);
+	//_btnOK = new TextButton(214, 16, 753, 252);
+	_txtTitle = new Text(214, 16, 708, 269);
+	_lstResearch = new TextList(198, 88, 708, 285);
 
 	// Set palette
 	setInterface("selectNewResearch");
 
 	add(_window, "window", "selectNewResearch");
-	add(_btnOK, "button", "selectNewResearch");
+	//add(_btnOK, "button", "selectNewResearch");
 	add(_txtTitle, "text", "selectNewResearch");
 	add(_lstResearch, "list", "selectNewResearch");
 
@@ -59,14 +59,14 @@ NewResearchListState::NewResearchListState(Base *base) : _base(base)
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
-	_btnOK->setText(tr("STR_OK"));
-	_btnOK->onMouseClick((ActionHandler)&NewResearchListState::btnOKClick);
-	_btnOK->onKeyboardPress((ActionHandler)&NewResearchListState::btnOKClick, Options::keyCancel);
+	//_btnOK->setText(tr("STR_OK"));
+	//_btnOK->onMouseClick((ActionHandler)&NewResearchListState::btnOKClick);
+	//_btnOK->onKeyboardPress((ActionHandler)&NewResearchListState::btnOKClick, Options::keyCancel);
 
 	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setText(tr("STR_NEW_RESEARCH_PROJECTS"));
 
-	_lstResearch->setColumns(1, 190);
+	_lstResearch->setColumns(1, 250);
 	_lstResearch->setSelectable(true);
 	_lstResearch->setBackground(_window);
 	_lstResearch->setMargin(8);

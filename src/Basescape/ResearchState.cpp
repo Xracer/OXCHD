@@ -44,23 +44,23 @@ ResearchState::ResearchState(Base *base) : _base(base)
 {
 	// Create objects
 	_window = new Window(this, 550, 220, 700, 3);
-	_btnNew = new TextButton(148, 16, 708, 196);
-	_btnOk = new TextButton(148, 16, 864, 196);
-	_txtTitle = new Text(310, 17, 705, 8);
+	//_btnNew = new TextButton(148, 16, 708, 196);
+	//_btnOk = new TextButton(148, 16, 864, 196);
+	_txtTitle = new Text(540, 17, 705, 8);
 	_txtAvailable = new Text(150, 11, 710, 24);
-	_txtAllocated = new Text(150, 11, 860, 24);
-	_txtSpace = new Text(300, 11, 710, 35);
-	_txtProject = new Text(200, 17, 710, 46);
-	_txtScientists = new Text(105, 17, 910, 46);
-	_txtProgress = new Text(84, 11, 1000, 46);
-	_lstResearch = new TextList(288, 812, 708, 82);
+	_txtAllocated = new Text(150, 11, 1010, 24);
+	_txtSpace = new Text(300, 11, 710, 37);
+	_txtProject = new Text(200, 17, 710, 50);
+	_txtScientists = new Text(200, 17, 910, 50);
+	_txtProgress = new Text(84, 11, 1100, 50);
+	_lstResearch = new TextList(530, 812, 710, 65);
 
 	// Set palette
 	setInterface("researchMenu");
 
 	add(_window, "window", "researchMenu");
-	add(_btnNew, "button", "researchMenu");
-	add(_btnOk, "button", "researchMenu");
+	//add(_btnNew, "button", "researchMenu");
+	//add(_btnOk, "button", "researchMenu");
 	add(_txtTitle, "text", "researchMenu");
 	add(_txtAvailable, "text", "researchMenu");
 	add(_txtAllocated, "text", "researchMenu");
@@ -95,7 +95,7 @@ ResearchState::ResearchState(Base *base) : _base(base)
 
 	_txtProgress->setText(tr("STR_PROGRESS"));
 
-	_lstResearch->setColumns(3, 200, 100, 70);
+	_lstResearch->setColumns(3, 252, 138, 100);
 	_lstResearch->setSelectable(true);
 	_lstResearch->setBackground(_window);
 	_lstResearch->setMargin(2);
