@@ -41,10 +41,10 @@ NewResearchListState::NewResearchListState(Base *base) : _base(base)
 {
 	_screen = false;
 
-	_window = new Window(this, 545, 140, 700, 250, POPUP_BOTH);
+	_window = new Window(this, 550, 210, 700, 225, POPUP_BOTH);
 	//_btnOK = new TextButton(214, 16, 753, 252);
-	_txtTitle = new Text(214, 16, 708, 269);
-	_lstResearch = new TextList(198, 88, 708, 285);
+	_txtTitle = new Text(540, 17, 702, 232);
+	_lstResearch = new TextList(520, 180, 702, 250);
 
 	// Set palette
 	setInterface("selectNewResearch");
@@ -57,6 +57,7 @@ NewResearchListState::NewResearchListState(Base *base) : _base(base)
 	//centerAllSurfaces();
 
 	// Set up objects
+	_window->setThinBorder();
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
 	//_btnOK->setText(tr("STR_OK"));
@@ -66,7 +67,7 @@ NewResearchListState::NewResearchListState(Base *base) : _base(base)
 	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setText(tr("STR_NEW_RESEARCH_PROJECTS"));
 
-	_lstResearch->setColumns(1, 250);
+	_lstResearch->setColumns(1, 525);
 	_lstResearch->setSelectable(true);
 	_lstResearch->setBackground(_window);
 	_lstResearch->setMargin(8);

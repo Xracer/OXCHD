@@ -73,6 +73,7 @@ ResearchState::ResearchState(Base *base) : _base(base)
 	//centerAllSurfaces();
 
 	// Set up objects
+	_window->setThinBorder();
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
 /*	_btnNew->setText(tr("STR_NEW_PROJECT"));
