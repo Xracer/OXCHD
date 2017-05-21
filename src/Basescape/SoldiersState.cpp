@@ -46,11 +46,11 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 	// Create objects
 	_window = new Window(this, 550, 350, 700, 3);
 
-	_txtTitle = new Text(440, 17, 705, 13);
-	_txtName = new Text(150, 11, 705, 30);
-	_txtRank = new Text(100, 11, 855, 30);
-	_txtCraft = new Text(100, 11, 955, 30);
-	_lstSoldiers = new TextList(300, 300, 708, 45);
+	_txtTitle = new Text(545, 17, 705, 13);
+	_txtName = new Text(150, 11, 710, 30);
+	_txtRank = new Text(100, 11, 900, 30);
+	_txtCraft = new Text(100, 11, 1040, 30);
+	_lstSoldiers = new TextList(515, 340, 700, 45);
 
 	// Set palette
 	setInterface("soldierList");
@@ -78,7 +78,7 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 
 	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_lstSoldiers->setColumns(3, 114, 92, 74);
+	_lstSoldiers->setColumns(3, 190, 140, 100);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
