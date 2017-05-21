@@ -66,21 +66,21 @@ void ResearchInfoState::buildUi()
 {
 	_screen = false;
 
-	_window = new Window(this, 550, 140, 700, 290); 
-	_txtTitle = new Text(210, 17, 710, 296);
+	_window = new Window(this, 550, 170, 700, 438); 
+	_txtTitle = new Text(545, 17, 705, 446);
 
-	_txtAvailableScientist = new Text(210, 13, 761, 302);
-	_txtAvailableSpace = new Text(210, 13, 761, 312);
-	_txtAllocatedScientist = new Text(210, 19, 761, 322);
-	_txtMore = new Text(110, 19, 785, 340);
-	_txtLess = new Text(110, 19, 785, 355);
-	_btnCancel = new TextButton(90, 19, 710, 377);
-	_btnOk = new TextButton(90, 19, 803, 377);
+	_txtAvailableScientist = new Text(210, 15, 705, 466);
+	_txtAvailableSpace = new Text(210, 15, 705, 486);
+	_txtAllocatedScientist = new Text(210, 19, 705, 506);
+	_txtMore = new Text(110, 19, 725, 531);
+	_txtLess = new Text(110, 19, 725, 556);
+	_btnCancel = new TextButton(150, 19, 705, 581);
+	_btnOk = new TextButton(150, 19, 860, 581);
 
-	_btnMore = new ArrowButton(ARROW_BIG_UP, 13, 14, 895, 269);
-	_btnLess = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 895, 298);
+	_btnMore = new ArrowButton(ARROW_BIG_UP, 13, 14, 895, 531);
+	_btnLess = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 895, 556);
 
-	_surfaceScientists = new InteractiveSurface(230, 140, 745, 209);
+	_surfaceScientists = new InteractiveSurface(230, 140, 745, 506);
 	_surfaceScientists->onMouseClick((ActionHandler)&ResearchInfoState::handleWheel, 0);
 
 	// Set palette
@@ -99,11 +99,13 @@ void ResearchInfoState::buildUi()
 	add(_btnMore, "button1", "allocateResearch");
 	add(_btnLess, "button1", "allocateResearch");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 	
 	// Set up objects
+	_window->setThinBorder();
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
+	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setBig();
 
 	_txtTitle->setText(_rule ? tr(_rule->getName()) : tr(_project->getRules()->getName()));
