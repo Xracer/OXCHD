@@ -43,15 +43,16 @@ namespace OpenXcom
  */
 SoldierMemorialState::SoldierMemorialState()
 {
+
 	// Create objects
 	_window = new Window(this, 550, 350, 700, 358);
-	_txtTitle = new Text(440, 17, 705, 368);
-	_txtName = new Text(150, 11, 705, 398);
-	_txtRank = new Text(100, 11, 855, 398);
-	_txtDate = new Text(100, 11, 955, 398);
-	_txtRecruited = new Text(150, 11, 705, 384);
-	_txtLost = new Text(150, 11, 855, 384);
-	_lstSoldiers = new TextList(300, 300, 705, 410);
+	_txtTitle = new Text(545, 17, 705, 368); 
+	_txtName = new Text(150, 11, 710, 398);
+	_txtRank = new Text(100, 11, 900, 398);
+	_txtDate = new Text(100, 11, 1040, 398);
+	_txtRecruited = new Text(160, 11, 710, 384);
+	_txtLost = new Text(150, 11, 900, 384);
+	_lstSoldiers = new TextList(515, 340, 700, 410);
 
 	// Set palette
 	setInterface("soldierMemorial");
