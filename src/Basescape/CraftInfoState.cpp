@@ -60,21 +60,21 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 		_window = new Window(this, 500, 100, 700, 123, POPUP_NONE);
 	}
 //	_btnOk = new TextButton(64, 24, 828, 288);
-	_btnW1 = new TextButton(24, 32, 714, 172);
-	_btnW2 = new TextButton(24, 32, 1052, 172);
+	_btnW1 = new TextButton(24, 40, 714, 167);
+	_btnW2 = new TextButton(24, 40, 1130, 167);
 //	_btnCrew = new TextButton(75, 16, 714, 216);
 //	_btnEquip = new TextButton(75, 16, 714, 240);
 //	_btnArmor = new TextButton(75, 16, 714, 264);
-	_edtCraft = new TextEdit(this, 180, 16, 800, 128);
+	_edtCraft = new TextEdit(this, 200, 16, 800, 128);
 	_txtDamage = new Text(300, 12, 714, 144);
-	_txtFuel = new Text(300, 12, 1028, 144);
+	_txtFuel = new Text(300, 12, 1025, 144);
 	_txtW1Name = new Text(95, 16, 746, 167);
 	_txtW1Ammo = new Text(75, 24, 746, 183);
-	_txtW2Name = new Text(95, 16, 974, 167);
-	_txtW2Ammo = new Text(75, 24, 974, 183);
-	_sprite = new Surface(32, 40, 874, 172);
-	_weapon1 = new Surface(15, 17, 849, 187);
-	_weapon2 = new Surface(15, 17, 916, 187);
+	_txtW2Name = new Text(95, 16, 1025, 167);
+	_txtW2Ammo = new Text(75, 24, 1025, 183);
+	_sprite = new Surface(40, 40, 900, 172);
+	_weapon1 = new Surface(15, 17, 880, 187);
+	_weapon2 = new Surface(15, 17, 945, 187);
 //	_crew = new Surface(220, 18, 795, 216);
 //	_equip = new Surface(220, 18, 795, 241);
 

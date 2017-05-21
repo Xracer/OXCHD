@@ -47,13 +47,13 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 330, 200, 750, 250, POPUP_BOTH);
-	_btnCancel = new TextButton(140, 16, 790, 386);
-	_txtTitle = new Text(300, 17, 756, 258);
-	_txtArmament = new Text(90, 11, 766, 274);
-	_txtQuantity = new Text(70, 11, 860, 274);
-	_txtAmmunition = new Text(150, 17, 925, 274);
-	_lstWeapons = new TextList(280, 120, 758, 298);
+	_window = new Window(this, 550, 180, 700, 224, POPUP_BOTH);
+	_btnCancel = new TextButton(200, 19, 800, 375);
+	_txtTitle = new Text(545, 17, 705, 233);
+	_txtArmament = new Text(150, 13, 710, 251);
+	_txtQuantity = new Text(110, 13, 860, 251);
+	_txtAmmunition = new Text(150, 13, 970, 251);
+	_lstWeapons = new TextList(500, 140, 700, 267);
 
 	// Set palette
 	setInterface("craftWeapons");
@@ -70,6 +70,7 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
 	_btnCancel->setText(tr("STR_CANCEL_UC"));
 	_btnCancel->onMouseClick((ActionHandler)&CraftWeaponsState::btnCancelClick);
@@ -84,10 +85,8 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
 	_txtAmmunition->setText(tr("STR_AMMUNITION_AVAILABLE"));
-	_txtAmmunition->setWordWrap(true);
-	_txtAmmunition->setVerticalAlign(ALIGN_BOTTOM);
 
-	_lstWeapons->setColumns(3, 110, 90, 36);
+	_lstWeapons->setColumns(3, 170, 150, 36);
 	_lstWeapons->setSelectable(true);
 	_lstWeapons->setBackground(_window);
 	_lstWeapons->setMargin(8);
