@@ -40,10 +40,10 @@ ConfirmLoadState::ConfirmLoadState(OptionsOrigin origin, const std::string &file
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 216, 100, 52, 50, POPUP_BOTH);
-	_btnYes = new TextButton(50, 20, 70, 120);
-	_btnNo = new TextButton(50, 20, 200, 120);
-	_txtText = new Text(204, 58, 58, 60);
+	_window = new Window(this, 250, 150, 350, 200, POPUP_BOTH);
+	_btnYes = new TextButton(50, 20, 358, 320);
+	_btnNo = new TextButton(50, 20, 540, 320);
+	_txtText = new Text(225, 58, 358, 210);
 
 	// Set palette
 	setInterface("saveMenus", false, _game->getSavedGame() ? _game->getSavedGame()->getSavedBattle() : 0);
