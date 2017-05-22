@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_RULEVIDEO_H
-#define OPENXCOM_RULEVIDEO_H
-
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <string>
@@ -27,6 +25,7 @@
 
 namespace OpenXcom
 {
+
 struct SlideshowHeader
 {
 	std::string musicId; // just the extension-less filename, like "GMWIN"
@@ -63,4 +62,3 @@ public:
 };
 
 }
-#endif

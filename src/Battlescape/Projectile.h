@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_PROJECTILE_H
-#define OPENXCOM_PROJECTILE_H
-
 #include <vector>
 #include "Position.h"
 #include "BattlescapeGame.h"
@@ -50,7 +48,7 @@ private:
 	int _bulletSprite;
 	bool _reversed;
 	int _vaporColor, _vaporDensity, _vaporProbability;
-	void applyAccuracy(const Position& origin, Position *target, double accuracy, bool keepRange, bool extendLine);
+	void applyAccuracy(Position origin, Position *target, double accuracy, bool keepRange, bool extendLine);
 public:
 	/// Creates a new Projectile.
 	Projectile(Mod *mod, SavedBattleGame *save, BattleAction action, Position origin, Position target, BattleItem *ammo);
@@ -58,7 +56,7 @@ public:
 	~Projectile();
 	/// Calculates the trajectory for a straight path.
 	int calculateTrajectory(double accuracy);
-	int calculateTrajectory(double accuracy, Position originVoxel, bool excludeUnit = true);
+	int calculateTrajectory(double accuracy, const Position& originVoxel, bool excludeUnit = true);
 	/// Calculates the trajectory for a curved path.
 	int calculateThrow(double accuracy);
 	/// Moves the projectile one step in its trajectory.
@@ -74,9 +72,9 @@ public:
 	/// Skips the bullet flight.
 	void skipTrajectory();
 	/// Gets the Position of origin for the projectile.
-	Position getOrigin();
+	Position getOrigin() const;
 	/// Gets the targetted tile for the projectile.
-	Position getTarget();
+	Position getTarget() const;
 	/// Is this projectile being drawn back-to-front or front-to-back?
 	bool isReversed() const;
 	/// adds a cloud of particles at the projectile's location
@@ -84,5 +82,3 @@ public:
 };
 
 }
-
-#endif

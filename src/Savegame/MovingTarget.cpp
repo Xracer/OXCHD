@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
 #include "MovingTarget.h"
-#include <cmath>
 #include "../fmath.h"
 #include "SerializationHelper.h"
+#include "../Engine/Options.h"
 
 namespace OpenXcom
 {
@@ -28,7 +27,7 @@ namespace OpenXcom
 /**
  * Initializes a moving target with blank coordinates.
  */
-MovingTarget::MovingTarget() : Target(), _dest(0), _speedLon(0.0), _speedLat(0.0), _speedRadian(0.0), _speed(0)
+MovingTarget::MovingTarget() : Target(), _dest(0), _speedLon(0.0), _speedLat(0.0), _speedRadian(0.0), _meetPointLon(0.0), _meetPointLat(0.0), _speed(0)
 {
 }
 
@@ -127,6 +126,15 @@ int MovingTarget::getSpeed() const
 }
 
 /**
+ * Returns the radial speed of the moving target.
+ * @return Speed in 1 / 5 sec.
+ */
+double MovingTarget::getSpeedRadian() const
+{
+	return _speedRadian;
+}
+
+/**
  * Changes the speed of the moving target
  * and converts it from standard knots (nautical miles per hour)
  * into radians per 5 in-game seconds.
@@ -148,14 +156,16 @@ void MovingTarget::setSpeed(int speed)
  */
 void MovingTarget::calculateSpeed()
 {
+	calculateMeetPoint();
 	if (_dest != 0)
 	{
 		double dLon, dLat, length;
-		dLon = sin(_dest->getLongitude() - _lon) * cos(_dest->getLatitude());
-		dLat = cos(_lat) * sin(_dest->getLatitude()) - sin(_lat) * cos(_dest->getLatitude()) * cos(_dest->getLongitude() - _lon);
+		dLon = sin(_meetPointLon - _lon) * cos(_meetPointLat);
+		dLat = cos(_lat) * sin(_meetPointLat) - sin(_lat) * cos(_meetPointLat) * cos(_meetPointLon - _lon);
 		length = sqrt(dLon * dLon + dLat * dLat);
 		_speedLat = dLat / length * _speedRadian;
 		_speedLon = dLon / length * _speedRadian / cos(_lat + _speedLat);
+
 		// Check for invalid speeds when a division by zero occurs due to near-zero values
 		if (!(_speedLon == _speedLon) || !(_speedLat == _speedLat))
 		{
@@ -202,6 +212,83 @@ void MovingTarget::move()
 			setLatitude(_dest->getLatitude());
 		}
 	}
+}
+
+/**
+ * Calculate meeting point with the target.
+ */
+void MovingTarget::calculateMeetPoint()
+{
+	// Initialize
+	if (_dest != 0)
+	{
+		_meetPointLat = _dest->getLatitude();
+		_meetPointLon = _dest->getLongitude();
+	}
+	else
+	{
+		_meetPointLat = _lat;
+		_meetPointLon = _lon;
+	}
+
+	if (!_dest || !Options::meetingPoint) return;
+
+	MovingTarget *u = dynamic_cast<MovingTarget*>(_dest);
+	if (!u || !u->getDestination()) return;
+
+	// Speed ratio
+	if (AreSame(u->getSpeedRadian(), 0.0)) return;
+	const double speedRatio = _speedRadian/ u->getSpeedRadian();
+
+	// The direction pseudovector
+	double	nx = cos(u->getLatitude())*sin(u->getLongitude())*sin(u->getDestination()->getLatitude()) -
+					sin(u->getLatitude())*cos(u->getDestination()->getLatitude())*sin(u->getDestination()->getLongitude()),
+			ny = sin(u->getLatitude())*cos(u->getDestination()->getLatitude())*cos(u->getDestination()->getLongitude()) -
+					cos(u->getLatitude())*cos(u->getLongitude())*sin(u->getDestination()->getLatitude()),
+			nz = cos(u->getLatitude())*cos(u->getDestination()->getLatitude())*sin(u->getDestination()->getLongitude() - u->getLongitude());
+	// Normalize and multiplex with radian speed
+	double	nk = _speedRadian/sqrt(nx*nx+ny*ny+nz*nz);
+	nx *= nk;
+	ny *= nk;
+	nz *= nk;
+
+	// Finding the meeting point. Don't search further than halfway across the
+	// globe (distance from interceptor's current point >= 1), as that may 
+	// cause the interceptor to go the wrong way later.
+	for (double path = 0, distance = 1;
+		path < M_PI && distance - path*speedRatio > 0 && path*speedRatio < 1;
+		path += _speedRadian)
+	{
+		_meetPointLat += nx*sin(_meetPointLon) - ny*cos(_meetPointLon);
+		if (std::abs(_meetPointLat) < M_PI_2) _meetPointLon += nz - (nx*cos(_meetPointLon) + ny*sin(_meetPointLon))*tan(_meetPointLat); else _meetPointLon += M_PI;
+
+		distance = acos(cos(_lat) * cos(_meetPointLat) * cos(_meetPointLon - _lon) + sin(_lat) * sin(_meetPointLat));
+	}
+
+	// Correction overflowing angles
+	double lonSign = Sign(_meetPointLon);
+	double latSign = Sign(_meetPointLat);
+	while (std::abs(_meetPointLon) > M_PI) _meetPointLon -= lonSign * 2 * M_PI;
+	while (std::abs(_meetPointLat) > M_PI) _meetPointLat -= latSign * 2 * M_PI;
+	if (std::abs(_meetPointLat) > M_PI_2) { _meetPointLat = latSign * std::abs(2 * M_PI - std::abs(_meetPointLat)); _meetPointLon -= lonSign * M_PI; }
+}
+
+/**
+ * Returns the latitude of the meeting point.
+ * @return Angle in rad.
+ */
+double MovingTarget::getMeetLatitude() const
+{
+	return _meetPointLat;
+}
+
+/**
+ * Returns the longitude of the meeting point.
+ * @return Angle in rad.
+ */
+double MovingTarget::getMeetLongitude() const
+{
+	return _meetPointLon;
 }
 
 }

@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_INVENTORYSTATE_H
-#define OPENXCOM_INVENTORYSTATE_H
-
 #include "../Engine/State.h"
 #include "../Interface/TextButton.h"
 #include "../Savegame/EquipmentLayoutItem.h"
@@ -89,6 +87,8 @@ public:
 	void btnApplyTemplateClick(Action *action);
 	/// Handler for hitting the Clear Inventory hotkey.
 	void onClearInventory(Action *action);
+	/// Handler for hitting the Autoequip hotkey.
+	void onAutoequip(Action *action);
 	/// Handler for clicking on the inventory.
 	void invClick(Action *action);
 	/// Handler for showing item info.
@@ -110,5 +110,3 @@ private:
 };
 
 }
-
-#endif

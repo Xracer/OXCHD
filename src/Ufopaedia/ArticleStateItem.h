@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef OPENXCOM_ARTICLESTATEITEM_H
-#define OPENXCOM_ARTICLESTATEITEM_H
-
 #include "ArticleState.h"
 
 namespace OpenXcom
@@ -56,5 +53,3 @@ namespace OpenXcom
 		Surface *_imageAmmo[3];
 	};
 }
-
-#endif

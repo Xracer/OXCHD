@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_SLIDER_H
-#define OPENXCOM_SLIDER_H
-
 #include "../Engine/InteractiveSurface.h"
 
 namespace OpenXcom
@@ -85,5 +83,3 @@ public:
 };
 
 }
-
-#endif

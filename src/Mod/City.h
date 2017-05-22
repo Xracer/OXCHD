@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_CITY_H
-#define OPENXCOM_CITY_H
-
 #include <string>
 #include "../Savegame/Target.h"
 
@@ -35,6 +33,9 @@ class City : public Target
 {
 private:
 	std::string _name;
+	
+	/// Gets the city's default name (unused).
+	std::wstring getDefaultName(Language *) const { return L""; }
 public:
 	/// Creates a new city at a certain position.
 	City(const std::string &name, double lon, double lat);
@@ -47,5 +48,3 @@ public:
 };
 
 }
-
-#endif

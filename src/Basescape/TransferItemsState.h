@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_TRANSFERITEMSSTATE_H
-#define OPENXCOM_TRANSFERITEMSSTATE_H
-
 #include "../Engine/State.h"
 #include "../Savegame/Transfer.h"
 #include <vector>
@@ -111,5 +109,3 @@ public:
 };
 
 }
-
-#endif

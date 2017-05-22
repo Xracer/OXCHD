@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_MEDIKITSTATE_H
-#define OPENXCOM_MEDIKITSTATE_H
-
 #include "../Engine/State.h"
 
 namespace OpenXcom
@@ -43,6 +41,7 @@ class MedikitState : public State
 	BattleUnit *_targetUnit, *_unit;
 	BattleItem *_item;
 	BattleAction *_action;
+	int _tu;
 	/// Handler for the end button.
 	void onEndClick(Action *action);
 	/// Handler for the heal button.
@@ -60,5 +59,3 @@ public:
 	void handle(Action *action);
 };
 }
-
-#endif

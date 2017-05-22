@@ -154,7 +154,7 @@ void PsiAttackBState::psiAttack()
 		killStat.setUnitStats(_target);
 		killStat.setTurn(_parent->getSave()->getTurn(), _parent->getSave()->getSide());
 		killStat.weapon = _action.weapon->getRules()->getName();
-		killStat.weaponAmmo = _action.weapon->getRules()->getName();
+		killStat.weaponAmmo = _action.weapon->getRules()->getName(); //Psi weapons got no ammo, just filling up the field
 		killStat.faction = _target->getFaction();
 		killStat.mission = _parent->getSave()->getGeoscapeSave()->getMissionStatistics()->size();
 		killStat.id = _target->getId();
@@ -164,12 +164,12 @@ void PsiAttackBState::psiAttack()
 			int moraleLoss = (110-_target->getBaseStats()->bravery);
 			if (moraleLoss > 0)
 			_target->moraleChange(-moraleLoss);
+			_target->setMindControllerId(_unit->getId());
 			// Award Panic battle unit kill
 			if (!_unit->getStatistics()->duplicateEntry(STATUS_PANICKING, _target->getId()))
 			{
 				killStat.status = STATUS_PANICKING;
 				_unit->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
-				_target->setMurdererId(_unit->getId());
 			}
 			if (_parent->getSave()->getSide() == FACTION_PLAYER)
 			{
@@ -183,8 +183,8 @@ void PsiAttackBState::psiAttack()
 			{
 				killStat.status = STATUS_TURNING;
 				_unit->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
-				_target->setMurdererId(_unit->getId());
 			}
+			_target->setMindControllerId(_unit->getId());
 			_target->convertToFaction(_unit->getFaction());
 			_parent->getTileEngine()->calculateFOV(_target->getPosition());
 			_parent->getTileEngine()->calculateUnitLighting();
@@ -194,17 +194,9 @@ void PsiAttackBState::psiAttack()
 			// if all units from either faction are mind controlled - auto-end the mission.
 			if (_parent->getSave()->getSide() == FACTION_PLAYER)
 			{
-				if (Options::battleAutoEnd && Options::allowPsionicCapture)
+				if (Options::allowPsionicCapture)
 				{
-					int liveAliens = 0;
-					int liveSoldiers = 0;
-					_parent->tallyUnits(liveAliens, liveSoldiers);
-					if (liveAliens == 0 || liveSoldiers == 0)
-					{
-						_parent->getSave()->setSelectedUnit(0);
-						_parent->cancelCurrentAction(true);
-						_parent->requestEndTurn();
-					}
+					_parent->autoEndBattle();
 				}
 				game->pushState(new InfoboxState(game->getLanguage()->getString("STR_MIND_CONTROL_SUCCESSFUL")));
 				_parent->getSave()->getBattleState()->updateSoldierInfo();

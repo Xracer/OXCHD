@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -22,6 +23,7 @@
 #include "../Engine/State.h"
 namespace OpenXcom
 {
+
 class Game;
 class Window;
 class TextButton;

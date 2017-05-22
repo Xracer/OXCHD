@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_SOLDIER_H
-#define OPENXCOM_SOLDIER_H
-
 #include <string>
 #include <yaml-cpp/yaml.h>
 #include "../Mod/Unit.h"
@@ -131,13 +129,13 @@ public:
 	/// Trains a soldier's psionic abilities (anytimePsiTraining option).
 	void trainPsi1Day();
 	/// Returns whether the unit is in psi training or not
-	bool isInPsiTraining();
+	bool isInPsiTraining() const;
 	/// set the psi training status
 	void setPsiTraining();
 	/// returns this soldier's psionic skill improvement score for this month.
-	int getImprovement();
+	int getImprovement() const;
 	/// returns this soldier's psionic strength improvement score for this month.
-	int getPsiStrImprovement();
+	int getPsiStrImprovement() const;
 	/// Gets the soldier death info.
 	SoldierDeath *getDeath() const;
 	/// Kills the soldier.
@@ -149,5 +147,3 @@ public:
 };
 
 }
-
-#endif

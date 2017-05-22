@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef OPENXCOM_SHADERMOVE_H
-#define	OPENXCOM_SHADERMOVE_H
-
 #include "ShaderDraw.h"
 
 namespace OpenXcom
@@ -163,6 +160,3 @@ inline ShaderMove<Uint8> ShaderCrop(Surface* s)
 }
 
 }//namespace OpenXcom
-
-#endif	/* OPENXCOM_SHADERMOVE_H */
-

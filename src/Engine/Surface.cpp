@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 OpenXcom Developers.
+ * Copyright 2010-2016 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -23,6 +23,7 @@
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
 #include <SDL_endian.h>
+#include "../lodepng.h"
 #include "Palette.h"
 #include "Exception.h"
 #include "Logger.h"
@@ -49,7 +50,7 @@ namespace
 
 /**
  * Helper function counting pitch in bytes with 16byte padding
- * @param bpp bytes per pixel
+ * @param bpp bits per pixel
  * @param width number of pixel in row
  * @return pitch in bytes
  */
@@ -60,7 +61,7 @@ inline int GetPitch(int bpp, int width)
 
 /**
  * Helper function creating aligned buffer
- * @param bpp bytes per pixel
+ * @param bpp bits per pixel
  * @param width number of pixel in row
  * @param height number of rows
  * @return pointer to memory
@@ -255,13 +256,58 @@ void Surface::loadImage(const std::string &filename)
 	_alignedBuffer = 0;
 	_surface = 0;
 
-	// SDL only takes UTF-8 filenames
-	// so here's an ugly hack to match this ugly reasoning
-	std::string utf8 = Language::wstrToUtf8(Language::fsToWstr(filename));
+	Log(LOG_VERBOSE) << "Loading image: " << filename;
 
-	// Load file
-	Log(LOG_VERBOSE) << "Loading image: " << utf8;
-	_surface = IMG_Load(utf8.c_str());
+	// Try loading with LodePNG first
+	std::vector<unsigned char> png;
+	unsigned error = lodepng::load_file(png, filename);
+	if (!error)
+	{
+		std::vector<unsigned char> image;
+		unsigned width, height;
+		lodepng::State state;
+		state.decoder.color_convert = 0;
+		error = lodepng::decode(image, width, height, state, png);
+		if (!error)
+		{
+			LodePNGColorMode *color = &state.info_png.color;
+			unsigned bpp = lodepng_get_bpp(color);
+			if (bpp == 8)
+			{
+				_alignedBuffer = NewAligned(bpp, width, height);
+				_surface = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, GetPitch(bpp, width), 0, 0, 0, 0);
+				if (_surface)
+				{
+					int x = 0, y = 0;
+					for (std::vector<unsigned char>::const_iterator i = image.begin(); i != image.end(); ++i)
+					{
+						setPixelIterative(&x, &y, *i);
+					}
+					setPalette((SDL_Color*)color->palette, 0, color->palettesize);
+					int transparent = 0;
+					for (int c = 0; c < _surface->format->palette->ncolors; ++c)
+					{
+						SDL_Color *palColor = _surface->format->palette->colors + c;
+						if (palColor->unused == 0)
+						{
+							transparent = c;
+							break;
+						}
+					}
+					SDL_SetColorKey(_surface, SDL_SRCCOLORKEY, transparent);
+				}
+			}
+		}
+	}
+
+	// Otherwise default to SDL_Image
+	if (!_surface)
+	{
+		// SDL only takes UTF-8 filenames
+		// so here's an ugly hack to match this ugly reasoning
+		std::string utf8 = Language::wstrToUtf8(Language::fsToWstr(filename));
+		_surface = IMG_Load(utf8.c_str());
+	}
 
 	if (!_surface)
 	{
@@ -447,6 +493,58 @@ void Surface::offset(int off, int min, int max, int mul)
 }
 
 /**
+ * Shifts all the colors in the surface by a set amount, but
+ * keeping them inside a fixed-size color block chunk.
+ * @param off Amount to shift.
+ * @param blk Color block size.
+ * @param mul Shift multiplier.
+ */
+void Surface::offsetBlock(int off, int blk, int mul)
+{
+	if (off == 0)
+		return;
+
+	// Lock the surface
+	lock();
+
+	for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+	{
+		Uint8 pixel = getPixel(x, y);
+		int min = pixel / blk * blk;
+		int max = min + blk;
+		int p;
+		if (off > 0)
+		{
+			p = pixel * mul + off;
+		}
+		else
+		{
+			p = (pixel + off) / mul;
+		}
+		if (min != -1 && p < min)
+		{
+			p = min;
+		}
+		else if (max != -1 && p > max)
+		{
+			p = max;
+		}
+
+		if (pixel > 0)
+		{
+			setPixelIterative(&x, &y, p);
+		}
+		else
+		{
+			setPixelIterative(&x, &y, 0);
+		}
+	}
+
+	// Unlock the surface
+	unlock();
+}
+
+/**
  * Inverts all the colors in the surface according to a middle point.
  * Used for effects like shifting a button between pressed and unpressed.
  * @param mid Middle point.
@@ -537,7 +635,7 @@ void Surface::copy(Surface *surface)
 	SDL_BlitSurface uses colour matching,
 	and is therefor unreliable as a means
 	to copy the contents of one surface to another
-	instead we have to do this manually 
+	instead we have to do this manually
 
 	SDL_Rect from;
 	from.x = getX() - surface->getX();
@@ -945,8 +1043,9 @@ void Surface::setTFTDMode(bool mode)
  * checks TFTD mode.
  * @return TFTD mode.
  */
-bool Surface::isTFTDMode()
+bool Surface::isTFTDMode() const
 {
 	return _tftdMode;
 }
+
 }

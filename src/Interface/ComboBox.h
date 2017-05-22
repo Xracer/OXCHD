@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_COMBOBOX_H
-#define OPENXCOM_COMBOBOX_H
-
 #include "../Engine/InteractiveSurface.h"
 #include <vector>
 #include <string>
@@ -55,12 +53,13 @@ private:
 	Language *_lang;
 	Uint8 _color;
 	bool _toggled;
+	bool _popupAboveButton;
 
 	void drawArrow();
 	void setDropdown(int options);
 public:
 	/// Creates a combo box with the specified size and position.
-	ComboBox(State *state, int width, int height, int x = 0, int y = 0);
+	ComboBox(State *state, int width, int height, int x = 0, int y = 0, bool popupAboveButton = false);
 	/// Cleans up the combo box.
 	~ComboBox();
 	/// Sets the X position of the surface.
@@ -86,6 +85,8 @@ public:
 	/// Gets the item that is currently hovered over in the popup list, or the current
 	/// selected item if no item is hovered over.
 	size_t getHoveredListIdx() const;
+	/// Sets the button text without changing the selected option
+	void setText(const std::wstring &text);
 	/// Sets the selected option in the list.
 	void setSelected(size_t sel);
 	/// Sets the list of options.
@@ -93,7 +94,7 @@ public:
 	/// Sets the list of options.
 	void setOptions(const std::vector<std::wstring> &options);
 	/// Blits the combo box onto another surface.
-	void blit(Surface *surface);	
+	void blit(Surface *surface);
 	/// Thinks arrow buttons.
 	void think();
 	/// Handle arrow buttons.
@@ -111,5 +112,3 @@ public:
 };
 
 }
-
-#endif

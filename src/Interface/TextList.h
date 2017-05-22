@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_TEXTLIST_H
-#define OPENXCOM_TEXTLIST_H
-
 #include <vector>
 #include <map>
 #include "../Engine/InteractiveSurface.h"
@@ -197,10 +195,8 @@ public:
 	ComboBox *getComboBox() const;
 	void setBorderColor(Uint8 color);
 	int getScrollbarColor();
-    /// Allows the cell to flood into other columns.
-    void setFlooding(bool flooding);
+	/// Allows the cell to flood into other columns.
+	void setFlooding(bool flooding);
 };
 
 }
-
-#endif

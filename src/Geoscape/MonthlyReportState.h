@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,10 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_MONTHLYREPORTSTATE_H
-#define OPENXCOM_MONTHLYREPORTSTATE_H
-
 #include "../Engine/State.h"
+#include <vector>
 #include <string>
 
 namespace OpenXcom
@@ -56,6 +55,8 @@ public:
 	MonthlyReportState(bool psi, Globe *globe);
 	/// Cleans up the Monthly Report state.
 	~MonthlyReportState();
+	/// Updates the ending.
+	void init();
 	/// Handler for clicking the OK button.
 	void btnOkClick(Action *action);
 	/// Calculate monthly scores.
@@ -63,5 +64,3 @@ public:
 };
 
 }
-
-#endif

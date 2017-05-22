@@ -16,14 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
 #include <assert.h>
-#include <cmath>
 #include <climits>
 #include <set>
 #include "TileEngine.h"
 #include <SDL.h>
-#include "AlienBAIState.h"
+#include "AIModule.h"
 #include "Map.h"
 #include "Camera.h"
 #include "../Savegame/SavedGame.h"
@@ -43,7 +41,6 @@
 #include "../Engine/Options.h"
 #include "ProjectileFlyBState.h"
 #include "MeleeAttackBState.h"
-#include "../Engine/Logger.h"
 #include "../fmath.h"
 
 namespace OpenXcom
@@ -195,7 +192,7 @@ void TileEngine::calculateUnitLighting()
  * @param power Power.
  * @param layer Light is separated in 3 layers: Ambient, Static and Dynamic.
  */
-void TileEngine::addLight(const Position &center, int power, int layer)
+void TileEngine::addLight(Position center, int power, int layer)
 {
 	// only loop through the positive quadrant.
 	for (int x = 0; x <= power; ++x)
@@ -487,7 +484,7 @@ int TileEngine::checkVoxelExposure(Position *originVoxel, Tile *tile, BattleUnit
 	int relX = floor(((float)relPos.y)*normal+0.5);
 	int relY = floor(((float)-relPos.x)*normal+0.5);
 
-	int sliceTargets[10]={0,0, relX,relY, -relX,-relY};
+	int sliceTargets[] = {0,0, relX,relY, -relX,-relY};
 
 	if (!otherUnit->isOut())
 	{
@@ -506,7 +503,7 @@ int TileEngine::checkVoxelExposure(Position *originVoxel, Tile *tile, BattleUnit
 	{
 		++total;
 		scanVoxel.z=targetMinHeight+i;
-		for (int j = 0; j < 2; ++j)
+		for (int j = 0; j < 3; ++j)
 		{
 			scanVoxel.x=targetVoxel.x + sliceTargets[j*2];
 			scanVoxel.y=targetVoxel.y + sliceTargets[j*2+1];
@@ -572,7 +569,7 @@ bool TileEngine::canTargetUnit(Position *originVoxel, Tile *tile, Position *scan
 	int relX = floor(((float)relPos.y)*normal+0.5);
 	int relY = floor(((float)-relPos.x)*normal+0.5);
 
-	int sliceTargets[10]={0,0, relX,relY, -relX,-relY, relY,-relX, -relY,relX};
+	int sliceTargets[] = {0,0, relX,relY, -relX,-relY, relY,-relX, -relY,relX};
 
 	if (!potentialUnit->isOut())
 	{
@@ -649,7 +646,7 @@ bool TileEngine::canTargetTile(Position *originVoxel, Tile *tile, int part, Posi
 	int *spiralArray;
 	int spiralCount;
 
-	int minZ, maxZ;
+	int minZ = 0, maxZ = 0;
 	bool minZfound = false, maxZfound = false;
 
 	if (part == O_OBJECT)
@@ -733,6 +730,7 @@ bool TileEngine::canTargetTile(Position *originVoxel, Tile *tile, int part, Posi
 
 	if (minZ > maxZ) minZ = maxZ;
 	int rangeZ = maxZ - minZ;
+	if (rangeZ>10) rangeZ = 10; //as above, clamping height range to prevent buffer overflow
 	int centerZ = (maxZ + minZ)/2;
 
 	for (int j = 0; j <= rangeZ; ++j)
@@ -763,7 +761,7 @@ bool TileEngine::canTargetTile(Position *originVoxel, Tile *tile, int part, Posi
  * (used when terrain has changed, which can reveal new parts of terrain or units).
  * @param position Position of the changed terrain.
  */
-void TileEngine::calculateFOV(const Position &position)
+void TileEngine::calculateFOV(Position position)
 {
 	for (std::vector<BattleUnit*>::iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 	{
@@ -833,39 +831,45 @@ std::vector<std::pair<BattleUnit *, int> > TileEngine::getSpottingUnits(BattleUn
 {
 	std::vector<std::pair<BattleUnit *, int> > spotters;
 	Tile *tile = unit->getTile();
-	for (std::vector<BattleUnit*>::const_iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
+	
+	// no reaction on civilian turn.
+	if (_save->getSide() != FACTION_NEUTRAL)
 	{
-			// not dead/unconscious
-		if (!(*i)->isOut() &&
-			// not dying
-			(*i)->getHealth() != 0 &&
-			// not about to pass out
-			(*i)->getStunlevel() < (*i)->getHealth() &&
-			// not a friend
-			(*i)->getFaction() != _save->getSide() &&
-			// closer than 20 tiles
-			distanceSq(unit->getPosition(), (*i)->getPosition()) <= MAX_VIEW_DISTANCE_SQR)
+		for (std::vector<BattleUnit*>::const_iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 		{
-			Position originVoxel = _save->getTileEngine()->getSightOriginVoxel(*i);
-			originVoxel.z -= 2;
-			Position targetVoxel;
-			AlienBAIState *aggro = dynamic_cast<AlienBAIState*>((*i)->getCurrentAIState());
-			bool gotHit = (aggro != 0 && aggro->getWasHitBy(unit->getId()));
-				// can actually see the target Tile, or we got hit
-			if (((*i)->checkViewSector(unit->getPosition()) || gotHit) &&
-				// can actually target the unit
-				canTargetUnit(&originVoxel, tile, &targetVoxel, *i) &&
-				// can actually see the unit
-				visible(*i, tile))
+				// not dead/unconscious
+			if (!(*i)->isOut() &&
+				// not dying
+				(*i)->getHealth() != 0 &&
+				// not about to pass out
+				(*i)->getStunlevel() < (*i)->getHealth() &&
+				// not a friend
+				(*i)->getFaction() != _save->getSide() &&
+				// not a civilian
+				(*i)->getFaction() != FACTION_NEUTRAL &&
+				// closer than 20 tiles
+				distanceSq(unit->getPosition(), (*i)->getPosition()) <= MAX_VIEW_DISTANCE_SQR)
 			{
-				if ((*i)->getFaction() == FACTION_PLAYER)
+				BattleAction falseAction;
+				falseAction.type = BA_SNAPSHOT;
+				falseAction.actor = *i;
+				falseAction.target = unit->getPosition();
+				Position originVoxel = getOriginVoxel(falseAction, 0);
+				Position targetVoxel;
+				AIModule *ai = (*i)->getAIModule();
+				bool gotHit = (ai != 0 && ai->getWasHitBy(unit->getId()));
+					// can actually see the target Tile, or we got hit
+				if (((*i)->checkViewSector(unit->getPosition()) || gotHit) &&
+					// can actually target the unit
+					canTargetUnit(&originVoxel, tile, &targetVoxel, *i) &&
+					// can actually see the unit
+					visible(*i, tile))
 				{
-					unit->setVisible(true);
-				}
-				(*i)->addToVisibleUnits(unit);
-				// no reaction on civilian turn.
-				if (_save->getSide() != FACTION_NEUTRAL)
-				{
+					if ((*i)->getFaction() == FACTION_PLAYER)
+					{
+						unit->setVisible(true);
+					}
+					(*i)->addToVisibleUnits(unit);
 					int attackType = determineReactionType(*i, unit);
 					if (attackType != BA_NONE)
 					{
@@ -943,6 +947,7 @@ int TileEngine::determineReactionType(BattleUnit *unit, BattleUnit *target)
 		// has a gun capable of snap shot with ammo
 		(weapon->getRules()->getBattleType() != BT_MELEE &&
 		weapon->getRules()->getTUSnap() &&
+		distance(unit->getPosition(), target->getPosition()) < weapon->getRules()->getMaxRange() &&
 		weapon->getAmmoItem() &&
 		unit->getActionTUs(BA_SNAPSHOT, weapon) > 0 &&
 		unit->getTimeUnits() > unit->getActionTUs(BA_SNAPSHOT, weapon)) &&
@@ -991,16 +996,16 @@ bool TileEngine::tryReaction(BattleUnit *unit, BattleUnit *target, int attackTyp
 		// hostile units will go into an "aggro" state when they react.
 		if (unit->getFaction() == FACTION_HOSTILE)
 		{
-			AlienBAIState *aggro = dynamic_cast<AlienBAIState*>(unit->getCurrentAIState());
-			if (aggro == 0)
+			AIModule *ai = unit->getAIModule();
+			if (ai == 0)
 			{
 				// should not happen, but just in case...
-				aggro = new AlienBAIState(_save, unit, 0);
-				unit->setAIState(aggro);
+				ai = new AIModule(_save, unit, 0);
+				unit->setAIModule(ai);
 			}
 
 			if (action.weapon->getAmmoItem()->getRules()->getExplosionRadius() &&
-				aggro->explosiveEfficacy(action.target, unit, action.weapon->getAmmoItem()->getRules()->getExplosionRadius(), -1) == false)
+				ai->explosiveEfficacy(action.target, unit, action.weapon->getAmmoItem()->getRules()->getExplosionRadius(), -1) == false)
 			{
 				action.targeting = false;
 			}
@@ -1033,7 +1038,7 @@ bool TileEngine::tryReaction(BattleUnit *unit, BattleUnit *target, int attackTyp
  * @param unit The unit that caused the explosion.
  * @return The Unit that got hit.
  */
-BattleUnit *TileEngine::hit(const Position &center, int power, ItemDamageType type, BattleUnit *unit)
+BattleUnit *TileEngine::hit(Position center, int power, ItemDamageType type, BattleUnit *unit)
 {
 	Tile *tile = _save->getTile(Position(center.x/16, center.y/16, center.z/24));
 	if (!tile)
@@ -1137,11 +1142,13 @@ BattleUnit *TileEngine::hit(const Position &center, int power, ItemDamageType ty
  * @param maxRadius The maximum radius othe explosion.
  * @param unit The unit that caused the explosion.
  */
-void TileEngine::explode(const Position &center, int power, ItemDamageType type, int maxRadius, BattleUnit *unit)
+void TileEngine::explode(Position center, int power, ItemDamageType type, int maxRadius, BattleUnit *unit)
 {
 	double centerZ = center.z / 24 + 0.5;
 	double centerX = center.x / 16 + 0.5;
 	double centerY = center.y / 16 + 0.5;
+	int hitSide = 0;
+	int diagonalWall = 0;
 	int power_;
 	std::set<Tile*> tilesAffected;
 	std::pair<std::set<Tile*>::iterator,bool> ret;
@@ -1167,6 +1174,17 @@ void TileEngine::explode(const Position &center, int power, ItemDamageType type,
 		vertdec = 5;
 	}
 
+	Tile *origin = _save->getTile(Position(centerX, centerY, centerZ));
+	Tile *dest;
+	if (origin->isBigWall()) //precalculations for bigwall deflection
+	{
+		diagonalWall = origin->getMapData(O_OBJECT)->getBigWall();
+		if (diagonalWall == Pathfinding::BIGWALLNWSE) //  3 |
+			hitSide = (center.x % 16 - center.y % 16) > 0 ? 1 : -1;
+		if (diagonalWall == Pathfinding::BIGWALLNESW) //  2 --
+			hitSide = (center.x % 16 + center.y % 16 - 15) > 0 ? 1 : -1;
+	}
+
 	for (int fi = -90; fi <= 90; fi += 5)
 	{
 		// raytrace every 3 degrees makes sure we cover all tiles in a circle.
@@ -1177,8 +1195,8 @@ void TileEngine::explode(const Position &center, int power, ItemDamageType type,
 			double sin_fi = sin(fi * M_PI / 180.0);
 			double cos_fi = cos(fi * M_PI / 180.0);
 
-			Tile *origin = _save->getTile(Position(centerX, centerY, centerZ));
-			Tile *dest = origin;
+			origin = _save->getTile(Position(centerX, centerY, centerZ));
+			dest = origin;
 			double l = 0;
 			int tileX, tileY, tileZ;
 			power_ = power;
@@ -1234,13 +1252,13 @@ void TileEngine::explode(const Position &center, int power, ItemDamageType type,
 									if (distance(dest->getPosition(), Position(centerX, centerY, centerZ)) < 2)
 									{
 										// ground zero effect is in effect
-										bu->damage(Position(0, 0, 0), (int)(RNG::generate(min, max)), type);
+										bu->damage(Position(0, 0, 0), (RNG::generate(min, max)), type);
 									}
 									else
 									{
 										// directional damage relative to explosion position.
 										// units above the explosion will be hit in the legs, units lateral to or below will be hit in the torso
-										bu->damage(Position(centerX, centerY, centerZ + 5) - dest->getPosition(), (int)(RNG::generate(min, max)), type);
+										bu->damage(Position(centerX, centerY, centerZ + 5) - dest->getPosition(), (RNG::generate(min, max)), type);
 									}
 								}
 								bool done = false;
@@ -1252,8 +1270,10 @@ void TileEngine::explode(const Position &center, int power, ItemDamageType type,
 										if (power_ > (*it)->getRules()->getArmor())
 										{
 											if ((*it)->getUnit() && (*it)->getUnit()->getStatus() == STATUS_UNCONSCIOUS)
-												(*it)->getUnit()->instaKill();
-											_save->removeItem((*it));
+											{
+												(*it)->getUnit()->kill();
+											}
+											_save->removeItem(*it);
 											break;
 										}
 										else
@@ -1337,8 +1357,34 @@ void TileEngine::explode(const Position &center, int power, ItemDamageType type,
 					Pathfinding::vectorToDirection(origin->getPosition() - dest->getPosition(), dir);
 					if (dir != -1 && dir %2) power_ -= 5; // diagonal movement costs an extra 50% for fire.
 				}
-				if (l>0.5) power_-= horizontalBlockage(origin, dest, type, l<1.5) * 2;
-				if (l>0.5) power_-= verticalBlockage(origin, dest, type, l<1.5) * 2;
+				if (l > 0.5) {
+					if ( l > 1.5)
+					{
+						power_ -= verticalBlockage(origin, dest, type, false) * 2;
+						power_ -= horizontalBlockage(origin, dest, type, false) * 2;
+					}
+					else //tricky bigwall deflection /Volutar
+					{
+						bool skipObject = diagonalWall == 0;
+						if (diagonalWall == Pathfinding::BIGWALLNESW) // --
+						{
+							if (hitSide<0 && te >= 135 && te < 315)
+								skipObject = true;
+							if (hitSide>0 && ( te < 135 || te > 315))
+								skipObject = true;
+						}
+						if (diagonalWall == Pathfinding::BIGWALLNWSE) // |
+						{
+							if (hitSide>0 && te >= 45 && te < 225)
+								skipObject = true;
+							if (hitSide<0 && ( te < 45 || te > 225))
+								skipObject = true;
+						}
+						power_ -= verticalBlockage(origin, dest, type, skipObject) * 2;
+						power_ -= horizontalBlockage(origin, dest, type, skipObject) * 2;
+
+					}
+				}
 			}
 		}
 	}
@@ -1426,6 +1472,10 @@ bool TileEngine::detonate(Tile* tile)
 			if ( i == 6 && (bigwall == 2 || bigwall == 3)) //diagonals for the current tile
 			{
 				bigwalldestroyed = true;
+			}
+			if ( i == 6 && (bigwall == 6 || bigwall == 7 || bigwall == 8)) //n/w/nw
+			{
+				skipnorthwest = false;
 			}
 			remainingPower -= 2 * tiles[i]->getMapData(currentpart)->getArmor();
 			destroyed = true;
@@ -1683,12 +1733,15 @@ int TileEngine::horizontalBlockage(Tile *startTile, Tile *endTile, ItemDamageTyp
 		break;
 	}
 
-	if (!skipObject)
+	if (!skipObject || (type==DT_NONE && startTile->isBigWall()) )
 		block += blockage(startTile,O_OBJECT, type, direction);
 
 	if (type != DT_NONE)
 	{
-		if (skipObject) return block;
+		// not too sure about removing this line,
+		// i have a sneaking suspicion we might end up blocking things that we shouldn't
+
+		//if (skipObject) return block;
 
 		direction += 4;
 		if (direction > 7)
@@ -1698,15 +1751,15 @@ int TileEngine::horizontalBlockage(Tile *startTile, Tile *endTile, ItemDamageTyp
 	}
 	else
 	{
-        if ( block <= 127 )
-        {
-            direction += 4;
-            if (direction > 7)
-                direction -= 8;
-            if (blockage(endTile,O_OBJECT, type, direction, true) > 127){
-                return -1; //hit bigwall, reveal bigwall tile
-            }
-        }
+		if ( block <= 127 )
+		{
+			direction += 4;
+			if (direction > 7)
+				direction -= 8;
+			if (blockage(endTile,O_OBJECT, type, direction, true) > 127){
+				return -1; //hit bigwall, reveal bigwall tile
+			}
+		}
 	}
 
 	return block;
@@ -2018,7 +2071,7 @@ int TileEngine::unitOpensDoor(BattleUnit *unit, bool rClick, int dir)
  * @param pos The starting position
  * @param part The part to open, defines which direction to check.
  */
-void TileEngine::checkAdjacentDoors(Position pos, int part)
+void TileEngine::checkAdjacentDoors(const Position& pos, int part)
 {
 	Position offset;
 	bool westSide = (part == 1);
@@ -2085,7 +2138,7 @@ int TileEngine::closeUfoDoors()
  * @param excludeAllBut [Optional] The only unit to be considered for ray hits.
  * @return the objectnumber(0-3) or unit(4) or out of map (5) or -1(hit nothing).
  */
-int TileEngine::calculateLine(const Position& origin, const Position& target, bool storeTrajectory, std::vector<Position> *trajectory, BattleUnit *excludeUnit, bool doVoxelCheck, bool onlyVisible, BattleUnit *excludeAllBut)
+int TileEngine::calculateLine(Position origin, Position target, bool storeTrajectory, std::vector<Position> *trajectory, BattleUnit *excludeUnit, bool doVoxelCheck, bool onlyVisible, BattleUnit *excludeAllBut)
 {
 	int x, x0, x1, delta_x, step_x;
 	int y, y0, y1, delta_y, step_y;
@@ -2166,19 +2219,19 @@ int TileEngine::calculateLine(const Position& origin, const Position& target, bo
 		}
 		else
 		{
-            int temp_res = verticalBlockage(_save->getTile(lastPoint), _save->getTile(Position(cx, cy, cz)), DT_NONE);
+			int temp_res = verticalBlockage(_save->getTile(lastPoint), _save->getTile(Position(cx, cy, cz)), DT_NONE);
 			result = horizontalBlockage(_save->getTile(lastPoint), _save->getTile(Position(cx, cy, cz)), DT_NONE, steps<2);
 			steps++;
-            if (result == -1)
-            {
-                if (temp_res > 127)
-                {
-                    result = 0;
-                } else {
-                return result; // We hit a big wall
-                }
-            }
-            result += temp_res;
+			if (result == -1)
+			{
+				if (temp_res > 127)
+				{
+					result = 0;
+				} else {
+				return result; // We hit a big wall
+				}
+			}
+			result += temp_res;
 			if (result > 127)
 			{
 				return result;
@@ -2253,7 +2306,7 @@ int TileEngine::calculateLine(const Position& origin, const Position& target, bo
  * @param delta Is the deviation of the angles it should take into account, 0,0,0 is perfection.
  * @return The objectnumber(0-3) or unit(4) or out of map (5) or -1(hit nothing).
  */
-int TileEngine::calculateParabola(const Position& origin, const Position& target, bool storeTrajectory, std::vector<Position> *trajectory, BattleUnit *excludeUnit, double curvature, const Position delta)
+int TileEngine::calculateParabola(Position origin, Position target, bool storeTrajectory, std::vector<Position> *trajectory, BattleUnit *excludeUnit, double curvature, const Position delta)
 {
 	double ro = sqrt((double)((target.x - origin.x) * (target.x - origin.x) + (target.y - origin.y) * (target.y - origin.y) + (target.z - origin.z) * (target.z - origin.z)));
 
@@ -2312,7 +2365,7 @@ int TileEngine::calculateParabola(const Position& origin, const Position& target
  * @param voxel The voxel to trace down.
  * @return z coord of "ground".
  */
-int TileEngine::castedShade(const Position& voxel)
+int TileEngine::castedShade(Position voxel)
 {
 	int zstart = voxel.z;
 	Position tmpCoord = voxel / Position(16,16,24);
@@ -2332,7 +2385,7 @@ int TileEngine::castedShade(const Position& voxel)
 		tmpVoxel.z = z;
 		if (voxelCheck(tmpVoxel, 0) != V_EMPTY) break;
 	}
-    return z;
+	return z;
 }
 
 /**
@@ -2341,7 +2394,7 @@ int TileEngine::castedShade(const Position& voxel)
  * @return True if visible.
  */
 
-bool TileEngine::isVoxelVisible(const Position& voxel)
+bool TileEngine::isVoxelVisible(Position voxel)
 {
 	int zstart = voxel.z+3; // slight Z adjust
 	if ((zstart/24)!=(voxel.z/24))
@@ -2358,7 +2411,7 @@ bool TileEngine::isVoxelVisible(const Position& voxel)
 		++tmpVoxel.y;
 		if (voxelCheck(tmpVoxel, 0) == V_OBJECT) return false;
 	}
-    return true;
+	return true;
 }
 
 /**
@@ -2370,8 +2423,12 @@ bool TileEngine::isVoxelVisible(const Position& voxel)
  * @param excludeAllBut If set, the only unit to be considered for ray hits.
  * @return The objectnumber(0-3) or unit(4) or out of map (5) or -1 (hit nothing).
  */
-int TileEngine::voxelCheck(const Position& voxel, BattleUnit *excludeUnit, bool excludeAllUnits, bool onlyVisible, BattleUnit *excludeAllBut)
+int TileEngine::voxelCheck(Position voxel, BattleUnit *excludeUnit, bool excludeAllUnits, bool onlyVisible, BattleUnit *excludeAllBut)
 {
+	if (_save->isBeforeGame())
+	{
+		excludeAllUnits = true; // don't start unit spotting before pre-game inventory stuff (large units on the craftInventory tile will cause a crash if they're "spotted")
+	}
 	Tile *tile = _save->getTile(voxel / Position(16, 16, 24));
 	// check if we are not out of the map
 	if (tile == 0 || voxel.x < 0 || voxel.y < 0 || voxel.z < 0)
@@ -2460,7 +2517,7 @@ void TileEngine::togglePersonalLighting()
  * @param pos2 Position of second square.
  * @return Distance.
  */
-int TileEngine::distance(const Position &pos1, const Position &pos2) const
+int TileEngine::distance(Position pos1, Position pos2) const
 {
 	int x = pos1.x - pos2.x;
 	int y = pos1.y - pos2.y;
@@ -2474,7 +2531,7 @@ int TileEngine::distance(const Position &pos1, const Position &pos2) const
  * @param considerZ Whether to consider the z coordinate.
  * @return Distance.
  */
-int TileEngine::distanceSq(const Position &pos1, const Position &pos2, bool considerZ) const
+int TileEngine::distanceSq(Position pos1, Position pos2, bool considerZ) const
 {
 	int x = pos1.x - pos2.x;
 	int y = pos1.y - pos2.y;
@@ -2602,7 +2659,7 @@ bool TileEngine::validMeleeRange(BattleUnit *attacker, BattleUnit *target, int d
  * @param dest Destination position.
  * @return True when the range is valid.
  */
-bool TileEngine::validMeleeRange(Position pos, int direction, BattleUnit *attacker, BattleUnit *target, Position *dest, bool preferEnemy)
+bool TileEngine::validMeleeRange(const Position& pos, int direction, BattleUnit *attacker, BattleUnit *target, Position *dest, bool preferEnemy)
 {
 	if (direction < 0 || direction > 7)
 	{
@@ -2690,7 +2747,7 @@ bool TileEngine::validMeleeRange(Position pos, int direction, BattleUnit *attack
  * @param position Current position.
  * @return Direction or -1 when no window found.
  */
-int TileEngine::faceWindow(const Position &position)
+int TileEngine::faceWindow(Position position)
 {
 	static const Position oneTileEast = Position(1, 0, 0);
 	static const Position oneTileSouth = Position(0, 1, 0);
@@ -2716,7 +2773,7 @@ int TileEngine::faceWindow(const Position &position)
  * @param voxelType The type of voxel at which this parabola terminates.
  * @return Validity of action.
  */
-bool TileEngine::validateThrow(BattleAction &action, Position originVoxel, Position targetVoxel, double *curve, int *voxelType)
+bool TileEngine::validateThrow(BattleAction &action, const Position& originVoxel, const Position& targetVoxel, double *curve, int *voxelType)
 {
 	bool foundCurve = false;
 	double curvature = 0.5;
@@ -2733,11 +2790,18 @@ bool TileEngine::validateThrow(BattleAction &action, Position originVoxel, Posit
 
 	Tile *targetTile = _save->getTile(action.target);
 	// object blocking - can't throw here
-	if ((action.type == BA_THROW
+	if (action.type == BA_THROW
 		&& targetTile
 		&& targetTile->getMapData(O_OBJECT)
-		&& targetTile->getMapData(O_OBJECT)->getTUCost(MT_WALK) == 255)
-		|| ProjectileFlyBState::validThrowRange(&action, originVoxel, targetTile) == false)
+		&& targetTile->getMapData(O_OBJECT)->getTUCost(MT_WALK) == 255
+		&& !(targetTile->isBigWall()
+		&& (targetTile->getMapData(O_OBJECT)->getBigWall()<1
+		|| targetTile->getMapData(O_OBJECT)->getBigWall()>3)))
+	{
+		return false;
+	}
+	// out of range - can't throw here
+	if (ProjectileFlyBState::validThrowRange(&action, originVoxel, targetTile) == false)
 	{
 		return false;
 	}
@@ -2793,7 +2857,7 @@ void TileEngine::recalculateFOV()
  * @param target The target point of the action.
  * @return direction.
  */
-int TileEngine::getDirectionTo(const Position &origin, const Position &target) const
+int TileEngine::getDirectionTo(Position origin, Position target) const
 {
 	double ox = target.x - origin.x;
 	double oy = target.y - origin.y;
@@ -2908,7 +2972,7 @@ Position TileEngine::getOriginVoxel(BattleAction &action, Tile *tile)
  * @param radius how far to spread out.
  * @param unit the unit that is triggering this action.
  */
-void TileEngine::setDangerZone(Position pos, int radius, BattleUnit *unit)
+void TileEngine::setDangerZone(const Position& pos, int radius, BattleUnit *unit)
 {
 	Tile *tile = _save->getTile(pos);
 	if (!tile)
@@ -2953,3 +3017,4 @@ void TileEngine::setDangerZone(Position pos, int radius, BattleUnit *unit)
 }
 
 }
+>>>>>>> refs/remotes/SupSuper/master

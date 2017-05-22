@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 OpenXcom Developers.
+ * Copyright 2010-2016 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -114,17 +114,18 @@ void create()
 	_info.push_back(OptionInfo("globeAllRadarsOnBaseBuild", &globeAllRadarsOnBaseBuild, true));
 	_info.push_back(OptionInfo("audioSampleRate", &audioSampleRate, 22050));
 	_info.push_back(OptionInfo("audioBitDepth", &audioBitDepth, 16));
+	_info.push_back(OptionInfo("audioChunkSize", &audioChunkSize, 1024));
 	_info.push_back(OptionInfo("pauseMode", &pauseMode, 0));
 	_info.push_back(OptionInfo("battleNotifyDeath", &battleNotifyDeath, false));
 	_info.push_back(OptionInfo("showFundsOnGeoscape", &showFundsOnGeoscape, false));
 	_info.push_back(OptionInfo("allowResize", &allowResize, false));
-	_info.push_back(OptionInfo("windowedModePositionX", &windowedModePositionX, -1));
-	_info.push_back(OptionInfo("windowedModePositionY", &windowedModePositionY, -1));
+	_info.push_back(OptionInfo("windowedModePositionX", &windowedModePositionX, 0));
+	_info.push_back(OptionInfo("windowedModePositionY", &windowedModePositionY, 0));
 	_info.push_back(OptionInfo("borderless", &borderless, false));
 	_info.push_back(OptionInfo("captureMouse", (bool*)&captureMouse, false));
 	_info.push_back(OptionInfo("battleTooltips", &battleTooltips, true));
 	_info.push_back(OptionInfo("keepAspectRatio", &keepAspectRatio, true));
-	_info.push_back(OptionInfo("nonSquarePixelRatio", &nonSquarePixelRatio, false));	
+	_info.push_back(OptionInfo("nonSquarePixelRatio", &nonSquarePixelRatio, false));
 	_info.push_back(OptionInfo("cursorInBlackBandsInFullscreen", &cursorInBlackBandsInFullscreen, false));
 	_info.push_back(OptionInfo("cursorInBlackBandsInWindow", &cursorInBlackBandsInWindow, true));
 	_info.push_back(OptionInfo("cursorInBlackBandsInBorderlessWindow", &cursorInBlackBandsInBorderlessWindow, false));
@@ -137,6 +138,8 @@ void create()
 	_info.push_back(OptionInfo("preferredSound", (int*)&preferredSound, SOUND_AUTO));
 	_info.push_back(OptionInfo("preferredVideo", (int*)&preferredVideo, VIDEO_FMV));
 	_info.push_back(OptionInfo("musicAlwaysLoop", &musicAlwaysLoop, false));
+	_info.push_back(OptionInfo("touchEnabled", &touchEnabled, false));
+	_info.push_back(OptionInfo("rootWindowedMode", &rootWindowedMode, false));
 
 	// advanced options
 	_info.push_back(OptionInfo("playIntro", &playIntro, true, "STR_PLAYINTRO", "STR_GENERAL"));
@@ -145,6 +148,7 @@ void create()
 	_info.push_back(OptionInfo("newSeedOnLoad", &newSeedOnLoad, false, "STR_NEWSEEDONLOAD", "STR_GENERAL"));
 	_info.push_back(OptionInfo("mousewheelSpeed", &mousewheelSpeed, 3, "STR_MOUSEWHEEL_SPEED", "STR_GENERAL"));
 	_info.push_back(OptionInfo("changeValueByMouseWheel", &changeValueByMouseWheel, 0, "STR_CHANGEVALUEBYMOUSEWHEEL", "STR_GENERAL"));
+	_info.push_back(OptionInfo("soldierDiaries", &soldierDiaries, true));
 
 // this should probably be any small screen touch-device, i don't know the defines for all of them so i'll cover android and IOS as i imagine they're more common
 #ifdef __ANDROID_API__
@@ -172,9 +176,9 @@ void create()
 	_info.push_back(OptionInfo("globeSeasons", &globeSeasons, false, "STR_GLOBESEASONS", "STR_GEOSCAPE"));
 	_info.push_back(OptionInfo("psiStrengthEval", &psiStrengthEval, false, "STR_PSISTRENGTHEVAL", "STR_GEOSCAPE"));
 	_info.push_back(OptionInfo("canTransferCraftsWhileAirborne", &canTransferCraftsWhileAirborne, false, "STR_CANTRANSFERCRAFTSWHILEAIRBORNE", "STR_GEOSCAPE")); // When the craft can reach the destination base with its fuel
-	_info.push_back(OptionInfo("canManufactureMoreItemsPerHour", &canManufactureMoreItemsPerHour, false, "STR_CANMANUFACTUREMOREITEMSPERHOUR", "STR_GEOSCAPE"));
-	_info.push_back(OptionInfo("spendResearchedItems", &spendResearchedItems, false, "STR_SPENDRESEARCHEDITEMS", "STR_GEOSCAPE"));
+	_info.push_back(OptionInfo("retainCorpses", &retainCorpses, false, "STR_RETAINCORPSES", "STR_GEOSCAPE"));
 	_info.push_back(OptionInfo("fieldPromotions", &fieldPromotions, false, "STR_FIELDPROMOTIONS", "STR_GEOSCAPE"));
+	_info.push_back(OptionInfo("meetingPoint", &meetingPoint, false, "STR_MEETINGPOINT", "STR_GEOSCAPE"));
 	
 	_info.push_back(OptionInfo("battleDragScrollInvert", &battleDragScrollInvert, false, "STR_DRAGSCROLLINVERT", "STR_BATTLESCAPE")); // true drags away from the cursor, false drags towards (like a grab)
 	_info.push_back(OptionInfo("sneakyAI", &sneakyAI, false, "STR_SNEAKYAI", "STR_BATTLESCAPE"));
@@ -273,6 +277,7 @@ void create()
 	_info.push_back(OptionInfo("keyInvCreateTemplate", &keyInvCreateTemplate, SDLK_c, "STR_CREATE_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
 	_info.push_back(OptionInfo("keyInvApplyTemplate", &keyInvApplyTemplate, SDLK_v, "STR_APPLY_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
 	_info.push_back(OptionInfo("keyInvClear", &keyInvClear, SDLK_x, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
+	_info.push_back(OptionInfo("keyInvAutoEquip", &keyInvAutoEquip, SDLK_z, "STR_AUTO_EQUIP", "STR_BATTLESCAPE"));
 
 #ifdef __MORPHOS__
 	_info.push_back(OptionInfo("FPS", &FPS, 15, "STR_FPS_LIMIT", "STR_GENERAL"));
@@ -444,7 +449,7 @@ static void _scanMods(const std::string &modsDir)
 	std::vector<std::string> contents = CrossPlatform::getFolderContents(modsDir);
 	for (std::vector<std::string>::iterator i = contents.begin(); i != contents.end(); ++i)
 	{
-		std::string modPath = modsDir + "/" + *i;
+		std::string modPath = modsDir + CrossPlatform::PATH_SEPARATOR + *i;
 		if (!CrossPlatform::folderExists(modPath))
 		{
 			// skip non-directories (e.g. README.txt)
@@ -457,7 +462,7 @@ static void _scanMods(const std::string &modsDir)
 		std::string metadataPath = modPath + "/metadata.yml";
 		if (!CrossPlatform::fileExists(metadataPath))
 		{
-			Log(LOG_WARNING) << metadataPath << " not found; using default values for mod: " << *i;
+			Log(LOG_VERBOSE) << metadataPath << " not found; using default values for mod: " << *i;
 		}
 		else
 		{
@@ -511,12 +516,15 @@ bool init(int argc, char *argv[])
 	s += "openxcom.log";
 	Logger::logFile() = s;
 	FILE *file = fopen(Logger::logFile().c_str(), "w");
-	if (!file)
+	if (file)
 	{
-		throw Exception(s + " not found");
+		fflush(file);
+		fclose(file);
 	}
-	fflush(file);
-	fclose(file);
+	else
+	{
+		Log(LOG_WARNING) << "Couldn't create log file, switching to stderr";
+	}
 	Log(LOG_INFO) << "Data folder is: " << _dataFolder;
 	Log(LOG_INFO) << "Data search is: ";
 	for (std::vector<std::string>::iterator i = _dataList.begin(); i != _dataList.end(); ++i)
@@ -527,14 +535,14 @@ bool init(int argc, char *argv[])
 	Log(LOG_INFO) << "Config folder is: " << _configFolder;
 	Log(LOG_INFO) << "Options loaded successfully.";
 
-	// pick up stuff in common
-	FileMap::load("common", CrossPlatform::searchDataFolder("common"), true);
-
 	return true;
 }
 
 void updateMods()
 {
+	// pick up stuff in common before-hand
+	FileMap::load("common", CrossPlatform::searchDataFolder("common"), true);
+
 	std::string modPath = CrossPlatform::searchDataFolder("standard");
 	Log(LOG_INFO) << "Scanning standard mods in '" << modPath << "'...";
 	_scanMods(modPath);
@@ -732,7 +740,7 @@ void mapResources()
 		std::set<std::string> circDepCheck;
 		_loadMod(modInfo, circDepCheck);
 	}
-	// pick up stuff in common
+	// TODO: Figure out why we still need to check common here
 	FileMap::load("common", CrossPlatform::searchDataFolder("common"), true);
 	Log(LOG_INFO) << "Resources files mapped successfully.";
 }
@@ -752,7 +760,11 @@ void setFolders()
 	if (_userFolder.empty())
 	{
 		std::vector<std::string> user = CrossPlatform::findUserFolders();
-		_configFolder = CrossPlatform::findConfigFolder();
+
+		if (_configFolder.empty())
+		{
+			_configFolder = CrossPlatform::findConfigFolder();
+		}
 
 		// Look for an existing user folder
 		for (std::vector<std::string>::reverse_iterator i = user.rbegin(); i != user.rend(); ++i)
@@ -826,7 +838,7 @@ void userSplitMasters()
 			{
 				saves = CrossPlatform::getFolderContents(_userFolder, "sav");
 				std::vector<std::string> autosaves = CrossPlatform::getFolderContents(_userFolder, "asav");
-				saves.insert(saves.end(), autosaves.begin(), autosaves.end());				
+				saves.insert(saves.end(), autosaves.begin(), autosaves.end());
 			}
 			for (std::vector<std::string>::iterator j = saves.begin(); j != saves.end();)
 			{
@@ -835,7 +847,7 @@ void userSplitMasters()
 				std::vector<std::string> mods = doc["mods"].as<std::vector< std::string> >(std::vector<std::string>());
 				if (std::find(mods.begin(), mods.end(), (*i)) != mods.end())
 				{
-					std::string dstFile = masterFolder + "/" + (*j);
+					std::string dstFile = masterFolder + CrossPlatform::PATH_SEPARATOR + (*j);
 					CrossPlatform::moveFile(srcFile, dstFile);
 					j = saves.erase(j);
 				}
@@ -919,6 +931,52 @@ void load(const std::string &filename)
 	}
 }
 
+void writeNode(const YAML::Node& node, YAML::Emitter& emitter)
+{
+	switch (node.Type())
+	{
+		case YAML::NodeType::Sequence:
+		{
+			emitter << YAML::BeginSeq;
+			for (size_t i = 0; i < node.size(); i++)
+			{
+				writeNode(node[i], emitter);
+			}
+			emitter << YAML::EndSeq;
+			break;
+		}
+		case YAML::NodeType::Map:
+		{
+			emitter << YAML::BeginMap;
+
+			// First collect all the keys
+			std::vector<std::string> keys(node.size());
+			int key_it = 0;
+			for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+			{
+				keys[key_it++] = it->first.as<std::string>();
+			}
+
+			// Then sort them
+			std::sort(keys.begin(), keys.end());
+
+			// Then emit all the entries in sorted order.
+			for(size_t i = 0; i < keys.size(); i++)
+			{
+				emitter << YAML::Key;
+				emitter << keys[i];
+				emitter << YAML::Value;
+				writeNode(node[keys[i]], emitter);
+			}
+			emitter << YAML::EndMap;
+			break;
+		}
+		default:
+			emitter << node;
+			break;
+	}
+}
+
 /**
  * Saves options to a YAML file.
  * @param filename YAML filename.
@@ -951,9 +1009,9 @@ void save(const std::string &filename)
 			doc["mods"].push_back(mod);
 		}
 
-		out << doc;
+		writeNode(doc, out);
 
-		sav << out.c_str();
+		sav << out.c_str() << std::endl;
 	}
 	catch (YAML::Exception &e)
 	{
@@ -1019,7 +1077,7 @@ std::string getConfigFolder()
  */
 std::string getMasterUserFolder()
 {
-	return _userFolder + getActiveMaster() + "/";
+	return _userFolder + getActiveMaster() + CrossPlatform::PATH_SEPARATOR;
 }
 
 /**
@@ -1046,6 +1104,12 @@ void backupDisplay()
 	Options::newHQXFilter = Options::useHQXFilter;
 	Options::newOpenGLShader = Options::useOpenGLShader;
 	Options::newXBRZFilter = Options::useXBRZFilter;
+	Options::newRootWindowedMode = Options::rootWindowedMode;
+	Options::newWindowedModePositionX = Options::windowedModePositionX;
+	Options::newWindowedModePositionY = Options::windowedModePositionY;
+	Options::newFullscreen = Options::fullscreen;
+	Options::newAllowResize = Options::allowResize;
+	Options::newBorderless = Options::borderless;
 }
 
 /**
@@ -1053,7 +1117,7 @@ void backupDisplay()
  * testing a new display setup.
  */
 void switchDisplay()
-{	
+{
 	std::swap(displayWidth, newDisplayWidth);
 	std::swap(displayHeight, newDisplayHeight);
 	std::swap(useOpenGL, newOpenGL);
@@ -1063,7 +1127,14 @@ void switchDisplay()
 	std::swap(useHQXFilter, newHQXFilter);
 	std::swap(useOpenGLShader, newOpenGLShader);
 	std::swap(useXBRZFilter, newXBRZFilter);
+	std::swap(rootWindowedMode, newRootWindowedMode);
+	std::swap(windowedModePositionX, newWindowedModePositionX);
+	std::swap(windowedModePositionY, newWindowedModePositionY);
+	std::swap(fullscreen, newFullscreen);
+	std::swap(allowResize, newAllowResize);
+	std::swap(borderless, newBorderless);
 }
 
 }
+
 }

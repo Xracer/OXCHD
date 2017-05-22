@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef OPENXCOM_ARTICLESTATEUFO_H
-#define OPENXCOM_ARTICLESTATEUFO_H
-
 #include "ArticleState.h"
 
 namespace OpenXcom
@@ -48,5 +45,3 @@ namespace OpenXcom
 		TextList *_lstInfo;
 	};
 }
-
-#endif

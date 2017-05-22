@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ZOOM_H
-#define ZOOM_H
-
 #include <SDL.h>
 #include "OpenGL.h"
 
@@ -42,5 +40,3 @@ private:
 };
 
 }
-
-#endif // ZOOM_H

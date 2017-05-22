@@ -268,23 +268,38 @@ size_t TextList::getVisibleRows() const
 void TextList::addRow(int cols, ...)
 {
 	va_list args;
+	int ncols;
 	va_start(args, cols);
-	std::vector<Text*> temp;
-	int rowX = 0, rows = 1, rowHeight = 0;
+	if (cols > 0)
+	{
+		ncols = cols;
+	}
+	else
+	{
+		ncols = 1;
+	}
 
-	for (int i = 0; i < cols; ++i)
+	std::vector<Text*> temp;
+	// Positions are relative to list surface.
+	int rowX = 0, rowY = 0, rows = 1, rowHeight = 0;
+	if (!_texts.empty())
+	{
+		rowY = _texts.back().front()->getY() + _texts.back().front()->getHeight() + _font->getSpacing();
+	}
+
+	for (int i = 0; i < ncols; ++i)
 	{
 		int width;
 		// Place text
-        if (_flooding)
-        {
-            width = 340;
-        }
-        else
-        {
-            width = _columns[i];
-        }
-		Text* txt = new Text(width, _font->getHeight(), _margin + rowX, getY());
+		if (_flooding)
+		{
+			width = 340;
+		}
+		else
+		{
+			width = _columns[i];
+		}
+		Text* txt = new Text(width, _font->getHeight(), _margin + rowX, rowY);
 		txt->setPalette(this->getPalette());
 		txt->initText(_big, _small, _lang);
 		txt->setColor(_color);
@@ -302,7 +317,8 @@ void TextList::addRow(int cols, ...)
 		{
 			txt->setSmall();
 		}
-		txt->setText(va_arg(args, wchar_t*));
+		if (cols > 0)
+			txt->setText(va_arg(args, wchar_t*));
 		// grab this before we enable word wrapping so we can use it to calculate
 		// the total row height below
 		int vmargin = _font->getHeight() - txt->getTextHeight();
@@ -313,7 +329,7 @@ void TextList::addRow(int cols, ...)
 			rows = std::max(rows, txt->getNumLines());
 		}
 		rowHeight = std::max(rowHeight, txt->getTextHeight() + vmargin);
-		
+
 		// Places dots between text
 		if (_dot && i < cols - 1)
 		{
@@ -321,8 +337,16 @@ void TextList::addRow(int cols, ...)
 			unsigned int w = txt->getTextWidth();
 			while (w < _columns[i])
 			{
+				if (_align[i] != ALIGN_RIGHT)
+				{
 				w += _font->getChar('.')->getCrop()->w + _font->getSpacing();
 				buf += '.';
+			}
+				if (_align[i] != ALIGN_LEFT)
+				{
+					w += _font->getChar('.')->getCrop()->w + _font->getSpacing();
+					buf.insert(0, 1, '.');
+				}
 			}
 			txt->setText(buf);
 		}
@@ -350,8 +374,8 @@ void TextList::addRow(int cols, ...)
 		_rows.push_back(_texts.size() - 1);
 	}
 
-
 	// Place arrow buttons
+	// Position defined w.r.t. main window, NOT TextList.
 	if (_arrowPos != -1)
 	{
 		ArrowShape shape1, shape2;
@@ -564,7 +588,7 @@ void TextList::setAlign(TextHAlign align, int col)
 {
 	if (col == -1)
 	{
-		for (size_t i = 0; i <= _columns.size() - 1; ++i)
+		for (size_t i = 0; i < _columns.size(); ++i)
 		{
 			_align[i] = align;
 		}
@@ -1126,33 +1150,33 @@ void TextList::mouseOver(Action *action, State *state)
 {
 	if (_selectable)
 	{
-		int h = _font->getHeight() + _font->getSpacing();
-		_selRow = std::max(0, (int)(_scroll + (int)floor(action->getRelativeYMouse() / (h * action->getYScale()))));
+		int rowHeight = _font->getHeight() + _font->getSpacing(); //theorethical line height
+		_selRow = std::max(0, (int)(_scroll + (int)floor(action->getRelativeYMouse() / (rowHeight * action->getYScale()))));
 		if (_selRow < _rows.size())
 		{
 			Text *selText = _texts[_rows[_selRow]].front();
 			int y = getY() + selText->getY();
-			int h = selText->getHeight() + _font->getSpacing();
-			if (y < getY() || y + h > getY() + getHeight())
+			int actualHeight = selText->getHeight() + _font->getSpacing(); //current line height
+			if (y < getY() || y + actualHeight > getY() + getHeight())
 			{
-				h /= 2;
+				actualHeight /= 2;
 			}
 			if (y < getY())
 			{
 				y = getY();
 			}
-			if (_selector->getHeight() != h)
+			if (_selector->getHeight() != actualHeight)
 			{
 				// resizing doesn't work, but recreating does, so let's do that!
 				delete _selector;
-				_selector = new Surface(getWidth(), h, getX(), y);
+				_selector = new Surface(getWidth(), actualHeight, getX(), y);
 				_selector->setPalette(getPalette());
 			}
 			_selector->setY(y);
 			_selector->copy(_bg);
 			if (_contrast)
 			{
-				_selector->offset(-10, 1);
+				_selector->offsetBlock(-5);
 			}
 			else if (_comboBox)
 			{
@@ -1160,7 +1184,7 @@ void TextList::mouseOver(Action *action, State *state)
 			}
 			else
 			{
-				_selector->offset(-10, Palette::backPos);
+				_selector->offsetBlock(-10);
 			}
 			_selector->setVisible(true);
 		}
@@ -1243,6 +1267,7 @@ int TextList::getScrollbarColor()
 
 void TextList::setFlooding(bool flooding)
 {
-    _flooding = flooding;
+	_flooding = flooding;
 }
+
 }

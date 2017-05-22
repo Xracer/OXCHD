@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,11 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef __OXC_TOGGLETEXTBUTTON_H
-#define __OXC_TOGGLETEXTBUTTON_H
-
-
 #include "TextButton.h"
 #include "../Engine/Action.h"
 #include "../Engine/State.h"
@@ -49,5 +45,3 @@ public:
 };
 
 }
-
-#endif

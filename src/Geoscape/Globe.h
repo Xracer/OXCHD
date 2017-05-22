@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_GLOBE_H
-#define OPENXCOM_GLOBE_H
-
 #include <vector>
 #include <list>
 #include "../Engine/InteractiveSurface.h"
@@ -49,7 +47,7 @@ private:
 	static const int NUM_SEASHADES = 72;
 	static const int NEAR_RADIUS = 25;
 	static const size_t DOGFIGHT_ZOOM = 3;
-	static const size_t CITY_MARKER = 8;
+	static const int CITY_MARKER = 8;
 	static const double ROTATE_LONGITUDE;
 	static const double ROTATE_LATITUDE;
 
@@ -206,7 +204,7 @@ public:
 	/// Turns off new base hover mode.
 	void unsetNewBaseHover(void);
 	/// Gets state of base hover mode
-	bool getNewBaseHover(void);
+	bool getNewBaseHover(void) const;
 	/// set the _radarLines variable
 	void toggleRadarLines();
 	/// Update the resolution settings, we just resized the window.
@@ -218,5 +216,3 @@ public:
 };
 
 }
-
-#endif

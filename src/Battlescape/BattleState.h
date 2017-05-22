@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,15 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_BATTLESTATE_H
-#define OPENXCOM_BATTLESTATE_H
-
 #include "BattlescapeGame.h"
 
 namespace OpenXcom
 {
-
-class BattlescapeGame;
 
 /**
  * This class sets the battlescape in a certain sub-state.
@@ -53,5 +49,3 @@ public:
 };
 
 }
-
-#endif

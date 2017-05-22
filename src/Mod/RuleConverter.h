@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright 2010-2017 OpenXcom Developers.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_RULECONVERTER_H
-#define OPENXCOM_RULECONVERTER_H
-
 #include <map>
 #include <vector>
 #include <string>
@@ -26,10 +24,6 @@
 
 namespace OpenXcom
 {
-
-class Polygon;
-class Polyline;
-class Texture;
 
 /**
  * Represents game-specific contents needed
@@ -85,5 +79,3 @@ public:
 };
 
 }
-
-#endif

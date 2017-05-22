@@ -91,6 +91,8 @@ if ( NOT OPENGL_FOUND )
     "Continuing building without OpenGL support."
     )
   add_definitions(-D__NO_OPENGL)
+else ()
+    include_directories ( ${OPENGL_INCLUDE_DIR} )
 endif ()
 
 # Read version number
@@ -111,12 +113,12 @@ if ( "${OPENXCOM_VERSION_STRING}" STREQUAL "" )
       ERROR_VARIABLE git_describe_error
       RESULT_VARIABLE git_describe_result
       )
-    string ( REGEX MATCH "([a-z|0-9|.]*)-([0-9]*)-([a-z|0-9]*)([-|a-z]*)" git_commit "${git_describe_out}" )
+    string ( REGEX MATCH "([a-z|0-9|.]*)-([0-9]*)-g([a-z|0-9]*)([-|a-z]*)" git_commit "${git_describe_out}" )
     set ( git_tag ${CMAKE_MATCH_1} )
     set ( git_nb_commit ${CMAKE_MATCH_2} )
     set ( git_commit ${CMAKE_MATCH_3} )
     set ( git_dirty ${CMAKE_MATCH_4} )
-    set ( OPENXCOM_VERSION_STRING ".${git_commit}" )
+    set ( OPENXCOM_VERSION_STRING ".${git_commit}${git_dirty}" )
   endif()
 endif()
 
@@ -163,10 +165,14 @@ if ( BUILD_PACKAGE )
 endif()
 
 if ( NOT WIN32 )
-  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/openxcom.desktop"     DESTINATION share/applications)
-  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom_48x48.png"   DESTINATION share/icons/hicolor/48x48/apps RENAME openxcom.png)
-  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom_128x128.png"   DESTINATION share/icons/hicolor/128x128/apps RENAME openxcom.png)
-  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom.svg"   DESTINATION share/icons/hicolor/scalable/apps)
+  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/openxcom.desktop"
+    DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/applications")
+  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom_48x48.png"
+    DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/icons/hicolor/48x48/apps" RENAME openxcom.png)
+  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom_128x128.png"
+    DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/icons/hicolor/128x128/apps" RENAME openxcom.png)
+  install(FILES "${CMAKE_SOURCE_DIR}/res/linux/icons/openxcom.svg"
+    DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/icons/hicolor/scalable/apps")
 endif ()
 
 add_subdirectory ( docs )
