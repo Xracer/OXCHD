@@ -130,12 +130,14 @@ namespace OpenXcom
 		add(_inv);
 
 		// Objects for information under name field
+		/*		
 		add(_txtRank);
 		add(_txtCraft);
 		add(_txtMissions);
 		add(_txtKills);
 		add(_txtStatus);
 		add(_txtArmor);
+		*/
 
 		_txtName->setColor(Palette::blockOffset(4));
 		_txtName->setBig();
@@ -218,6 +220,7 @@ namespace OpenXcom
 		_currentTooltip = "";
 
 		//Setup object for the top row labels of stats
+		/*
 		_txtRank->setColor(color);
 		_txtRank->setSecondaryColor(color2);
 		_txtRank->setHighContrast(true);
@@ -241,6 +244,7 @@ namespace OpenXcom
 		_txtArmor->setColor(color);
 		_txtArmor->setSecondaryColor(color2);
 		_txtArmor->setHighContrast(true);
+		*/
 
 	}
 
@@ -358,7 +362,7 @@ namespace OpenXcom
 		}
 		else
 		{
-			Surface *armorSurface = _game->getMod()->getSurface(unit->getArmor()->getSpriteInventory(), flase);
+			Surface *armorSurface = _game->getMod()->getSurface(unit->getArmor()->getSpriteInventory(), false);
 			if (armorSurface)
 			{
 				armorSurface->blit(_soldier);

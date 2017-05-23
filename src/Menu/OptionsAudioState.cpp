@@ -55,9 +55,6 @@ namespace OpenXcom
 		_txtUiVolume = new Text(114, 11, 388, 162);
 		_slrUiVolume = new Slider(130, 18, 388, 174);
 
-		_txtSampleRate = new Text(114, 11, 526, 162);
-		_cbxSampleRate = new ComboBox(this, 130, 18, 526, 174);
-
 		_txtMusicFormat = new Text(114, 11, 388, 194);
 		_cbxMusicFormat = new ComboBox(this, 130, 18, 388, 206);
 		_txtCurrentMusic = new Text(114, 11, 388, 226);

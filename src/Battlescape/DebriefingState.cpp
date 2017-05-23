@@ -1071,12 +1071,6 @@ void DebriefingState::prepareDebriefing()
 				destroyAlienBase = false;
 			}
 
-			
-			if (deployment && !deployment->getNextStage().empty())
-			{
-				_missionStatistics->alienRace = (*i)->getAlienRace();
-				destroyAlienBase = false;
-			}
 			success = destroyAlienBase;
 			if (destroyAlienBase)
 			{
@@ -1108,11 +1102,6 @@ void DebriefingState::prepareDebriefing()
 		UnitFaction oldFaction = (*j)->getOriginalFaction();
 		int value = (*j)->getValue();
 		Soldier *soldier = save->getSoldier((*j)->getId());
-		std::string type = (*j)->getType();
-		if (!(*j)->getSpawnUnit().empty())
-		{
-			type = (*j)->getSpawnUnit();
-		}
 
 		if (!(*j)->getTile())
 		{

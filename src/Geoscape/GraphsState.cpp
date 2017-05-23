@@ -104,7 +104,7 @@ namespace OpenXcom
 		for (std::vector<Region *>::iterator iter = _game->getSavedGame()->getRegions()->begin(); iter != _game->getSavedGame()->getRegions()->end(); ++iter)
 		{
 			// always save in toggles all the regions
-
+			Uint8 color = 13 + 8 * (offset % GRAPH_MAX_BUTTONS);
 			_regionToggles.push_back(new GraphButInfo(tr((*iter)->getRules()->getType()), color));
 			// initially add the GRAPH_MAX_BUTTONS having the first regions information
 			if (offset < GRAPH_MAX_BUTTONS)
@@ -782,11 +782,11 @@ namespace OpenXcom
 					y = 175;
 				newLineVector.push_back(y);
 				if (newLineVector.size() > 1 && _alien)
-					_alienCountryLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), Palette::blockOffset((entry / 2) + 1) + offset); //changing all 17 -> 35
+					_alienCountryLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), _countryToggles.at(entry)->_color + 4); //changing all 17 -> 35
 				else if (newLineVector.size() > 1 && _income)
-					_incomeLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), Palette::blockOffset((entry / 2) + 1) + offset); //changing all 17 -> 35
+					_incomeLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), _countryToggles.at(entry)->_color + 4); //changing all 17 -> 35
 				else if (newLineVector.size() > 1)
-					_xcomCountryLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), Palette::blockOffset((entry / 2) + 1) + offset); //changing all 17 -> 35
+					_xcomCountryLines.at(entry)->drawLine(x, y, x + 35, newLineVector.at(newLineVector.size() - 2), _countryToggles.at(entry)->_color + 4); //changing all 17 -> 35
 			}
 
 			if (_alien)

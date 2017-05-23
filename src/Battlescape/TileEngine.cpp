@@ -3017,4 +3017,3 @@ void TileEngine::setDangerZone(const Position& pos, int radius, BattleUnit *unit
 }
 
 }
->>>>>>> refs/remotes/SupSuper/master
