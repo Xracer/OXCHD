@@ -108,7 +108,7 @@ CraftSoldiersState::CraftSoldiersState(Base *base, size_t craft)
 	_txtCraft = new Text(120, 11, 1036, 258);
 	_txtAvailable = new Text(150, 11, 716, 246);
 	_txtUsed = new Text(110, 11, 922, 246);
-	_cbxSortBy = new ComboBox(this, 148, 16, 8, 176, true); //Need to put it in the right place
+	_cbxSortBy = new ComboBox(this, 150, 16, 1095, 229, true); //Need to put it in the right place
 	_lstSoldiers = new TextList(508, 118, 708, 270);
 
 	// Set palette
