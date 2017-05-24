@@ -50,32 +50,33 @@ namespace OpenXcom
 StatisticsState::StatisticsState()
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0, POPUP_BOTH);
-	_btnOk = new TextButton(50, 12, 135, 180);
-	_txtTitle = new Text(310, 25, 5, 8);
-	_lstStats = new TextList(280, 136, 12, 36);
+	_window = new Window(this, 550, 204, 700, 539);
+	//_btnOk = new TextButton(50, 12, 835, 749);
+	_txtTitle = new Text(310, 25, 705, 542);
+	_lstStats = new TextList(515, 162, 712, 567);
 
 	// Set palette
 	setInterface("newGameMenu");
 
-	add(_window, "window", "saveMenus");
-	add(_btnOk, "button", "saveMenus");
+	add(_window, "window", "soldierList");
+	//add(_btnOk, "button", "saveMenus");
 	add(_txtTitle, "text", "saveMenus");
 	add(_lstStats, "list", "saveMenus");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
-	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	//_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
+	_window->setThinBorder();
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&StatisticsState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&StatisticsState::btnOkClick, Options::keyOk);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&StatisticsState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&StatisticsState::btnOkClick, Options::keyOk);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
 
-	_lstStats->setColumns(2, 200, 80);
+	_lstStats->setColumns(2, 300, 150);
 	_lstStats->setDot(true);
 
 	listStats();
@@ -310,7 +311,7 @@ void StatisticsState::listStats()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void StatisticsState::btnOkClick(Action *)
 {
 	if (_game->getSavedGame()->getEnding() == END_NONE)
@@ -322,6 +323,6 @@ void StatisticsState::btnOkClick(Action *)
 		_game->setSavedGame(0);
 		_game->setState(new MainMenuState);
 	}
-}
+}*/
 
 }

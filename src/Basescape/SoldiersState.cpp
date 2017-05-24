@@ -30,6 +30,7 @@
 #include "../Savegame/Soldier.h"
 #include "SoldierInfoState.h"
 #include "SoldierMemorialState.h"
+#include "../Engine/MultiState.h"
 
 namespace OpenXcom
 {
@@ -44,13 +45,13 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 	bool isPsiBtnVisible = Options::anytimePsiTraining && _base->getAvailablePsiLabs() > 0;
 
 	// Create objects
-	_window = new Window(this, 550, 350, 700, 3);
+	_window = new Window(this, 550, 265, 700, 3);
 
 	_txtTitle = new Text(545, 17, 705, 13);
 	_txtName = new Text(150, 11, 710, 30);
 	_txtRank = new Text(100, 11, 900, 30);
 	_txtCraft = new Text(100, 11, 1040, 30);
-	_lstSoldiers = new TextList(515, 340, 700, 45);
+	_lstSoldiers = new TextList(515, 250, 700, 45);
 
 	// Set palette
 	setInterface("soldierList");
@@ -78,7 +79,7 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 
 	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_lstSoldiers->setColumns(3, 190, 140, 100);
+	_lstSoldiers->setColumns(3, 190, 140, 170);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
@@ -123,6 +124,14 @@ void SoldiersState::init()
  */
 void SoldiersState::lstSoldiersClick(Action *)
 {
+	/*
+	_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+
+	state->add(new TransferBaseState(_base));
+	_game->pushState(state);
+	*/
 	_game->pushState(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
 }
 

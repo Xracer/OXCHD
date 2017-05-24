@@ -63,6 +63,7 @@
 #include "../Mod/RuleInterface.h"
 #include "../Engine/MultiState.h"
 #include "../Interface/Window.h"
+#include "../Menu/StatisticsState.h"
 
 namespace OpenXcom
 {
@@ -76,13 +77,13 @@ namespace OpenXcom
 BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(globe)
 {
 	// Create objects
-	_txtFacility = new Text(192, 11, 25, 95);
-	_view = new BaseView(192, 192, 13, 120);
-	_mini = new MiniBaseView(180, 16, 13, 10);
-	_edtBase = new TextEdit(this, 150, 17, 13, 43);
-	_txtLocation = new Text(126, 11, 13, 65);
-	_txtFunds = new Text(126, 11, 13, 77);
-	_btnNewBase = new TextButton(32, 32, 220, 10);
+	_txtFacility = new Text(192, 11, 13, 105);
+	_view = new BaseView(384, 384, 13, 120);
+	_mini = new MiniBaseView(200, 32, 13, 10);
+	_edtBase = new TextEdit(this, 150, 17, 13, 45);
+	_txtLocation = new Text(126, 11, 13, 70);
+	_txtFunds = new Text(126, 11, 13, 83);
+	_btnNewBase = new TextButton(80, 32, 220, 10);
 	_btnBaseInfo = new TextButton(110, 30, 10, 755);
 	_btnSoldiers = new TextButton(110, 30, 125, 755);
 	_btnCrafts = new TextButton(110, 30, 240, 755);
@@ -299,6 +300,7 @@ void BasescapeState::btnSoldiersClick(Action *)
 	state->add(new BasescapeState(_base, _globe));
 	state->add(new SoldiersState(_base));
 	state->add(new SoldierMemorialState());
+	state->add(new StatisticsState());
 	_game->pushState(state);
 }
 

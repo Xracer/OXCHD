@@ -45,21 +45,21 @@ SoldierMemorialState::SoldierMemorialState()
 {
 
 	// Create objects
-	_window = new Window(this, 550, 350, 700, 358);
-	_btnStatistics = new TextButton(148, 16, 8, 176);
-	_txtTitle = new Text(545, 17, 705, 368); 
-	_txtName = new Text(150, 11, 710, 398);
-	_txtRank = new Text(100, 11, 900, 398);
-	_txtDate = new Text(100, 11, 1040, 398);
-	_txtRecruited = new Text(160, 11, 710, 384);
-	_txtLost = new Text(150, 11, 900, 384);
-	_lstSoldiers = new TextList(515, 340, 700, 410);
+	_window = new Window(this, 550, 265, 700, 271);
+	//_btnStatistics = new TextButton(148, 16, 8, 176);
+	_txtTitle = new Text(545, 17, 705, 274); 
+	_txtName = new Text(150, 11, 710, 308);
+	_txtRank = new Text(100, 11, 900, 308);
+	_txtDate = new Text(100, 11, 1040, 308);
+	_txtRecruited = new Text(160, 11, 710, 294);
+	_txtLost = new Text(150, 11, 900, 294);
+	_lstSoldiers = new TextList(515, 250, 700, 323);
 
 	// Set palette
 	setInterface("soldierMemorial");
 
-	add(_window, "window", "soldierMemorial");
-	add(_btnStatistics, "button", "soldierMemorial");
+	add(_window, "window", "soldierList");
+	//add(_btnStatistics, "button", "soldierMemorial");
 	add(_txtTitle, "text", "soldierMemorial");
 	add(_txtName, "text", "soldierMemorial");
 	add(_txtRank, "text", "soldierMemorial");
@@ -72,8 +72,8 @@ SoldierMemorialState::SoldierMemorialState()
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
 	_window->setThinBorder();
 
-	_btnStatistics->setText(tr("STR_STATISTICS"));
-	_btnStatistics->onMouseClick((ActionHandler)&SoldierMemorialState::btnStatisticsClick);
+	//_btnStatistics->setText(tr("STR_STATISTICS"));
+	//_btnStatistics->onMouseClick((ActionHandler)&SoldierMemorialState::btnStatisticsClick);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -125,11 +125,11 @@ SoldierMemorialState::~SoldierMemorialState()
 /**
 * Shows the Statistics screen.
 * @param action Pointer to an action.
-*/
+
 void SoldierMemorialState::btnStatisticsClick(Action *)
 {
 	_game->pushState(new StatisticsState);
-}
+}*/
 
 /**
  * Shows the selected soldier's info.
