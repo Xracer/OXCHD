@@ -65,17 +65,19 @@ ManageAlienContainmentState::ManageAlienContainmentState(Base *base, OptionsOrig
 	}
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(overCrowded ? 288:148, 16, overCrowded ? 16:8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtAvailable =  new Text(190, 9, 10, 24);
-	_txtUsed = new Text(110, 9, 136, 24);
-	_txtItem = new Text(120, 9, 10, 41);
-	_txtLiveAliens = new Text(54, 18, 153, 32);
-	_txtDeadAliens = new Text(54, 18, 207, 32);
-	_txtInterrogatedAliens = new Text(54, 18, 261, 32);
-	_lstAliens = new TextList(286, 112, 8, 53);
+	int xPos = 700;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 3);
+	_btnOk = new TextButton(overCrowded ? 288:148, 16, overCrowded ? 16:8, 179);
+	_btnCancel = new TextButton(148, 16, 164, 179);
+	_txtTitle = new Text(310, 17, 5 + xPos, 11);
+	_txtAvailable = new Text(190, 9, 10 + xPos, 27);
+	_txtUsed = new Text(110, 9, 136 + xPos, 27);
+	_txtItem = new Text(120, 9, 10 + xPos, 44);
+	_txtLiveAliens = new Text(54, 18, 153 + xPos, 35);
+	_txtDeadAliens = new Text(54, 18, 207 + xPos, 35);
+	_txtInterrogatedAliens = new Text(54, 18, 261 + xPos, 35);
+	_lstAliens = new TextList(286, 112, 8 + xPos, 56);
 
 	// Set palette
 	setInterface("manageContainment");
@@ -92,7 +94,7 @@ ManageAlienContainmentState::ManageAlienContainmentState(Base *base, OptionsOrig
 	add(_txtInterrogatedAliens, "text", "manageContainment");
 	add(_lstAliens, "list", "manageContainment");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface((origin == OPT_BATTLESCAPE)? "BACK01.SCR" : "BACK05.SCR"));

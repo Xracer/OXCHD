@@ -56,26 +56,29 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 	}
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnPrev = new TextButton(28, 14, 8, 8);
-	_btnNext = new TextButton(28, 14, 284, 8);
-	_btnKills = new TextButton(70, 16, 8, 176);
-	_btnMissions = new TextButton(70, 16, 86, 176);
-	_btnCommendations = new TextButton(70, 16, 164, 176);
-	_btnOk = new TextButton(70, 16, 242, 176);
-	_txtTitle = new Text(310, 16, 5, 8);
-	_lstPerformance = new TextList(288, 128, 8, 28);
-	_lstKillTotals = new TextList(302, 9, 8, 164);
-	_lstMissionTotals = new TextList(302, 9, 8, 164);
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
+	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
+	_btnNext = new TextButton(28, 14, 284 + xPos, 8 + yPos);
+	_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
+	_btnMissions = new TextButton(70, 16, 86 + xPos, 176 + yPos);
+	_btnCommendations = new TextButton(70, 16, 164 + xPos, 176 + yPos);
+	_btnOk = new TextButton(70, 16, 242 + xPos, 176 + yPos);
+	_txtTitle = new Text(310, 16, 5 + xPos, 8 + yPos);
+	_lstPerformance = new TextList(288, 128, 8 + xPos, 28 + yPos);
+	_lstKillTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
+	_lstMissionTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
 	// Commendation stats
-	_txtMedalName = new Text(120, 18, 16, 36);
-	_txtMedalLevel = new Text(120, 18, 186, 36);
-	_txtMedalInfo = new Text(280, 32, 20, 135);
-	_lstCommendations = new TextList(240, 80, 48, 52);
+	_txtMedalName = new Text(120, 18, 16 + xPos, 36 + yPos);
+	_txtMedalLevel = new Text(120, 18, 186 + xPos, 36 + yPos);
+	_txtMedalInfo = new Text(280, 32, 20 + xPos, 135 + yPos);
+	_lstCommendations = new TextList(240, 80, 48 + xPos, 52 + yPos);
 	for (int i = 0; i != 10; ++i)
 	{
-		_commendations.push_back(new Surface(31, 8, 16, 52 + 8*i));
-		_commendationDecorations.push_back(new Surface(31, 8, 16, 52 + 8*i));
+		_commendations.push_back(new Surface(31, 8, 16 + xPos, 52 + 8 * i + yPos));
+		_commendationDecorations.push_back(new Surface(31, 8, 16 + xPos, 52 + 8 * i + yPos));
 	}
 
 	// Set palette

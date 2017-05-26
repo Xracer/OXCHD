@@ -58,15 +58,18 @@ namespace OpenXcom
 TransferItemsState::TransferItemsState(Base *baseFrom, Base *baseTo) : _baseFrom(baseFrom), _baseTo(baseTo), _sel(0), _total(0), _pQty(0), _cQty(0), _aQty(0), _iQty(0.0), _distance(0.0), _ammoColor(0)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(148, 16, 8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtQuantity = new Text(50, 9, 150, 24);
-	_txtAmountTransfer = new Text(60, 17, 200, 24);
-	_txtAmountDestination = new Text(60, 17, 260, 24);
-	_cbxCategory = new ComboBox(this, 120, 16, 10, 24);
-	_lstItems = new TextList(287, 128, 8, 44);
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
+	_btnOk = new TextButton(148, 16, 8 + xPos, 176 + yPos);
+	_btnCancel = new TextButton(148, 16, 164 + xPos, 176 + yPos);
+	_txtTitle = new Text(310, 17, 5 + xPos, 8 + yPos);
+	_txtQuantity = new Text(50, 9, 150 + xPos, 24 + yPos);
+	_txtAmountTransfer = new Text(60, 17, 200 + xPos, 24 + yPos);
+	_txtAmountDestination = new Text(60, 17, 260 + xPos, 24 + yPos);
+	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 24 + yPos);
+	_lstItems = new TextList(287, 128, 8 + xPos, 44 + yPos);
 
 	// Set palette
 	setInterface("transferMenu");

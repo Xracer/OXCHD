@@ -74,10 +74,10 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	}
 
 	// Create objects
-	_bg = new Surface(550, 350, 0, 0);
+	_bg = new Surface(570, 350, 0, 0);
 	/*
 	_banner = new Surface (1280, 40, 0, 0);
-	_grid = new Surface (320, 200, 700, 65);
+	_grid = new Surface (570, 200, 700, 65);
 	*/
 	_rank = new Surface(26, 23, 4, 4);
 	_btnPrev = new TextButton(30, 20, 1100, 7);

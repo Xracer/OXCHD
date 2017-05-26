@@ -63,8 +63,8 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	// Create objects
 	int xPos = 700;
 	_window = new Window(this, 570, 747, 0 + xPos, 3);
-	_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 176);
-	_btnCancel = new TextButton(148, 16, 164 + xPos, 176);
+	//_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 176);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 176);
 	_txtTitle = new Text(310, 17, 5 + xPos, 11);
 	_txtSales = new Text(150, 11, 10 + xPos, 27);
 	_txtFunds = new Text(150, 11, 160 + xPos, 27);
@@ -81,8 +81,8 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	_ammoColor = _game->getMod()->getInterface("sellMenu")->getElement("ammoColor")->color;
 
 	add(_window, "window", "sellMenu");
-	add(_btnOk, "button", "sellMenu");
-	add(_btnCancel, "button", "sellMenu");
+	//add(_btnOk, "button", "sellMenu");
+	//add(_btnCancel, "button", "sellMenu");
 	add(_txtTitle, "text", "sellMenu");
 	add(_txtSales, "text", "sellMenu");
 	add(_txtFunds, "text", "sellMenu");
@@ -98,13 +98,13 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-	_btnOk->setText(tr("STR_SELL_SACK"));
-	_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, Options::keyOk);
+	//_btnOk->setText(tr("STR_SELL_SACK"));
+	//_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, Options::keyOk);
 
-	_btnCancel->setText(tr("STR_CANCEL"));
-	_btnCancel->onMouseClick((ActionHandler)&SellState::btnCancelClick);
-	_btnCancel->onKeyboardPress((ActionHandler)&SellState::btnCancelClick, Options::keyCancel);
+	//_btnCancel->setText(tr("STR_CANCEL"));
+	//_btnCancel->onMouseClick((ActionHandler)&SellState::btnCancelClick);
+	//_btnCancel->onKeyboardPress((ActionHandler)&SellState::btnCancelClick, Options::keyCancel);
 
 	if (overfull)
 	{

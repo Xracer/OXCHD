@@ -56,18 +56,21 @@ SoldierDiaryOverviewState::SoldierDiaryOverviewState(Base *base, size_t soldierI
 	}
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnKills = new TextButton(70, 16, 8, 176);
-	_btnMissions = new TextButton(70, 16, 86, 176);
-	_btnCommendations = new TextButton(70, 16, 164, 176);
-	_btnOk = new TextButton(70, 16, 242, 176);
-	_btnPrev = new TextButton(28, 14, 8, 8);
-	_btnNext = new TextButton(28, 14, 284, 8);
-	_txtTitle = new Text(310, 16, 5, 8);
-	_txtMission = new Text(114, 9, 16, 36);
-	_txtRating = new Text(102, 9, 120, 36);
-	_txtDate = new Text(90, 9, 218, 36);
-	_lstDiary = new TextList(288, 120, 8, 44);
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
+	_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
+	_btnMissions = new TextButton(70, 16, 86 + xPos, 176 + yPos);
+	_btnCommendations = new TextButton(70, 16, 164 + xPos, 176 + yPos);
+	_btnOk = new TextButton(70, 16, 242 + xPos, 176 + yPos);
+	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
+	_btnNext = new TextButton(28, 14, 284 + xPos, 8 + yPos);
+	_txtTitle = new Text(310, 16, 5 + xPos, 8 + yPos);
+	_txtMission = new Text(114, 9, 16 + xPos, 36 + yPos);
+	_txtRating = new Text(102, 9, 120 + xPos, 36 + yPos);
+	_txtDate = new Text(90, 9, 218 + xPos, 36 + yPos);
+	_lstDiary = new TextList(288, 120, 8 + xPos, 44 + yPos);
 
 	// Set palette
 	setInterface("soldierDiary");
@@ -85,7 +88,7 @@ SoldierDiaryOverviewState::SoldierDiaryOverviewState(Base *base, size_t soldierI
 	add(_txtDate, "text2", "soldierDiary");
 	add(_lstDiary, "list", "soldierDiary");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));

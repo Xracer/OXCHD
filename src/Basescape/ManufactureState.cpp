@@ -43,20 +43,22 @@ namespace OpenXcom
 ManufactureState::ManufactureState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnNew = new TextButton(148, 16, 8, 176);
-	_btnOk = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtAvailable = new Text(150, 9, 8, 24);
-	_txtAllocated = new Text(150, 9, 160, 24);
-	_txtSpace = new Text(150, 9, 8, 34);
-	_txtFunds = new Text(150, 9, 160, 34);
-	_txtItem = new Text(80, 9, 10, 52);
-	_txtEngineers = new Text(56, 18, 112, 44);
-	_txtProduced = new Text(56, 18, 168, 44);
-	_txtCost = new Text(44, 27, 222, 44);
-	_txtTimeLeft = new Text(60, 27, 260, 44);
-	_lstManufacture = new TextList(288, 88, 8, 80);
+	int xPos = 700;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 3);
+	_btnNew = new TextButton(148, 16, 8 + xPos, 179);
+	_btnOk = new TextButton(148, 16, 164 + xPos, 179);
+	_txtTitle = new Text(310, 17, 5 + xPos, 11);
+	_txtAvailable = new Text(150, 9, 8 + xPos, 27);
+	_txtAllocated = new Text(150, 9, 160 + xPos, 27);
+	_txtSpace = new Text(150, 9, 8 + xPos, 37);
+	_txtFunds = new Text(150, 9, 160 + xPos, 37);
+	_txtItem = new Text(80, 9, 10 + xPos, 55);
+	_txtEngineers = new Text(56, 18, 112 + xPos, 47);
+	_txtProduced = new Text(56, 18, 168 + xPos, 47);
+	_txtCost = new Text(44, 27, 222 + xPos, 47);
+	_txtTimeLeft = new Text(60, 27, 260 + xPos, 47);
+	_lstManufacture = new TextList(288, 88, 8 + xPos, 83);
 
 	// Set palette
 	setInterface("manufactureMenu");
@@ -76,7 +78,7 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 	add(_txtTimeLeft, "text2", "manufactureMenu");
 	add(_lstManufacture, "list", "manufactureMenu");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK17.SCR"));
