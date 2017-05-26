@@ -57,17 +57,18 @@ namespace OpenXcom
 PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQty(0), _cQty(0), _iQty(0.0), _ammoColor(0)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(148, 16, 8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtFunds = new Text(150, 9, 10, 24);
-	_txtPurchases = new Text(150, 9, 160, 24);
-	_txtSpaceUsed = new Text(150, 9, 160, 34);
-	_txtCost = new Text(102, 9, 152, 44);
-	_txtQuantity = new Text(60, 9, 256, 44);
-	_cbxCategory = new ComboBox(this, 120, 16, 10, 36);
-	_lstItems = new TextList(287, 120, 8, 54);
+	int xPos = 700;
+	_window = new Window(this, 570, 747, 0 + xPos, 3);
+	//_btnOk = new TextButton(148, 16, 8 + xPos, 179);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 179);
+	_txtTitle = new Text(570, 17, 5 + xPos, 11);
+	_txtFunds = new Text(200, 11, 10 + xPos, 30);
+	_txtPurchases = new Text(200, 11, 200 + xPos, 30);
+	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 30);
+	_txtCost = new Text(102, 11, 180 + xPos, 56);
+	_txtQuantity = new Text(70, 11, 385 + xPos, 56);
+	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 56);
+	_lstItems = new TextList(450, 690, 8 + xPos, 74);
 
 	// Set palette
 	setInterface("buyMenu");
@@ -75,8 +76,8 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	_ammoColor = _game->getMod()->getInterface("buyMenu")->getElement("ammoColor")->color;
 
 	add(_window, "window", "buyMenu");
-	add(_btnOk, "button", "buyMenu");
-	add(_btnCancel, "button", "buyMenu");
+//	add(_btnOk, "button", "buyMenu");
+//	add(_btnCancel, "button", "buyMenu");
 	add(_txtTitle, "text", "buyMenu");
 	add(_txtFunds, "text", "buyMenu");
 	add(_txtPurchases, "text", "buyMenu");
@@ -86,18 +87,18 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	add(_lstItems, "list", "buyMenu");
 	add(_cbxCategory, "text", "buyMenu");
 
-	centerAllSurfaces();
+//	centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&PurchaseState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&PurchaseState::btnOkClick, Options::keyOk);
+//	_btnOk->setText(tr("STR_OK"));
+//	_btnOk->onMouseClick((ActionHandler)&PurchaseState::btnOkClick);
+//	_btnOk->onKeyboardPress((ActionHandler)&PurchaseState::btnOkClick, Options::keyOk);
 
-	_btnCancel->setText(tr("STR_CANCEL"));
-	_btnCancel->onMouseClick((ActionHandler)&PurchaseState::btnCancelClick);
-	_btnCancel->onKeyboardPress((ActionHandler)&PurchaseState::btnCancelClick, Options::keyCancel);
+//	_btnCancel->setText(tr("STR_CANCEL"));
+//	_btnCancel->onMouseClick((ActionHandler)&PurchaseState::btnCancelClick);
+//	_btnCancel->onKeyboardPress((ActionHandler)&PurchaseState::btnCancelClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -116,8 +117,8 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_lstItems->setArrowColumn(227, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 150, 55, 50, 28);
+	_lstItems->setArrowColumn(310, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 200, 200, 70, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);

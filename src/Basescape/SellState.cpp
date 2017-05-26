@@ -61,18 +61,19 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	bool overfull = Options::storageLimitsEnforced && _base->storesOverfull();
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(overfull? 288:148, 16, overfull? 16:8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtSales = new Text(150, 9, 10, 24);
-	_txtFunds = new Text(150, 9, 160, 24);
-	_txtSpaceUsed = new Text(150, 9, 160, 34);
-	_txtQuantity = new Text(54, 9, 136, 44);
-	_txtSell = new Text(96, 9, 190, 44);
-	_txtValue = new Text(40, 9, 270, 44);
-	_cbxCategory = new ComboBox(this, 120, 16, 10, 36);
-	_lstItems = new TextList(287, 120, 8, 54);
+	int xPos = 700;
+	_window = new Window(this, 570, 747, 0 + xPos, 3);
+	_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 176);
+	_btnCancel = new TextButton(148, 16, 164 + xPos, 176);
+	_txtTitle = new Text(310, 17, 5 + xPos, 11);
+	_txtSales = new Text(150, 11, 10 + xPos, 27);
+	_txtFunds = new Text(150, 11, 160 + xPos, 27);
+	_txtSpaceUsed = new Text(150, 11, 160 + xPos, 37);
+	_txtQuantity = new Text(54, 11, 136 + xPos, 47);
+	_txtSell = new Text(96, 11, 190 + xPos, 47);
+	_txtValue = new Text(40, 11, 270 + xPos, 47);
+	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 39);
+	_lstItems = new TextList(450, 690, 8 + xPos, 57);
 
 	// Set palette
 	setInterface("sellMenu");
@@ -92,7 +93,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	add(_lstItems, "list", "sellMenu");
 	add(_cbxCategory, "text", "sellMenu");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
@@ -132,8 +133,8 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	_txtValue->setText(tr("STR_VALUE"));
 
-	_lstItems->setArrowColumn(182, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 156, 54, 24, 53);
+	_lstItems->setArrowColumn(310, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 200, 200, 70, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);

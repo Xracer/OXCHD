@@ -1869,7 +1869,6 @@ namespace OpenXcom
 			state->add(new StoresState(_game->getSavedGame()->getSelectedBase()));
 			state->add(new TransfersState(_game->getSavedGame()->getSelectedBase()));
 			// add more here
-			_game->pushState(state);
 		}
 	}
 

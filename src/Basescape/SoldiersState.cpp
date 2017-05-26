@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SoldiersState.h"
+#include "SoldierDiaryOverviewState.h"
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
@@ -31,6 +32,18 @@
 #include "SoldierInfoState.h"
 #include "SoldierMemorialState.h"
 #include "../Engine/MultiState.h"
+
+#include "../Savegame/Craft.h"
+#include "../Mod/RuleCraft.h"
+#include "../Savegame/ItemContainer.h"
+#include "../Savegame/Vehicle.h"
+#include "../Savegame/SavedGame.h"
+#include "../Menu/ErrorMessageState.h"
+#include "../Battlescape/InventoryState.h"
+#include "../Battlescape/BattlescapeGenerator.h"
+#include "../Savegame/SavedBattleGame.h"
+#include "../Mod/RuleInterface.h"
+
 
 namespace OpenXcom
 {
@@ -124,15 +137,43 @@ void SoldiersState::init()
  */
 void SoldiersState::lstSoldiersClick(Action *)
 {
-	/*
+	
+	
 	_game->popState();
 	MultiState *state = new MultiState;
 	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+//	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow())); //state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
 
-	state->add(new TransferBaseState(_base));
 	_game->pushState(state);
+	
+
+
+	/*
+	 * Trying to put the inventory into the soldier info screen to 
+	 * make an unified view of all soldier information and loadout
+	 *
+	 *
+
+	Craft *craft = _base->getCrafts()->at(_craft);
+	if (craft->getNumSoldiers() != 0)
+	{
+		SavedBattleGame *bgame = new SavedBattleGame();
+		_game->getSavedGame()->setBattleGame(bgame);
+
+		BattlescapeGenerator bgen = BattlescapeGenerator(_game);
+		bgen.runInventory(craft);
+
+		_game->popState();
+		MultiState *state = new MultiState;
+		state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+		state->add(new InventoryState(false, 0));
+		_game->pushState(state);
+	}
 	*/
-	_game->pushState(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+
+
+
+	//_game->pushState(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
 }
 
 }
