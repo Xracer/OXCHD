@@ -62,18 +62,20 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	// Create objects
 	int xPos = 700;
-	_window = new Window(this, 570, 747, 0 + xPos, 3);
-	//_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 176);
-	//_btnCancel = new TextButton(148, 16, 164 + xPos, 176);
-	_txtTitle = new Text(310, 17, 5 + xPos, 11);
-	_txtSales = new Text(150, 11, 10 + xPos, 27);
-	_txtFunds = new Text(150, 11, 160 + xPos, 27);
-	_txtSpaceUsed = new Text(150, 11, 160 + xPos, 37);
-	_txtQuantity = new Text(54, 11, 136 + xPos, 47);
-	_txtSell = new Text(96, 11, 190 + xPos, 47);
-	_txtValue = new Text(40, 11, 270 + xPos, 47);
-	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 39);
-	_lstItems = new TextList(450, 690, 8 + xPos, 57);
+	int yPos = 3;
+
+	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
+	//_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 173+ yPos);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 173+ yPos);
+	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
+	_txtSales = new Text(200, 11, 10 + xPos, 27 + yPos);
+	_txtFunds = new Text(200, 11, 200 + xPos, 27 + yPos);
+	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 27 + yPos);
+	_txtQuantity = new Text(70, 11, 180 + xPos, 50 + yPos);
+	_txtSell = new Text(105, 11, 280 + xPos, 50 + yPos);
+	_txtValue = new Text(40, 11, 380 + xPos, 50 + yPos);
+	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
+	_lstItems = new TextList(450, 690, 8 + xPos, 70 + yPos);
 
 	// Set palette
 	setInterface("sellMenu");
@@ -133,8 +135,8 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	_txtValue->setText(tr("STR_VALUE"));
 
-	_lstItems->setArrowColumn(310, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 200, 200, 70, 50);
+	_lstItems->setArrowColumn(315, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 90, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);

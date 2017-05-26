@@ -58,17 +58,19 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 {
 	// Create objects
 	int xPos = 700;
-	_window = new Window(this, 570, 747, 0 + xPos, 3);
-	//_btnOk = new TextButton(148, 16, 8 + xPos, 179);
-	//_btnCancel = new TextButton(148, 16, 164 + xPos, 179);
-	_txtTitle = new Text(570, 17, 5 + xPos, 11);
-	_txtFunds = new Text(200, 11, 10 + xPos, 30);
-	_txtPurchases = new Text(200, 11, 200 + xPos, 30);
-	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 30);
-	_txtCost = new Text(102, 11, 180 + xPos, 56);
-	_txtQuantity = new Text(70, 11, 385 + xPos, 56);
-	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 56);
-	_lstItems = new TextList(450, 690, 8 + xPos, 74);
+	int yPos = 3;
+
+	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
+	//_btnOk = new TextButton(148, 16, 8 + xPos, 176+ yPos);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 176+ yPos);
+	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
+	_txtFunds = new Text(200, 11, 10 + xPos, 27 + yPos);
+	_txtPurchases = new Text(200, 11, 200 + xPos, 27 + yPos);
+	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 27 + yPos);
+	_txtCost = new Text(102, 11, 180 + xPos, 50 + yPos);
+	_txtQuantity = new Text(70, 11, 385 + xPos, 50 + yPos);
+	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
+	_lstItems = new TextList(450, 690, 8 + xPos, 70 + yPos);
 
 	// Set palette
 	setInterface("buyMenu");
@@ -117,8 +119,8 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_lstItems->setArrowColumn(310, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 200, 200, 70, 50);
+	_lstItems->setArrowColumn(315, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 90, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);
