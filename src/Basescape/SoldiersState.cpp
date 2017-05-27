@@ -138,8 +138,6 @@ void SoldiersState::init()
 void SoldiersState::lstSoldiersClick(Action *)
 {
 	
-	
-	_game->popState();
 	MultiState *state = new MultiState;
 	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
 //	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow())); //state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
