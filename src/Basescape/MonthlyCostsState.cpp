@@ -42,19 +42,19 @@ namespace OpenXcom
 MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 550, 172, 700, 210, POPUP_BOTH);
+	_window = new Window(this, 550, 225, 700, 210, POPUP_BOTH);
 	_txtTitle = new Text(440, 17, 705, 216);
 	_txtRental = new Text(170, 11, 705, 233);
 	_txtCost = new Text(120, 11, 865, 233); //875
 	_txtQuantity = new Text(80, 11, 975, 233); //995
 	_txtTotal = new Text(80, 11, 1070, 233);
 	_lstCrafts = new TextList(508, 50, 705, 245);
-	_txtSalaries = new Text(150, 11, 705, 289);
-	_txtIncome = new Text(150, 11, 705, 350);
-	_txtMaintenance = new Text(150, 11, 705, 365);
-	_lstSalaries = new TextList(508, 40, 705, 300);
-	_lstMaintenance = new TextList(508, 11, 705, 338);
-	_lstTotal = new TextList(200, 11, 900, 385); ///170, ...120, 80, 80
+	_txtSalaries = new Text(150, 11, 705, 300);
+	_txtIncome = new Text(180, 11, 705, 383);
+	_txtMaintenance = new Text(180, 11, 705, 395);
+	_lstSalaries = new TextList(508, 50, 705, 311);
+	_lstMaintenance = new TextList(508, 11, 705, 361); // total base maintena
+	_lstTotal = new TextList(200, 11, 975, 395); ///170, ...120, 80, 80
 
 	// Set palette
 	setInterface("hdbaseInfo");
@@ -142,13 +142,13 @@ MonthlyCostsState::MonthlyCostsState(Base *base) : _base(base)
 	ss6 << _base->getTotalScientists();
 	_lstSalaries->addRow(4, tr("STR_SCIENTISTS").c_str(), Text::formatFunding(_game->getMod()->getScientistCost()).c_str(), ss6.str().c_str(), Text::formatFunding(_base->getTotalScientists() * _game->getMod()->getScientistCost()).c_str());
 
-	_lstMaintenance->setColumns(2, 370, 70);
+	_lstMaintenance->setColumns(2, 370, 90);
 	_lstMaintenance->setDot(true);
 	std::wostringstream ss7;
 	ss7 << L'\x01' << Text::formatFunding(_base->getFacilityMaintenance());
 	_lstMaintenance->addRow(2, tr("STR_BASE_MAINTENANCE").c_str(), ss7.str().c_str());
 
-	_lstTotal->setColumns(2, 45, 70);
+	_lstTotal->setColumns(2, 100, 90); //450
 	_lstTotal->setDot(true);
 	_lstTotal->addRow(2, tr("STR_TOTAL").c_str(), Text::formatFunding(_base->getMonthlyMaintenace()).c_str());
 }

@@ -1850,7 +1850,6 @@ namespace OpenXcom
 			state->add(new BaseInfoState(_game->getSavedGame()->getSelectedBase(), basescape));
 			state->add(new MonthlyCostsState(_game->getSavedGame()->getSelectedBase()));
 			state->add(new StoresState(_game->getSavedGame()->getSelectedBase()));
-			state->add(new TransfersState(_game->getSavedGame()->getSelectedBase()));
 			// add more here
 			_game->pushState(state);
 		}
@@ -1867,6 +1866,7 @@ namespace OpenXcom
 			state->add(new StoresState(_game->getSavedGame()->getSelectedBase()));
 			state->add(new TransfersState(_game->getSavedGame()->getSelectedBase()));
 			// add more here
+			_game->pushState(state);
 		}
 	}
 

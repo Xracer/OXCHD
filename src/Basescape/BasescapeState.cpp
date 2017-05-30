@@ -39,6 +39,7 @@
 #include "StoresState.h"
 #include "TransferBaseState.h"
 #include "TransfersState.h"
+#include "TransferItemsState.h"
 #include "../Engine/Game.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
@@ -283,7 +284,6 @@ void BasescapeState::btnBaseInfoClick(Action *)
 	state->add(new BaseInfoState(_base, this));
 	state->add(new MonthlyCostsState(_base));
 	state->add(new StoresState(_base));
-	state->add(new TransfersState(_base));
 	// add more here
 	_game->pushState(state);
 }
@@ -421,7 +421,9 @@ void BasescapeState::btnTransferClick(Action *)
 	_game->popState();
 	MultiState *state = new MultiState;
 	state->add(new BasescapeState(_base, _globe));
+	state->add(new TransfersState(_base));
 	state->add(new TransferBaseState(_base));
+//	state->add(new TransferItemsState(_base));
 	_game->pushState(state);
 }
 

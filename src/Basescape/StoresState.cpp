@@ -41,12 +41,12 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 550, 200, 700, 385, POPUP_BOTH);
-	_txtTitle = new Text(440, 17, 705, 391);
-	_txtItem = new Text(142, 11, 705, 412);
-	_txtQuantity = new Text(88, 11, 895, 412);
-	_txtSpaceUsed = new Text(74, 11, 1020, 412);
-	_lstStores = new TextList(508, 150, 705, 426);
+	_window = new Window(this, 550, 305, 700, 440, POPUP_BOTH);
+	_txtTitle = new Text(440, 17, 705, 443);
+	_txtItem = new Text(142, 11, 705, 462);
+	_txtQuantity = new Text(88, 11, 895, 462);
+	_txtSpaceUsed = new Text(74, 11, 1020, 462);
+	_lstStores = new TextList(508, 230, 705, 476);
 
 	// Set palette
 	setInterface("hdbaseInfo");
