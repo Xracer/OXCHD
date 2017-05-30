@@ -140,7 +140,7 @@ void SoldiersState::lstSoldiersClick(Action *)
 	
 	MultiState *state = new MultiState;
 	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
-//	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow())); //state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
+	//state->add(new SoldierDiaryOverviewState(_base, _soldierId, this)); //state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
 
 	_game->pushState(state);
 	
@@ -149,7 +149,7 @@ void SoldiersState::lstSoldiersClick(Action *)
 	/*
 	 * Trying to put the inventory into the soldier info screen to 
 	 * make an unified view of all soldier information and loadout
-	 *
+	 * The was Warboy did to the InventoryState
 	 *
 
 	Craft *craft = _base->getCrafts()->at(_craft);

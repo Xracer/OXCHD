@@ -65,7 +65,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	int yPos = 3;
 
 	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
-	//_btnOk = new TextButton(overfull ? 288 : 148, 16, overfull ? 16 : 8 + xPos, 173+ yPos);
+	_btnOk = new TextButton(overfull ? 556 : 556, 19, overfull ? 16 : 8 + xPos, 720 + yPos);
 	//_btnCancel = new TextButton(148, 16, 164 + xPos, 173+ yPos);
 	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
 	_txtSales = new Text(200, 11, 10 + xPos, 27 + yPos);
@@ -73,7 +73,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 27 + yPos);
 	_txtQuantity = new Text(70, 11, 180 + xPos, 50 + yPos);
 	_txtSell = new Text(105, 11, 280 + xPos, 50 + yPos);
-	_txtValue = new Text(40, 11, 380 + xPos, 50 + yPos);
+	_txtValue = new Text(60, 11, 400 + xPos, 50 + yPos);
 	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
 	_lstItems = new TextList(450, 690, 8 + xPos, 70 + yPos);
 
@@ -83,7 +83,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	_ammoColor = _game->getMod()->getInterface("sellMenu")->getElement("ammoColor")->color;
 
 	add(_window, "window", "sellMenu");
-	//add(_btnOk, "button", "sellMenu");
+	add(_btnOk, "button", "sellMenu");
 	//add(_btnCancel, "button", "sellMenu");
 	add(_txtTitle, "text", "sellMenu");
 	add(_txtSales, "text", "sellMenu");
@@ -100,9 +100,9 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-	//_btnOk->setText(tr("STR_SELL_SACK"));
-	//_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
-	//_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, Options::keyOk);
+	_btnOk->setText(tr("STR_SELL_SACK"));
+	_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
+	_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, Options::keyOk);
 
 	//_btnCancel->setText(tr("STR_CANCEL"));
 	//_btnCancel->onMouseClick((ActionHandler)&SellState::btnCancelClick);
@@ -131,12 +131,12 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_txtSell->setText(tr("STR_SELL_SACK"));
+	_txtSell->setText(tr("STR_SELL_SACK_UC"));
 
-	_txtValue->setText(tr("STR_VALUE"));
+	_txtValue->setText(tr("STR_VALUE_UC"));
 
-	_lstItems->setArrowColumn(315, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 190, 100, 90, 50);
+	_lstItems->setArrowColumn(320, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 100, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);
@@ -471,7 +471,7 @@ void SellState::btnOkClick(Action *)
 			}
 		}
 	}
-	_game->popState();
+	// _game->popState(); dont want to pop the state because of multistate
 }
 
 /**

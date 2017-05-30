@@ -61,7 +61,7 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	int yPos = 3;
 
 	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
-	//_btnOk = new TextButton(148, 16, 8 + xPos, 176+ yPos);
+	_btnOk = new TextButton(556, 19, 8 + xPos, 720+ yPos);
 	//_btnCancel = new TextButton(148, 16, 164 + xPos, 176+ yPos);
 	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
 	_txtFunds = new Text(200, 11, 10 + xPos, 27 + yPos);
@@ -70,7 +70,7 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	_txtCost = new Text(102, 11, 180 + xPos, 50 + yPos);
 	_txtQuantity = new Text(70, 11, 385 + xPos, 50 + yPos);
 	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
-	_lstItems = new TextList(450, 690, 8 + xPos, 70 + yPos);
+	_lstItems = new TextList(450, 670, 8 + xPos, 70 + yPos);
 
 	// Set palette
 	setInterface("buyMenu");
@@ -78,7 +78,7 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	_ammoColor = _game->getMod()->getInterface("buyMenu")->getElement("ammoColor")->color;
 
 	add(_window, "window", "buyMenu");
-//	add(_btnOk, "button", "buyMenu");
+	add(_btnOk, "button", "buyMenu");
 //	add(_btnCancel, "button", "buyMenu");
 	add(_txtTitle, "text", "buyMenu");
 	add(_txtFunds, "text", "buyMenu");
@@ -94,9 +94,9 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-//	_btnOk->setText(tr("STR_OK"));
-//	_btnOk->onMouseClick((ActionHandler)&PurchaseState::btnOkClick);
-//	_btnOk->onKeyboardPress((ActionHandler)&PurchaseState::btnOkClick, Options::keyOk);
+	_btnOk->setText(tr("STR_PURCHASE_RECRUIT_LC"));
+	_btnOk->onMouseClick((ActionHandler)&PurchaseState::btnOkClick);
+	_btnOk->onKeyboardPress((ActionHandler)&PurchaseState::btnOkClick, Options::keyOk);
 
 //	_btnCancel->setText(tr("STR_CANCEL"));
 //	_btnCancel->onMouseClick((ActionHandler)&PurchaseState::btnCancelClick);
@@ -119,8 +119,8 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_lstItems->setArrowColumn(315, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 190, 100, 90, 50);
+	_lstItems->setArrowColumn(330, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 120, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);
@@ -378,7 +378,7 @@ void PurchaseState::btnOkClick(Action *)
 			}
 		}
 	}
-	_game->popState();
+	// _game->popState(); dont want to pop the state because of multistate
 }
 
 /**
