@@ -115,7 +115,7 @@ en-US:
   STR_ENGINEERS__ALLOCATED: "Engineers Allocated"
   STR_UNITS_PRODUCED: "Units Produced"
   STR_TOTAL_TO_PRODUCE: "Total to Produce"
-  STR_COST__PER__UNIT: "Cost{NEWLINE}per{NEWLINE}Unit"
+  STR_COST__PER__UNIT: "Cost per Unit"
   STR_DAYS_HOURS_LEFT: "Days/Hours Left"
   STR_NEW_PRODUCTION: "New Production"
   STR_PRODUCTION_ITEMS: "Production Items"

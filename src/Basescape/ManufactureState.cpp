@@ -43,29 +43,30 @@ namespace OpenXcom
 ManufactureState::ManufactureState(Base *base) : _base(base)
 {
 	// Create objects
+	int yPos = 3;
 	int xPos = 700;
-
-	_window = new Window(this, 570, 200, 0 + xPos, 3);
-	_btnNew = new TextButton(148, 16, 8 + xPos, 179);
-	_btnOk = new TextButton(148, 16, 164 + xPos, 179);
-	_txtTitle = new Text(310, 17, 5 + xPos, 11);
-	_txtAvailable = new Text(150, 9, 8 + xPos, 27);
-	_txtAllocated = new Text(150, 9, 160 + xPos, 27);
-	_txtSpace = new Text(150, 9, 8 + xPos, 37);
-	_txtFunds = new Text(150, 9, 160 + xPos, 37);
-	_txtItem = new Text(80, 9, 10 + xPos, 55);
-	_txtEngineers = new Text(56, 18, 112 + xPos, 47);
-	_txtProduced = new Text(56, 18, 168 + xPos, 47);
-	_txtCost = new Text(44, 27, 222 + xPos, 47);
-	_txtTimeLeft = new Text(60, 27, 260 + xPos, 47);
-	_lstManufacture = new TextList(288, 88, 8 + xPos, 83);
+	
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos, POPUP_BOTH);
+	//_btnNew = new TextButton(148, 16, 8 + xPos, 179 + yPos);
+	//_btnOk = new TextButton(148, 16, 164 + xPos, 179 + yPos);
+	_txtTitle = new Text(550, 17, 5 + xPos, 8 + yPos);
+	_txtAvailable = new Text(250, 11, 8 + xPos, 27 + yPos);
+	_txtAllocated = new Text(250, 11, 255 + xPos, 27 + yPos);
+	_txtSpace = new Text(250, 11, 8 + xPos, 40 + yPos);
+	_txtFunds = new Text(250, 11, 255 + xPos, 40 + yPos);
+	_txtItem = new Text(80, 11, 8 + xPos, 55 + yPos);
+	_txtEngineers = new Text(120, 18, 120 + xPos, 55 + yPos);
+	_txtProduced = new Text(100, 18, 245 + xPos, 55 + yPos);
+	_txtCost = new Text(130, 27, 345 + xPos, 55 + yPos);
+	_txtTimeLeft = new Text(100, 27, 455 + xPos, 55 + yPos);
+	_lstManufacture = new TextList(550, 180, 8 + xPos, 83 + yPos);
 
 	// Set palette
 	setInterface("manufactureMenu");
 
 	add(_window, "window", "manufactureMenu");
-	add(_btnNew, "button", "manufactureMenu");
-	add(_btnOk, "button", "manufactureMenu");
+	//add(_btnNew, "button", "manufactureMenu");
+	//add(_btnOk, "button", "manufactureMenu");
 	add(_txtTitle, "text1", "manufactureMenu");
 	add(_txtAvailable, "text1", "manufactureMenu");
 	add(_txtAllocated, "text1", "manufactureMenu");
@@ -83,12 +84,12 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK17.SCR"));
 
-	_btnNew->setText(tr("STR_NEW_PRODUCTION"));
-	_btnNew->onMouseClick((ActionHandler)&ManufactureState::btnNewProductionClick);
+	//_btnNew->setText(tr("STR_NEW_PRODUCTION"));
+	//_btnNew->onMouseClick((ActionHandler)&ManufactureState::btnNewProductionClick);
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&ManufactureState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&ManufactureState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&ManufactureState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&ManufactureState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -110,7 +111,7 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 	_txtTimeLeft->setText(tr("STR_DAYS_HOURS_LEFT"));
 	_txtTimeLeft->setWordWrap(true);
 
-	_lstManufacture->setColumns(5, 115, 15, 52, 56, 48);
+	_lstManufacture->setColumns(5, 115, 90, 90, 90, 48);
 	_lstManufacture->setAlign(ALIGN_RIGHT);
 	_lstManufacture->setAlign(ALIGN_LEFT, 0);
 	_lstManufacture->setSelectable(true);

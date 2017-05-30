@@ -70,26 +70,29 @@ void ManufactureInfoState::buildUi()
 {
 	_screen = false;
 
-	_window = new Window(this, 320, 160, 0, 20, POPUP_BOTH);
-	_txtTitle = new Text(320, 17, 0, 30);
-	_btnOk = new TextButton(136, 16, 168, 155);
-	_btnStop = new TextButton(136, 16, 16, 155);
-	_btnSell = new ToggleTextButton(60, 16, 244, 61);
-	_txtAvailableEngineer = new Text(160, 9, 16, 50);
-	_txtAvailableSpace = new Text(160, 9, 16, 60);
-	_txtMonthlyProfit = new Text(160, 9, 168, 50);
-	_txtAllocatedEngineer = new Text(112, 32, 16, 80);
-	_txtUnitToProduce = new Text(112, 48, 168, 64);
-	_txtEngineerUp = new Text(90, 9, 40, 118);
-	_txtEngineerDown = new Text(90, 9, 40, 138);
-	_txtUnitUp = new Text(90, 9, 192, 118);
-	_txtUnitDown = new Text(90, 9, 192, 138);
-	_btnEngineerUp = new ArrowButton(ARROW_BIG_UP, 13, 14, 132, 114);
-	_btnEngineerDown = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 132, 136);
-	_btnUnitUp = new ArrowButton(ARROW_BIG_UP, 13, 14, 284, 114);
-	_btnUnitDown = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 284, 136);
-	_txtAllocated = new Text(40, 16, 128, 88);
-	_txtTodo = new Text(40, 16, 280, 88);
+	int yPos = 208;
+	int xPos = 700;
+
+	_window = new Window(this, 320, 160, 0 + xPos, 0 + yPos, POPUP_BOTH);
+	_txtTitle = new Text(320, 17, 0 + xPos, 10 + yPos);
+	_btnOk = new TextButton(136, 16, 168 + xPos, 135 + yPos);
+	_btnStop = new TextButton(136, 16, 16 + xPos, 135 + yPos);
+	_btnSell = new ToggleTextButton(60, 16, 244 + xPos, 41 + yPos);
+	_txtAvailableEngineer = new Text(160, 9, 16 + xPos, 30 + yPos);
+	_txtAvailableSpace = new Text(160, 9, 16 + xPos, 40 + yPos);
+	_txtMonthlyProfit = new Text(160, 9, 168 + xPos, 30 + yPos);
+	_txtAllocatedEngineer = new Text(112, 32, 16 + xPos, 60 + yPos);
+	_txtUnitToProduce = new Text(112, 48, 168 + xPos, 44 + yPos);
+	_txtEngineerUp = new Text(90, 9, 40 + xPos, 98 + yPos);
+	_txtEngineerDown = new Text(90, 9, 40 + xPos, 118 + yPos);
+	_txtUnitUp = new Text(90, 9, 192 + xPos, 98 + yPos);
+	_txtUnitDown = new Text(90, 9, 192 + xPos, 118 + yPos);
+	_btnEngineerUp = new ArrowButton(ARROW_BIG_UP, 13, 14, 132 + xPos, 94 + yPos);
+	_btnEngineerDown = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 132 + xPos, 116 + yPos);
+	_btnUnitUp = new ArrowButton(ARROW_BIG_UP, 13, 14, 284 + xPos, 94 + yPos);
+	_btnUnitDown = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 284 + xPos, 116 + yPos);
+	_txtAllocated = new Text(40, 16, 128 + xPos, 68 + yPos);
+	_txtTodo = new Text(40, 16, 280 + xPos, 68 + yPos);
 
 	_surfaceEngineers = new InteractiveSurface(160, 150, 0, 25);
 	_surfaceEngineers->onMouseClick((ActionHandler)&ManufactureInfoState::handleWheelEngineer, 0);
