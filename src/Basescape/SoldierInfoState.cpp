@@ -44,6 +44,14 @@
 #include "../Mod/RuleInterface.h"
 #include "../Mod/RuleSoldier.h"
 #include "../Savegame/SoldierDeath.h"
+#include "SoldierInfoState.h"
+#include "SoldierDiaryOverviewState.h"
+#include "SoldierDiaryMissionState.h"
+#include "SoldierDiaryPerformanceState.h"
+#include "SoldierMemorialState.h"
+#include "../Engine/MultiState.h"
+
+
 
 namespace OpenXcom
 {
@@ -86,7 +94,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	_btnArmor = new TextButton(110, 14, 850, 43);
 	_edtSoldier = new TextEdit(this, 210, 16, 40, 9);
 	_btnSack = new TextButton(60, 14, 963, 43);
-	_btnDiary = new TextButton(60, 14, 1050, 43);
+	//_btnDiary = new TextButton(60, 14, 1050, 43);
 	_txtRank = new Text(130, 11, 0, 43);
 	_txtMissions = new Text(100, 11, 130, 43);
 	_txtKills = new Text(100, 11, 230, 43);
@@ -165,7 +173,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	add(_btnArmor, "button", "soldierInfo");
 	add(_edtSoldier, "text1", "soldierInfo");
 	add(_btnSack, "button", "soldierInfo");
-	add(_btnDiary, "button", "soldierInfo");
+	//add(_btnDiary, "button", "soldierInfo");
 	add(_txtRank, "text1", "soldierInfo");
 	add(_txtMissions, "text1", "soldierInfo");
 	add(_txtKills, "text1", "soldierInfo");
@@ -261,8 +269,8 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	_btnSack->setText(tr("STR_SACK"));
 	_btnSack->onMouseClick((ActionHandler)&SoldierInfoState::btnSackClick);
 
-	_btnDiary->setText(tr("STR_DIARY"));
-	_btnDiary->onMouseClick((ActionHandler)&SoldierInfoState::btnDiaryClick);
+	//_btnDiary->setText(tr("STR_DIARY"));
+	//_btnDiary->onMouseClick((ActionHandler)&SoldierInfoState::btnDiaryClick);
 
 	_txtRank->setText(tr("STR_RANK"));
 
@@ -581,6 +589,22 @@ void SoldierInfoState::btnPrevClick(Action *)
 		_soldierId = _list->size() - 1;
 	else
 		_soldierId--;
+
+
+
+
+	MultiState *state = new MultiState;
+//	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+//	state->add(info);
+	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
+	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this)); 
+//	state->add(new SoldierDiaryMissionState(_base, _soldierId));
+//	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
+	_game->pushState(state);
+
+
+
+
 	init();
 }
 
@@ -593,6 +617,16 @@ void SoldierInfoState::btnNextClick(Action *)
 	_soldierId++;
 	if (_soldierId >= _list->size())
 		_soldierId = 0;
+
+	MultiState *state = new MultiState;
+	//	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+	//	state->add(info);
+	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
+	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
+//	state->add(new SoldierDiaryMissionState(_base, _soldierId, this));
+//	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
+	_game->pushState(state);
+
 	init();
 }
 
@@ -620,10 +654,11 @@ void SoldierInfoState::btnSackClick(Action *)
 /**
  * Shows the Diary Soldier window.
  * @param action Pointer to an action.
- */
+ *
 void SoldierInfoState::btnDiaryClick(Action *)
 {
 	_game->pushState(new SoldierDiaryOverviewState(_base, _soldierId, this));
 }
+ */
 
 }

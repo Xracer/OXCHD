@@ -17,7 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SoldiersState.h"
-#include "SoldierDiaryOverviewState.h"
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
@@ -30,6 +29,9 @@
 #include "../Savegame/Base.h"
 #include "../Savegame/Soldier.h"
 #include "SoldierInfoState.h"
+#include "SoldierDiaryOverviewState.h"
+#include "SoldierDiaryMissionState.h"
+#include "SoldierDiaryPerformanceState.h"
 #include "SoldierMemorialState.h"
 #include "../Engine/MultiState.h"
 
@@ -139,12 +141,13 @@ void SoldiersState::lstSoldiersClick(Action *)
 {
 	
 	MultiState *state = new MultiState;
+	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+	state->add(info);
 	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
-	//state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow())); //state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
-
+	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow(), info)); //trying to add the awards screen
+//	state->add(new SoldierDiaryMissionState(_base, _lstSoldiers->getSelectedRow(), info));
+//	state->add(new SoldierDiaryPerformanceState(_base, _lstSoldiers->getSelectedRow(), info));
 	_game->pushState(state);
-	
-
 
 	/*
 	 * Trying to put the inventory into the soldier info screen to 

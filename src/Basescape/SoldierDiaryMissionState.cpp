@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SoldierDiaryMissionState.h"
+#include "SoldierInfoState.h"
 #include "../Mod/Mod.h"
 #include "../Engine/Game.h"
 #include "../Engine/Language.h"
@@ -39,12 +40,15 @@ namespace OpenXcom
  * @param soldier Pointer to the selected soldier.
  * @param rowEntry number to get mission info from.
  */
-SoldierDiaryMissionState::SoldierDiaryMissionState(Soldier *soldier, int rowEntry) : _soldier(soldier), _rowEntry(rowEntry)
+	SoldierDiaryMissionState::SoldierDiaryMissionState(Soldier *soldier, int rowEntry) : _soldier(soldier), _rowEntry(rowEntry)
 {
 	_screen = false;
 
+	int xPos = 700;
+	int yPos = 208;
+
 	// Create objects
-	_window = new Window(this, 300, 128, 10, 36, POPUP_HORIZONTAL);
+	_window = new Window(this, 350, 128, 10, 36, POPUP_HORIZONTAL);
 	_btnOk = new TextButton(240, 16, 40, 140);
 	_btnPrev = new TextButton(28, 14, 18, 44);
 	_btnNext = new TextButton(28, 14, 274, 44);
@@ -81,6 +85,7 @@ SoldierDiaryMissionState::SoldierDiaryMissionState(Soldier *soldier, int rowEntr
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK16.SCR"));
+	_window->setThinBorder();
 
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&SoldierDiaryMissionState::btnOkClick);

@@ -59,7 +59,7 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 	int xPos = 700;
 	int yPos = 3;
 
-	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
+	_window = new Window(this, 350, 200, 0 + xPos, 0 + yPos, POPUP_HORIZONTAL);
 	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
 	_btnNext = new TextButton(28, 14, 284 + xPos, 8 + yPos);
 	_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
@@ -109,6 +109,7 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
+	_window->setThinBorder();
 
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&SoldierDiaryPerformanceState::btnOkClick);

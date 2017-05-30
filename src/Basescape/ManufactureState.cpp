@@ -83,6 +83,7 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK17.SCR"));
+	_window->setThinBorder();
 
 	//_btnNew->setText(tr("STR_NEW_PRODUCTION"));
 	//_btnNew->onMouseClick((ActionHandler)&ManufactureState::btnNewProductionClick);
