@@ -16,11 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BaseScapeState.h"
 #include "TransferBaseState.h"
+#include "TransferBaseState.h"
+#include "TransfersState.h"
+#include "TransferItemsState.h"
 #include <sstream>
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/MultiState.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
@@ -140,6 +145,15 @@ void TransferBaseState::btnCancelClick(Action *)
 void TransferBaseState::lstBasesClick(Action *)
 {
 	_game->pushState(new TransferItemsState(_base, _bases[_lstBases->getSelectedRow()]));
+	
+	/*_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new TransfersState(_base));
+	state->add(new TransferBaseState(_base));
+	state->add(new TransferItemsState(_base, _bases[_lstBases->getSelectedRow()]));
+	_game->pushState(state);
+	*/
 }
 
 }

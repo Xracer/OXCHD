@@ -59,17 +59,17 @@ TransferItemsState::TransferItemsState(Base *baseFrom, Base *baseTo) : _baseFrom
 {
 	// Create objects
 	int xPos = 700;
-	int yPos = 3;
+	int yPos = 412;
 
 	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
 	_btnOk = new TextButton(148, 16, 8 + xPos, 176 + yPos);
 	_btnCancel = new TextButton(148, 16, 164 + xPos, 176 + yPos);
-	_txtTitle = new Text(310, 17, 5 + xPos, 8 + yPos);
-	_txtQuantity = new Text(50, 9, 150 + xPos, 24 + yPos);
-	_txtAmountTransfer = new Text(60, 17, 200 + xPos, 24 + yPos);
-	_txtAmountDestination = new Text(60, 17, 260 + xPos, 24 + yPos);
+	_txtTitle = new Text(550, 17, 5 + xPos, 8 + yPos);
+	_txtQuantity = new Text(70, 11, 175 + xPos, 24 + yPos);
+	_txtAmountTransfer = new Text(150, 17, 260 + xPos, 24 + yPos);
+	_txtAmountDestination = new Text(150, 17, 390 + xPos, 24 + yPos);
 	_cbxCategory = new ComboBox(this, 120, 16, 10 + xPos, 24 + yPos);
-	_lstItems = new TextList(287, 128, 8 + xPos, 44 + yPos);
+	_lstItems = new TextList(530, 128, 8 + xPos, 44 + yPos);
 
 	// Set palette
 	setInterface("transferMenu");
@@ -111,8 +111,8 @@ TransferItemsState::TransferItemsState(Base *baseFrom, Base *baseTo) : _baseFrom
 	_txtAmountDestination->setText(tr("STR_AMOUNT_AT_DESTINATION"));
 	_txtAmountDestination->setWordWrap(true);
 
-	_lstItems->setArrowColumn(193, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 162, 58, 40, 20);
+	_lstItems->setArrowColumn(320, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 100, 60);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);

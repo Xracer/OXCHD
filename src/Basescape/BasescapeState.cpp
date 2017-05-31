@@ -43,6 +43,7 @@
 #include "TransferItemsState.h"
 #include "../Engine/Game.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/MultiState.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Text.h"
@@ -63,7 +64,6 @@
 #include "../Savegame/Region.h"
 #include "../Geoscape/AllocatePsiTrainingState.h"
 #include "../Mod/RuleInterface.h"
-#include "../Engine/MultiState.h"
 #include "../Interface/Window.h"
 #include "../Menu/StatisticsState.h"
 
