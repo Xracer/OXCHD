@@ -31,6 +31,7 @@
 #include "NewResearchListState.h"
 #include "NewManufactureListState.h"
 #include "PurchaseState.h"
+#include "PlaceFacilityState.h"
 #include "ResearchState.h"
 #include "ResearchInfoState.h"
 #include "SoldiersState.h"
@@ -153,7 +154,7 @@ BasescapeState::BasescapeState(Base *base, Globe *globe) : _base(base), _globe(g
 	_btnResearch->setText(tr("STR_RESEARCH"));
 	_btnResearch->onMouseClick((ActionHandler)&BasescapeState::btnResearchClick);
 
-	_btnTraining->setText(tr("STR_TRAINING"));
+	_btnTraining->setText(tr("STR_TRAINING_UC"));
 	_btnTraining->onMouseClick((ActionHandler)&BasescapeState::btnTrainingClick);
 
 	_btnManufacture->setText(tr("STR_MANUFACTURE"));
@@ -333,7 +334,12 @@ void BasescapeState::btnCraftsClick(Action *)
  */
 void BasescapeState::btnFacilitiesClick(Action *)
 {
-	_game->pushState(new BuildFacilitiesState(_base, this));
+	//_game->pushState(new BuildFacilitiesState(_base, this));
+	
+	MultiState *state = new MultiState;
+	state->add(new BuildFacilitiesState(_base, this));
+//	state->add(new PlaceFacilityState(_base, this));
+	_game->pushState(state);
 }
 
 /**
@@ -347,7 +353,6 @@ void BasescapeState::btnResearchClick(Action *)
 	MultiState *state = new MultiState;
 	state->add(new BasescapeState(_base, _globe));
 	state->add(new ResearchState(_base));
-	//state->add(new ResearchInfoState(_base, 0));
 	state->add(new NewResearchListState(_base));
 	_game->pushState(state);
 }

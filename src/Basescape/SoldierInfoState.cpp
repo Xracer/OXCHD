@@ -98,7 +98,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	_txtRank = new Text(130, 11, 0, 43);
 	_txtMissions = new Text(100, 11, 130, 43);
 	_txtKills = new Text(100, 11, 230, 43);
-	_txtCraft = new Text(130, 11, 330, 43);
+	_txtCraft = new Text(140, 11, 330, 43);
 	_txtRecovery = new Text(180, 11, 460, 43);
 	_txtPsionic = new Text(150, 11, 600, 43);
 	_txtDead = new Text(150, 11, 750, 43);
@@ -589,10 +589,8 @@ void SoldierInfoState::btnPrevClick(Action *)
 		_soldierId = _list->size() - 1;
 	else
 		_soldierId--;
-
-
-
-
+	
+	_game->popState();
 	MultiState *state = new MultiState;
 //	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
 //	state->add(info);
@@ -617,13 +615,14 @@ void SoldierInfoState::btnNextClick(Action *)
 	_soldierId++;
 	if (_soldierId >= _list->size())
 		_soldierId = 0;
-
+	
+	_game->popState();
 	MultiState *state = new MultiState;
 	//	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
 	//	state->add(info);
 	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
 	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
-//	state->add(new SoldierDiaryMissionState(_base, _soldierId, this));
+//	state->add(new SoldierDiaryMissionState(_soldier, _soldierId, this));
 //	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
 	_game->pushState(state);
 
