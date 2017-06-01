@@ -389,7 +389,7 @@ void TextList::addRow(int cols, ...)
 			shape1 = ARROW_SMALL_LEFT;
 			shape2 = ARROW_SMALL_RIGHT;
 		}
-		ArrowButton *a1 = new ArrowButton(shape1, 11, 8, getX() + _arrowPos, getY());
+		ArrowButton *a1 = new ArrowButton(shape1, 13, 12, getX() + _arrowPos, getY()); //changed the size of the arrows from 11, 8
 		a1->setListButton();
 		a1->setPalette(this->getPalette());
 		a1->setColor(_up->getColor());
@@ -397,7 +397,7 @@ void TextList::addRow(int cols, ...)
 		a1->onMousePress(_leftPress);
 		a1->onMouseRelease(_leftRelease);
 		_arrowLeft.push_back(a1);
-		ArrowButton *a2 = new ArrowButton(shape2, 11, 8, getX() + _arrowPos + 12, getY());
+		ArrowButton *a2 = new ArrowButton(shape2, 13, 12, getX() + _arrowPos + 16, getY()); //changed the size of the arrows from 11, 8 and move the location  from 12
 		a2->setListButton();
 		a2->setPalette(this->getPalette());
 		a2->setColor(_up->getColor());

@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "PurchaseState.h"
+#include "BasescapeState.h"
 #include <algorithm>
 #include <sstream>
 #include <climits>
@@ -26,6 +27,7 @@
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/MultiState.h"
 #include "../Engine/Timer.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
@@ -379,6 +381,14 @@ void PurchaseState::btnOkClick(Action *)
 		}
 	}
 	// _game->popState(); dont want to pop the state because of multistate
+	PurchaseState::updateList();
+	
+	/*_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new PurchaseState(_base));
+	_game->pushState(state);
+	*/
 }
 
 /**

@@ -472,6 +472,7 @@ void SellState::btnOkClick(Action *)
 		}
 	}
 	// _game->popState(); dont want to pop the state because of multistate
+	SellState::updateList();
 }
 
 /**
