@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -110,7 +110,7 @@ AllocatePsiTrainingState::AllocatePsiTrainingState(Base *base) : _sel(0)
 		}
 		else
 		{
-			ssStr << tr("STR_UNKNOWN").c_str();
+			ssStr << tr("STR_UNKNOWN");
 		}
 		if ((*s)->getCurrentStats()->psiSkill > 0)
 		{
@@ -133,6 +133,7 @@ AllocatePsiTrainingState::AllocatePsiTrainingState(Base *base) : _sel(0)
 		row++;
 	}
 }
+
 /**
  *
  */
@@ -147,6 +148,10 @@ AllocatePsiTrainingState::~AllocatePsiTrainingState()
  */
 void AllocatePsiTrainingState::btnOkClick(Action *)
 {
+	for (std::vector<Soldier*>::iterator i = _base->getSoldiers()->begin(); i != _base->getSoldiers()->end(); ++i)
+	{
+		(*i)->calcStatString(_game->getMod()->getStatStrings(), (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())));
+	}
 	_game->popState();
 }
 
@@ -163,7 +168,7 @@ void AllocatePsiTrainingState::lstSoldiersClick(Action *action)
 		{
 			if (_base->getUsedPsiLabs() < _base->getAvailablePsiLabs())
 			{
-				_lstSoldiers->setCellText(_sel, 3, tr("STR_YES").c_str());
+				_lstSoldiers->setCellText(_sel, 3, tr("STR_YES"));
 				_lstSoldiers->setRowColor(_sel, _lstSoldiers->getSecondaryColor());
 				_labSpace--;
 				_txtRemaining->setText(tr("STR_REMAINING_PSI_LAB_CAPACITY").arg(_labSpace));
@@ -172,7 +177,7 @@ void AllocatePsiTrainingState::lstSoldiersClick(Action *action)
 		}
 		else
 		{
-			_lstSoldiers->setCellText(_sel, 3, tr("STR_NO").c_str());
+			_lstSoldiers->setCellText(_sel, 3, tr("STR_NO"));
 			_lstSoldiers->setRowColor(_sel, _lstSoldiers->getColor());
 			_labSpace++;
 			_txtRemaining->setText(tr("STR_REMAINING_PSI_LAB_CAPACITY").arg(_labSpace));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -21,7 +21,6 @@
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/Language.h"
-#include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
 #include "../Interface/Text.h"
@@ -44,27 +43,30 @@ namespace OpenXcom
 ManufactureState::ManufactureState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnNew = new TextButton(148, 16, 8, 176);
-	_btnOk = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtAvailable = new Text(150, 9, 8, 24);
-	_txtAllocated = new Text(150, 9, 160, 24);
-	_txtSpace = new Text(150, 9, 8, 34);
-	_txtFunds = new Text(150, 9, 160, 34);
-	_txtItem = new Text(80, 9, 10, 52);
-	_txtEngineers = new Text(56, 18, 112, 44);
-	_txtProduced = new Text(56, 18, 168, 44);
-	_txtCost = new Text(44, 27, 222, 44);
-	_txtTimeLeft = new Text(60, 27, 260, 44);
-	_lstManufacture = new TextList(288, 90, 8, 80);
+	int yPos = 3;
+	int xPos = 700;
+	
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos, POPUP_BOTH);
+	//_btnNew = new TextButton(148, 16, 8 + xPos, 179 + yPos);
+	//_btnOk = new TextButton(148, 16, 164 + xPos, 179 + yPos);
+	_txtTitle = new Text(550, 17, 5 + xPos, 8 + yPos);
+	_txtAvailable = new Text(250, 11, 8 + xPos, 27 + yPos);
+	_txtAllocated = new Text(250, 11, 255 + xPos, 27 + yPos);
+	_txtSpace = new Text(250, 11, 8 + xPos, 40 + yPos);
+	_txtFunds = new Text(250, 11, 255 + xPos, 40 + yPos);
+	_txtItem = new Text(80, 11, 8 + xPos, 55 + yPos);
+	_txtEngineers = new Text(120, 18, 120 + xPos, 55 + yPos);
+	_txtProduced = new Text(100, 18, 245 + xPos, 55 + yPos);
+	_txtCost = new Text(130, 27, 345 + xPos, 55 + yPos);
+	_txtTimeLeft = new Text(100, 27, 455 + xPos, 55 + yPos);
+	_lstManufacture = new TextList(550, 180, 8 + xPos, 83 + yPos);
 
 	// Set palette
 	setInterface("manufactureMenu");
 
 	add(_window, "window", "manufactureMenu");
-	add(_btnNew, "button", "manufactureMenu");
-	add(_btnOk, "button", "manufactureMenu");
+	//add(_btnNew, "button", "manufactureMenu");
+	//add(_btnOk, "button", "manufactureMenu");
 	add(_txtTitle, "text1", "manufactureMenu");
 	add(_txtAvailable, "text1", "manufactureMenu");
 	add(_txtAllocated, "text1", "manufactureMenu");
@@ -77,17 +79,18 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 	add(_txtTimeLeft, "text2", "manufactureMenu");
 	add(_lstManufacture, "list", "manufactureMenu");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK17.SCR"));
+	_window->setThinBorder();
 
-	_btnNew->setText(tr("STR_NEW_PRODUCTION"));
-	_btnNew->onMouseClick((ActionHandler)&ManufactureState::btnNewProductionClick);
+	//_btnNew->setText(tr("STR_NEW_PRODUCTION"));
+	//_btnNew->onMouseClick((ActionHandler)&ManufactureState::btnNewProductionClick);
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&ManufactureState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&ManufactureState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&ManufactureState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&ManufactureState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -109,7 +112,7 @@ ManufactureState::ManufactureState(Base *base) : _base(base)
 	_txtTimeLeft->setText(tr("STR_DAYS_HOURS_LEFT"));
 	_txtTimeLeft->setWordWrap(true);
 
-	_lstManufacture->setColumns(5, 115, 15, 52, 56, 48);
+	_lstManufacture->setColumns(5, 115, 90, 90, 90, 48);
 	_lstManufacture->setAlign(ALIGN_RIGHT);
 	_lstManufacture->setAlign(ALIGN_LEFT, 0);
 	_lstManufacture->setSelectable(true);
@@ -168,10 +171,10 @@ void ManufactureState::fillProductionList()
 		std::wostringstream s1;
 		s1 << (*iter)->getAssignedEngineers();
 		std::wostringstream s2;
-		if ((*iter)->getSellItems()) s2 << "$";
 		s2 << (*iter)->getAmountProduced() << "/";
 		if ((*iter)->getInfiniteAmount()) s2 << Language::utf8ToWstr("∞");
 		else s2 << (*iter)->getAmountTotal();
+		if ((*iter)->getSellItems()) s2 << " $";
 		std::wostringstream s3;
 		s3 << Text::formatFunding((*iter)->getRules()->getManufactureCost());
 		std::wostringstream s4;
@@ -183,10 +186,6 @@ void ManufactureState::fillProductionList()
 		{
 			int timeLeft = (*iter)->getAmountTotal() * (*iter)->getRules()->getManufactureTime() - (*iter)->getTimeSpent();
 			int numEffectiveEngineers = (*iter)->getAssignedEngineers();
-			if (!Options::canManufactureMoreItemsPerHour)
-			{
-				numEffectiveEngineers = std::min(numEffectiveEngineers, (*iter)->getRules()->getManufactureTime());
-			}
 			// ensure we round up since it takes an entire hour to manufacture any part of that hour's capacity
 			int hoursLeft = (timeLeft + numEffectiveEngineers - 1) / numEffectiveEngineers;
 			int daysLeft = hoursLeft / 24;

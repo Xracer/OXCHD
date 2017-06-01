@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -42,9 +42,9 @@ OptionsModsState::OptionsModsState(OptionsOrigin origin) : OptionsBaseState(orig
 	setCategory(_btnMods);
 
 	// Create objects
-	_txtMaster = new Text(114, 9, 94, 8);
-	_cbxMasters = new ComboBox(this, 218, 16, 94, 18);
-	_lstMods = new TextList(200, 104, 94, 40);
+	_txtMaster = new Text(114, 11, 388, 128);
+	_cbxMasters = new ComboBox(this, 265, 20, 388, 140);
+	_lstMods = new TextList(250, 160, 388, 166);
 
 	add(_txtMaster, "text", "modsMenu");
 	add(_lstMods, "optionLists", "modsMenu");
@@ -53,7 +53,7 @@ OptionsModsState::OptionsModsState(OptionsOrigin origin) : OptionsBaseState(orig
 	centerAllSurfaces();
 
 	// how much room do we need for YES/NO
-	Text text = Text(100, 9, 0, 0);
+	Text text = Text(275, 15, 0, 0);
 	text.initText(_game->getMod()->getFont("FONT_BIG"), _game->getMod()->getFont("FONT_SMALL"), _game->getLanguage());
 	text.setText(tr("STR_YES"));
 	int yes = text.getTextWidth();
@@ -167,7 +167,6 @@ void OptionsModsState::lstModsRefresh(size_t scrollLoc)
 			continue;
 		}
 
-		std::string  modId   = modInfo.getId();
 		std::wstring modName = Language::fsToWstr(modInfo.getName());
 		_lstMods->addRow(3, modName.c_str(), L"", (i->second ? tr("STR_YES").c_str() : tr("STR_NO").c_str()));
 		_mods.push_back(*i);
@@ -205,7 +204,7 @@ void OptionsModsState::lstModsClick(Action *action)
 
 		mod.second = ! mod.second;
 		Options::mods[i].second = mod.second;
-		_lstMods->setCellText(_lstMods->getSelectedRow(), 2, (mod.second ? tr("STR_YES").c_str() : tr("STR_NO").c_str()));
+		_lstMods->setCellText(_lstMods->getSelectedRow(), 2, (mod.second ? tr("STR_YES") : tr("STR_NO")));
 
 		break;
 	}

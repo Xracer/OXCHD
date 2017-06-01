@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -65,17 +65,19 @@ ManageAlienContainmentState::ManageAlienContainmentState(Base *base, OptionsOrig
 	}
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(overCrowded ? 288:148, 16, overCrowded ? 16:8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtAvailable =  new Text(190, 9, 10, 24);
-	_txtUsed = new Text(110, 9, 136, 24);
-	_txtItem = new Text(120, 9, 10, 41);
-	_txtLiveAliens = new Text(54, 18, 153, 32);
-	_txtDeadAliens = new Text(54, 18, 207, 32);
-	_txtInterrogatedAliens = new Text(54, 18, 261, 32);
-	_lstAliens = new TextList(286, 112, 8, 53);
+	int xPos = 700;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 3);
+	_btnOk = new TextButton(overCrowded ? 288:148, 16, overCrowded ? 16:8, 179);
+	_btnCancel = new TextButton(148, 16, 164, 179);
+	_txtTitle = new Text(310, 17, 5 + xPos, 11);
+	_txtAvailable = new Text(190, 9, 10 + xPos, 27);
+	_txtUsed = new Text(110, 9, 136 + xPos, 27);
+	_txtItem = new Text(120, 9, 10 + xPos, 44);
+	_txtLiveAliens = new Text(54, 18, 153 + xPos, 35);
+	_txtDeadAliens = new Text(54, 18, 207 + xPos, 35);
+	_txtInterrogatedAliens = new Text(54, 18, 261 + xPos, 35);
+	_lstAliens = new TextList(286, 112, 8 + xPos, 56);
 
 	// Set palette
 	setInterface("manageContainment");
@@ -92,7 +94,7 @@ ManageAlienContainmentState::ManageAlienContainmentState(Base *base, OptionsOrig
 	add(_txtInterrogatedAliens, "text", "manageContainment");
 	add(_lstAliens, "list", "manageContainment");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface((origin == OPT_BATTLESCAPE)? "BACK01.SCR" : "BACK05.SCR"));
@@ -150,7 +152,7 @@ ManageAlienContainmentState::ManageAlienContainmentState(Base *base, OptionsOrig
 	for (std::vector<std::string>::const_iterator i = items.begin(); i != items.end(); ++i)
 	{
 		int qty = _base->getStorageItems()->getItem(*i);
-		if (qty > 0 && _game->getMod()->getItem(*i)->isAlien())
+		if (qty > 0 && _game->getMod()->getItem(*i, true)->isAlien())
 		{
 			_qtys.push_back(0);
 			_aliens.push_back(*i);
@@ -219,7 +221,7 @@ void ManageAlienContainmentState::btnOkClick(Action *)
 
 			if (Options::canSellLiveAliens)
 			{
-				_game->getSavedGame()->setFunds(_game->getSavedGame()->getFunds() + _game->getMod()->getItem(_aliens[i])->getSellCost() * _qtys[i]);
+				_game->getSavedGame()->setFunds(_game->getSavedGame()->getFunds() + _game->getMod()->getItem(_aliens[i], true)->getSellCost() * _qtys[i]);
 			}
 			else
 			{
@@ -227,8 +229,8 @@ void ManageAlienContainmentState::btnOkClick(Action *)
 				_base->getStorageItems()->addItem(
 					_game->getMod()->getArmor(
 						_game->getMod()->getUnit(
-							_aliens[i]
-						)->getArmor()
+							_aliens[i], true
+						)->getArmor(), true
 					)->getCorpseGeoscape(), _qtys[i]
 				); // ;)
 			}
@@ -240,9 +242,9 @@ void ManageAlienContainmentState::btnOkClick(Action *)
 	{
 		_game->pushState(new SellState(_base, _origin));
 		if (_origin == OPT_BATTLESCAPE)
-			_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), _palette, _game->getMod()->getInterface("manageContainment")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("manageContainment")->getElement("errorPalette")->color));
+			_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()), _palette, _game->getMod()->getInterface("manageContainment")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("manageContainment")->getElement("errorPalette")->color));
 		else
-			_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), _palette, _game->getMod()->getInterface("manageContainment")->getElement("errorMessage")->color, "BACK13.SCR", _game->getMod()->getInterface("manageContainment")->getElement("errorPalette")->color));
+			_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()), _palette, _game->getMod()->getInterface("manageContainment")->getElement("errorMessage")->color, "BACK13.SCR", _game->getMod()->getInterface("manageContainment")->getElement("errorPalette")->color));
  	}
 }
 

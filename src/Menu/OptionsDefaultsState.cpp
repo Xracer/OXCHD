@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -40,10 +40,10 @@ OptionsDefaultsState::OptionsDefaultsState(OptionsOrigin origin, OptionsBaseStat
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 256, 100, 32, 50, POPUP_BOTH);
-	_btnYes = new TextButton(60, 18, 60, 122);
-	_btnNo = new TextButton(60, 18, 200, 122);
-	_txtTitle = new Text(246, 32, 37, 70);
+	_window = new Window(this, 260, 100, 350, 200, POPUP_BOTH);
+	_btnYes = new TextButton(60, 18, 380, 272);
+	_btnNo = new TextButton(60, 18, 520, 272);
+	_txtTitle = new Text(246, 32, 357, 220);
 
 	// Set palette
 	setInterface("mainMenu", false, _game->getSavedGame() ? _game->getSavedGame()->getSavedBattle() : 0);

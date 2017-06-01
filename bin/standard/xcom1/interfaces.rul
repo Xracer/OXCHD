@@ -179,9 +179,10 @@ interfaces:
         color: 0     # brown
       - id: window
         color: 138   # yellow
-      - id: text
+      - id: text1
         color: 239   # bright green
-        color2: 138  # yellow
+      - id: text2
+        color: 138  # yellow
       - id: button
         color: 133   # minty green
   - type: confirmDestination
@@ -514,7 +515,20 @@ interfaces:
       - id: errorPalette
         color: 0     # brown
       - id: errorMessage
+        color: 133   # minty green  
+  - type: commendations
+    elements:
+      - id: palette
+        color: 0     # brown
+      - id: window
+        color: 239   # bright green
+      - id: heading
         color: 133   # minty green
+      - id: list
+        color: 239   # bright green
+        color2: 138  # yellow
+      - id: button
+        color: 239   # bright green
   - type: geoscape
     elements:
       - id: palette
@@ -837,7 +851,7 @@ interfaces:
       - id: palette
         color: 6     # oxide
       - id: window
-        color: 241   # pink
+        color: 218   # pink
       - id: text1
         color: 241   # pink
         color2: 218  # blue
@@ -962,9 +976,43 @@ interfaces:
         color2: 208  # white
       - id: list
         color: 246   # purple
+        color2: 218  # blue
         border: 218  # blue
       - id: button
         color: 218   # blue
+  - type: soldierDiary
+    palette: PAL_BASESCAPE
+    elements:
+      - id: palette
+        color: 7     # violet
+      - id: window
+        color: 241   # pink
+      - id: text1
+        color: 218   # blue
+      - id: text2
+        color: 241   # pink
+        color2: 218  # blue
+      - id: list
+        color: 218   # blue
+        color2: 241   # pink
+        border: 241  # pink
+      - id: button
+        color: 246   # purple
+  - type: soldierMission
+    palette: PAL_BASESCAPE
+    elements:
+      - id: palette
+        color: 1     # burgundy
+      - id: window
+        color: 218   # blue
+      - id: text
+        color: 213   # gold
+        color2: 208  # white
+      - id: list
+        color: 208   # white
+        border: 213  # gold
+      - id: button
+        color: 213   # gold
   - type: craftEquipment
     palette: PAL_BASESCAPE
     elements:
@@ -1290,3 +1338,56 @@ interfaces:
       - id: buttonEnd
         pos: [220, 140]
         size: [20, 20]
+  - type: hdbaseInfo
+    palette: PAL_BASESCAPE
+    elements:
+      - id: window
+        color: 218   # blue
+      - id: title
+        color: 241   # pink
+      - id: text1
+        color: 241   # pink	
+        color2: 218  # blue
+      - id: text2
+        color: 213   # gold		
+      - id: list
+        color: 218   # blue
+      - id: button
+        color: 218   # blue
+      - id: numbers
+        color: 208   # white
+      - id: list
+        color: 218   # blue
+      - id: personnelBars
+        color: 16    # orange
+      - id: facilityBars
+        color: 48    # light green
+      - id: defenceBar
+        color: 32    # sorta red
+      - id: detectionBars
+        color: 128   # pale blue
+  - type: hdcraftInfo
+    palette: PAL_BASESCAPE
+    elements:
+      - id: palette
+        color: 3     # pink
+      - id: window
+        color: 218   # blue
+      - id: title
+        color: 241   # pink
+      - id: text1
+        color: 241   # pink
+        color2: 208  # white
+      - id: text2
+        color: 218   # blue
+        color2: 213  # gold
+      - id: button
+        color: 218   # blue
+      - id: list
+        color: 218   # blue
+        color2: 208  # white
+        border: 246  # purple
+      - id: button
+        color: 218   # blue
+      - id: other
+        color: 246   # purple

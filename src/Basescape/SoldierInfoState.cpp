@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -18,10 +18,12 @@
  */
 #include "SoldierInfoState.h"
 #include "SoldierDiaryOverviewState.h"
+#include <algorithm>
 #include <sstream>
 #include "../Engine/Game.h"
 #include "../Engine/Action.h"
 #include "../Mod/Mod.h"
+#include "../Engine/Language.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
 #include "../Interface/Bar.h"
@@ -33,8 +35,6 @@
 #include "../Savegame/Base.h"
 #include "../Savegame/Craft.h"
 #include "../Savegame/Soldier.h"
-#include "../Savegame/SoldierDiary.h"
-#include "../Savegame/ItemContainer.h"
 #include "../Engine/SurfaceSet.h"
 #include "../Mod/Armor.h"
 #include "../Menu/ErrorMessageState.h"
@@ -43,6 +43,15 @@
 #include "SackSoldierState.h"
 #include "../Mod/RuleInterface.h"
 #include "../Mod/RuleSoldier.h"
+#include "../Savegame/SoldierDeath.h"
+#include "SoldierInfoState.h"
+#include "SoldierDiaryOverviewState.h"
+#include "SoldierDiaryMissionState.h"
+#include "SoldierDiaryPerformanceState.h"
+#include "SoldierMemorialState.h"
+#include "../Engine/MultiState.h"
+
+
 
 namespace OpenXcom
 {
@@ -73,78 +82,84 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	}
 
 	// Create objects
-	_bg = new Surface(320, 200, 0, 0);
+	_bg = new Surface(570, 350, 0, 0);
+	/*
+	_banner = new Surface (1280, 40, 0, 0);
+	_grid = new Surface (570, 200, 700, 65);
+	*/
 	_rank = new Surface(26, 23, 4, 4);
-	_btnPrev = new TextButton(28, 14, 0, 33);
-	_btnOk = new TextButton(48, 14, 30, 33);
-	_btnNext = new TextButton(28, 14, 80, 33);
-	_btnArmor = new TextButton(110, 14, 130, 33);
+	_btnPrev = new TextButton(30, 20, 1100, 7);
+	_btnOk = new TextButton(50, 20, 1132, 7);
+	_btnNext = new TextButton(30, 20, 1186, 7);
+	_btnArmor = new TextButton(110, 14, 850, 43);
 	_edtSoldier = new TextEdit(this, 210, 16, 40, 9);
-	_btnSack = new TextButton(60, 14, 260, 33);
-    _btnDiary = new TextButton(60, 14, 260, 48);
-	_txtRank = new Text(130, 9, 0, 48);
-	_txtMissions = new Text(100, 9, 130, 48);
-	_txtKills = new Text(100, 9, 200, 48);
-	_txtCraft = new Text(130, 9, 0, 56);
-	_txtRecovery = new Text(180, 9, 130, 56);
-	_txtPsionic = new Text(150, 9, 0, 66);
+	_btnSack = new TextButton(60, 14, 963, 43);
+	//_btnDiary = new TextButton(60, 14, 1050, 43);
+	_txtRank = new Text(130, 11, 0, 43);
+	_txtMissions = new Text(100, 11, 130, 43);
+	_txtKills = new Text(100, 11, 230, 43);
+	_txtCraft = new Text(140, 11, 330, 43);
+	_txtRecovery = new Text(180, 11, 460, 43);
+	_txtPsionic = new Text(150, 11, 600, 43);
+	_txtDead = new Text(150, 11, 750, 43);
 
 	int yPos = 80;
-	int step = 11;
+	int step = 15;
+	int xPos = 700;
 
-	_txtTimeUnits = new Text(120, 9, 6, yPos);
-	_numTimeUnits = new Text(18, 9, 131, yPos);
-	_barTimeUnits = new Bar(170, 7, 150, yPos);
+	_txtTimeUnits = new Text(120, 11, 7 + xPos, yPos); // added 700 to all xPos
+	_numTimeUnits = new Text(18, 11, 131 + xPos, yPos);
+	_barTimeUnits = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtStamina = new Text(120, 9, 6, yPos);
-	_numStamina = new Text(18, 9, 131, yPos);
-	_barStamina = new Bar(170, 7, 150, yPos);
+	_txtStamina = new Text(120, 11, 6 + xPos, yPos);
+	_numStamina = new Text(18, 11, 131 + xPos, yPos);
+	_barStamina = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtHealth = new Text(120, 9, 6, yPos);
-	_numHealth = new Text(18, 9, 131, yPos);
-	_barHealth = new Bar(170, 7, 150, yPos);
+	_txtHealth = new Text(120, 11, 6 + xPos, yPos);
+	_numHealth = new Text(18, 11, 131 + xPos, yPos);
+	_barHealth = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtBravery = new Text(120, 9, 6, yPos);
-	_numBravery = new Text(18, 9, 131, yPos);
-	_barBravery = new Bar(170, 7, 150, yPos);
+	_txtBravery = new Text(120, 11, 6 + xPos, yPos);
+	_numBravery = new Text(18, 11, 131 + xPos, yPos);
+	_barBravery = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtReactions = new Text(120, 9, 6, yPos);
-	_numReactions = new Text(18, 9, 131, yPos);
-	_barReactions = new Bar(170, 7, 150, yPos);
+	_txtReactions = new Text(120, 11, 6 + xPos, yPos);
+	_numReactions = new Text(18, 11, 131 + xPos, yPos);
+	_barReactions = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtFiring = new Text(120, 9, 6, yPos);
-	_numFiring = new Text(18, 9, 131, yPos);
-	_barFiring = new Bar(170, 7, 150, yPos);
+	_txtFiring = new Text(120, 11, 6 + xPos, yPos);
+	_numFiring = new Text(18, 11, 131 + xPos, yPos);
+	_barFiring = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtThrowing = new Text(120, 9, 6, yPos);
-	_numThrowing = new Text(18, 9, 131, yPos);
-	_barThrowing = new Bar(170, 7, 150, yPos);
+	_txtThrowing = new Text(120, 11, 6 + xPos, yPos);
+	_numThrowing = new Text(18, 11, 131 + xPos, yPos);
+	_barThrowing = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtMelee = new Text(120, 9, 6, yPos);
-	_numMelee = new Text(18, 9, 131, yPos);
-	_barMelee = new Bar(170, 7, 150, yPos);
+	_txtMelee = new Text(120, 11, 6 + xPos, yPos);
+	_numMelee = new Text(18, 11, 131 + xPos, yPos);
+	_barMelee = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtStrength = new Text(120, 9, 6, yPos);
-	_numStrength = new Text(18, 9, 131, yPos);
-	_barStrength = new Bar(170, 7, 150, yPos);
+	_txtStrength = new Text(120, 11, 6 + xPos, yPos);
+	_numStrength = new Text(18, 11, 131 + xPos, yPos);
+	_barStrength = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtPsiStrength = new Text(120, 9, 6, yPos);
-	_numPsiStrength = new Text(18, 9, 131, yPos);
-	_barPsiStrength = new Bar(170, 7, 150, yPos);
+	_txtPsiStrength = new Text(120, 11, 6 + xPos, yPos);
+	_numPsiStrength = new Text(18, 11, 131 + xPos, yPos);
+	_barPsiStrength = new Bar(170, 9, 150 + xPos, yPos);
 	yPos += step;
 
-	_txtPsiSkill = new Text(120, 9, 6, yPos);
-	_numPsiSkill = new Text(18, 9, 131, yPos);
-	_barPsiSkill = new Bar(170, 7, 150, yPos);
+	_txtPsiSkill = new Text(120, 11, 6 + xPos, yPos);
+	_numPsiSkill = new Text(18, 11, 131 + xPos, yPos);
+	_barPsiSkill = new Bar(170, 9, 150 + xPos, yPos);
 
 	// Set palette
 	setInterface("soldierInfo");
@@ -158,13 +173,14 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	add(_btnArmor, "button", "soldierInfo");
 	add(_edtSoldier, "text1", "soldierInfo");
 	add(_btnSack, "button", "soldierInfo");
-	add(_btnDiary, "button", "soldierInfo");
+	//add(_btnDiary, "button", "soldierInfo");
 	add(_txtRank, "text1", "soldierInfo");
 	add(_txtMissions, "text1", "soldierInfo");
 	add(_txtKills, "text1", "soldierInfo");
 	add(_txtCraft, "text1", "soldierInfo");
 	add(_txtRecovery, "text1", "soldierInfo");
 	add(_txtPsionic, "text2", "soldierInfo");
+	add(_txtDead, "text2", "soldierInfo");
 
 	add(_txtTimeUnits, "text2", "soldierInfo");
 	add(_numTimeUnits, "numbers", "soldierInfo");
@@ -210,7 +226,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	add(_numPsiSkill, "numbers", "soldierInfo");
 	add(_barPsiSkill, "barPsiSkill", "soldierInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_game->getMod()->getSurface("BACK06.SCR")->blit(_bg);
@@ -253,26 +269,19 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	_btnSack->setText(tr("STR_SACK"));
 	_btnSack->onMouseClick((ActionHandler)&SoldierInfoState::btnSackClick);
 
-	_btnDiary->setText(tr("STR_DIARY"));
-	_btnDiary->onMouseClick((ActionHandler)&SoldierInfoState::btnDiaryClick);
+	//_btnDiary->setText(tr("STR_DIARY"));
+	//_btnDiary->onMouseClick((ActionHandler)&SoldierInfoState::btnDiaryClick);
 
-/*	_txtRank->setColor(Palette::blockOffset(13)+10);
-	_txtRank->setSecondaryColor(Palette::blockOffset(13));
+	_txtRank->setText(tr("STR_RANK"));
 
-	_txtMissions->setColor(Palette::blockOffset(13)+10);
-	_txtMissions->setSecondaryColor(Palette::blockOffset(13));
+	_txtMissions->setText(tr("STR_MISSIONS"));
 
-	_txtKills->setColor(Palette::blockOffset(13)+10);
-	_txtKills->setSecondaryColor(Palette::blockOffset(13));
+	_txtKills->setText(tr("STR_KILLS"));
 
-	_txtCraft->setColor(Palette::blockOffset(13)+10);
-	_txtCraft->setSecondaryColor(Palette::blockOffset(13));
+	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_txtRecovery->setColor(Palette::blockOffset(13)+10);
-	_txtRecovery->setSecondaryColor(Palette::blockOffset(13));
+	_txtRecovery->setText(tr("STR_RECOVERY"));
 
-	_txtPsionic->setColor(Palette::blockOffset(15)+1);
-*/
 	_txtPsionic->setText(tr("STR_IN_PSIONIC_TRAINING"));
 
 	_txtTimeUnits->setText(tr("STR_TIME_UNITS"));
@@ -434,7 +443,7 @@ void SoldierInfoState::init()
 
 	_btnArmor->setText(wsArmor);
 
-	_btnSack->setVisible(!(_soldier->getCraft() && _soldier->getCraft()->getStatus() == "STR_OUT"));
+	_btnSack->setVisible(_game->getSavedGame()->getMonthsPassed() > -1 && !(_soldier->getCraft() && _soldier->getCraft()->getStatus() == "STR_OUT"));
 
 	_txtRank->setText(tr("STR_RANK_").arg(tr(_soldier->getRankString())));
 
@@ -466,7 +475,7 @@ void SoldierInfoState::init()
 
 	if (current->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
 	{
-		std::wstringstream ss14;
+		std::wostringstream ss14;
 		ss14 << withArmor.psiStrength;
 		_numPsiStrength->setText(ss14.str());
 		_barPsiStrength->setMax(current->psiStrength);
@@ -486,7 +495,7 @@ void SoldierInfoState::init()
 
 	if (current->psiSkill > 0)
 	{
-		std::wstringstream ss15;
+		std::wostringstream ss15;
 		ss15 << withArmor.psiSkill;
 		_numPsiSkill->setText(ss15.str());
 		_barPsiSkill->setMax(current->psiSkill);
@@ -510,10 +519,19 @@ void SoldierInfoState::init()
 		_btnArmor->setVisible(false);
 		_btnSack->setVisible(false);
 		_txtCraft->setVisible(false);
+		_txtDead->setVisible(true);
+		if (_soldier->getDeath() && _soldier->getDeath()->getCause())
+		{
+			_txtDead->setText(_game->getLanguage()->getString("STR_KILLED_IN_ACTION", _soldier->getGender()));
+		}
+		else
+		{
+			_txtDead->setText(_game->getLanguage()->getString("STR_MISSING_IN_ACTION", _soldier->getGender()));
+		}
 	}
 	else
 	{
-		_btnSack->setVisible(_game->getSavedGame()->getMonthsPassed() > -1);
+		_txtDead->setVisible(false);
 	}
 }
 
@@ -552,12 +570,12 @@ void SoldierInfoState::edtSoldierChange(Action *)
  */
 void SoldierInfoState::btnOkClick(Action *)
 {
-    
+	
 	_game->popState();
 	if (_game->getSavedGame()->getMonthsPassed() > -1 && Options::storageLimitsEnforced && _base != 0 && _base->storesOverfull())
 	{
 		_game->pushState(new SellState(_base));
-		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), _palette, _game->getMod()->getInterface("soldierInfo")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("soldierInfo")->getElement("errorPalette")->color));
+		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()), _palette, _game->getMod()->getInterface("soldierInfo")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("soldierInfo")->getElement("errorPalette")->color));
 	}
 }
 
@@ -571,6 +589,20 @@ void SoldierInfoState::btnPrevClick(Action *)
 		_soldierId = _list->size() - 1;
 	else
 		_soldierId--;
+	
+	_game->popState();
+	MultiState *state = new MultiState;
+//	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+//	state->add(info);
+	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
+	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this)); 
+//	state->add(new SoldierDiaryMissionState(_base, _soldierId));
+//	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
+	_game->pushState(state);
+
+
+
+
 	init();
 }
 
@@ -583,6 +615,17 @@ void SoldierInfoState::btnNextClick(Action *)
 	_soldierId++;
 	if (_soldierId >= _list->size())
 		_soldierId = 0;
+	
+	_game->popState();
+	MultiState *state = new MultiState;
+	//	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+	//	state->add(info);
+	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
+	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this));
+//	state->add(new SoldierDiaryMissionState(_soldier, _soldierId, this));
+//	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
+	_game->pushState(state);
+
 	init();
 }
 
@@ -610,10 +653,11 @@ void SoldierInfoState::btnSackClick(Action *)
 /**
  * Shows the Diary Soldier window.
  * @param action Pointer to an action.
- */
+ *
 void SoldierInfoState::btnDiaryClick(Action *)
 {
 	_game->pushState(new SoldierDiaryOverviewState(_base, _soldierId, this));
 }
+ */
 
 }

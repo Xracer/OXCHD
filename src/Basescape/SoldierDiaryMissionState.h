@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,16 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_SOLDIERDIARYMISSIONSTATE_H
-#define OPENXCOM_SOLDIERDIARYMISSIONSTATE_H
-
-#include <vector>
 #include "../Engine/State.h"
 
 namespace OpenXcom
 {
 
-class Base;
 class TextButton;
 class Window;
 class Text;
@@ -33,32 +29,34 @@ class TextList;
 class Soldier;
 
 /**
- * Select Mission window that shows 
+ * Diary window that shows
  * mission details for a soldier.
  */
 class SoldierDiaryMissionState : public State
 {
 private:
-	Base *_base;
-	size_t _soldierId;
 	Soldier *_soldier;
-	std::vector<Soldier*> *_list;
 
-	TextButton *_btnOk;
+	TextButton *_btnOk, *_btnPrev, *_btnNext;
 	Window *_window;
-	Text *_txtTitle, *_txtScore, *_txtKills, *_txtMissionType, *_txtUFO, *_txtRace, *_txtDaylight, *_txtDaysWounded;
+	Text *_txtTitle, *_txtUFO, *_txtScore, *_txtKills, *_txtLocation, *_txtRace, *_txtDaylight, *_txtDaysWounded;
+	Text *_txtNoRecord;
 	TextList *_lstKills;
 
 	int _rowEntry;
 public:
 	/// Creates the Soldier Diary Mission state.
-	SoldierDiaryMissionState(Base *base, size_t soldierId, int rowEntry);
+	SoldierDiaryMissionState(Soldier *soldier, int rowEntry);
 	/// Cleans up the Soldier Diary Mission state.
 	~SoldierDiaryMissionState();
 	/// Handler for clicking the Cancel button.
 	void btnOkClick(Action *action);
+	/// Updates the mission info.
+	void init();
+	/// Handler for clicking the Previous button.
+	void btnPrevClick(Action *action);
+	/// Handler for clicking the Next button.
+	void btnNextClick(Action *action);
 };
 
 }
-
-#endif

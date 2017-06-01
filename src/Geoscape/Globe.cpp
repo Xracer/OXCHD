@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
 #include "Globe.h"
-#include <cmath>
 #include <algorithm>
 #include "../fmath.h"
 #include "../Engine/Action.h"
@@ -88,7 +86,7 @@ struct GlobeStaticData
 	 * @param y cord of point where we getting this vector
 	 * @return normal vector of sphere surface
 	 */
-	inline Cord circle_norm(double ox, double oy, double r, double x, double y)
+	static inline Cord circle_norm(double ox, double oy, double r, double x, double y)
 	{
 		const double limit = r*r;
 		const double norm = 1./r;
@@ -296,14 +294,12 @@ Globe::Globe(Game* game, int cenX, int cenY, int width, int height, int x, int y
  */
 Globe::~Globe()
 {
-	delete _texture;
-
 	delete _blinkTimer;
 	delete _rotTimer;
 	delete _countries;
 	delete _markers;
-	//delete _texture;
-	//delete _markerSet;
+	delete _texture;
+	delete _markerSet;
 	delete _radars;
 	delete _clipper;
 
@@ -397,43 +393,49 @@ double Globe::lastVisibleLat(double lon) const
 	return atan(-cos(_cenLat) * cos(lon - _cenLon)/sin(_cenLat));
 }
 
-/**
- * Checks if a polar point is inside a certain polygon.
- * @param lon Longitude of the point.
- * @param lat Latitude of the point.
- * @param poly Pointer to the polygon.
- * @return True if it's inside, False if it's outside.
- */
-bool Globe::insidePolygon(double lon, double lat, Polygon *poly) const
+
+Polygon* Globe::getPolygonFromLonLat(double lon, double lat) const
 {
-	bool backFace = true;
-	for (int i = 0; i < poly->getPoints(); ++i)
+	const double zDiscard=0.75f;
+	double coslat = cos(lat);
+	double sinlat = sin(lat);
+
+	for (std::list<Polygon*>::iterator i = _rules->getPolygons()->begin(); i != _rules->getPolygons()->end(); ++i)
 	{
-		backFace = backFace && pointBack(poly->getLongitude(i), poly->getLatitude(i));
-	}
-	if (backFace != pointBack(lon, lat))
-		return false;
-
-	bool odd = false;
-	for (int i = 0; i < poly->getPoints(); ++i)
-	{
-		int j = (i + 1) % poly->getPoints();
-
-		/*double x = lon, y = lat,
-			   x_i = poly->getLongitude(i), y_i = poly->getLatitude(i),
-			   x_j = poly->getLongitude(j), y_j = poly->getLatitude(j);*/
-
-		double x, y, x_i, x_j, y_i, y_j;
-		polarToCart(poly->getLongitude(i), poly->getLatitude(i), &x_i, &y_i);
-		polarToCart(poly->getLongitude(j), poly->getLatitude(j), &x_j, &y_j);
-		polarToCart(lon, lat, &x, &y);
-
-		if (((y_i < y && y_j >= y) || (y_j < y && y_i >= y)) && (x_i <= x || x_j <= x))
+		double x, y, z, x2, y2;
+		double clat, clon;
+		z = 0;
+		for (int j = 0; j < (*i)->getPoints(); ++j)
 		{
-			odd ^= (x_i + (y - y_i) / (y_j - y_i) * (x_j - x_i) < x);
+			z = coslat * cos((*i)->getLatitude(j)) * cos((*i)->getLongitude(j) - lon) + sinlat * sin((*i)->getLatitude(j));
+			if (z<zDiscard) break; //discarded
 		}
+		if (z<zDiscard) continue; //discarded
+
+		bool odd = false;
+
+		clat = (*i)->getLatitude(0); //initial point
+		clon = (*i)->getLongitude(0);
+		x = cos(clat) * sin(clon - lon);
+		y = coslat * sin(clat) - sinlat * cos(clat) * cos(clon - lon);
+
+		for (int j = 0; j < (*i)->getPoints(); ++j)
+		{
+			int k = (j + 1) % (*i)->getPoints(); //index of next point in poly
+			clat = (*i)->getLatitude(k);
+			clon = (*i)->getLongitude(k);
+
+			x2 = cos(clat) * sin(clon - lon);
+			y2 = coslat * sin(clat) - sinlat * cos(clat) * cos(clon - lon);
+			if ( ((y>0)!=(y2>0)) && (0 < (x2-x)*(0-y)/(y2-y)+x) )
+				odd = !odd;
+			x = x2;
+			y = y2;
+
+		}
+		if (odd) return *i;
 	}
-	return odd;
+	return NULL;
 }
 
 /**
@@ -512,7 +514,7 @@ void Globe::rotateStopLat()
  */
 void Globe::setZoom(size_t zoom)
 {
-	_zoom = std::min(std::max(zoom, (size_t)0u), _zoomRadius.size() - 1);
+	_zoom = Clamp(zoom, (size_t)0u, _zoomRadius.size() - 1);
 	_zoomTexture = (2 - (int)floor(_zoom / 2.0)) * (_texture->getTotalFrames() / 3);
 	_radius = _zoomRadius[_zoom];
 	_game->getSavedGame()->setGlobeZoom(_zoom);
@@ -650,19 +652,7 @@ void Globe::center(double lon, double lat)
  */
 bool Globe::insideLand(double lon, double lat) const
 {
-	bool inside = false;
-	// We're only temporarily changing cenLon/cenLat so the "const" is actually preserved
-	Globe* const globe = const_cast<Globe* const>(this); // WARNING: BAD CODING PRACTICE
-	double oldLon = _cenLon, oldLat = _cenLat;
-	globe->_cenLon = lon;
-	globe->_cenLat = lat;
-	for (std::list<Polygon*>::iterator i = _rules->getPolygons()->begin(); i != _rules->getPolygons()->end() && !inside; ++i)
-	{
-		inside = insidePolygon(lon, lat, *i);
-	}
-	globe->_cenLon = oldLon;
-	globe->_cenLat = oldLat;
-	return inside;
+	return (getPolygonFromLonLat(lon,lat))!=NULL;
 }
 
 /**
@@ -755,7 +745,7 @@ std::vector<Target*> Globe::getTargets(int x, int y, bool craft) const
 		}
 	}
 	for (std::vector<AlienBase*>::iterator i = _game->getSavedGame()->getAlienBases()->begin(); i != _game->getSavedGame()->getAlienBases()->end(); ++i)
- 	{
+	{
 		if (!(*i)->isDiscovered())
 		{
 			continue;
@@ -859,10 +849,10 @@ void Globe::blink()
 {
 	_blink = -_blink;
 
-	for (size_t i = 0; i < _markerSet->getTotalFrames(); ++i)
+	for (std::map<int, Surface*>::iterator i = _markerSet->getFrames()->begin(); i != _markerSet->getFrames()->end(); ++i)
 	{
-		if (i != CITY_MARKER)
-			_markerSet->getFrame(i)->offset(_blink);
+		if (i->first != CITY_MARKER)
+			i->second->offset(_blink);
 	}
 
 	drawMarkers();
@@ -895,10 +885,10 @@ void Globe::draw()
 	drawOcean();
 	drawLand();
 	drawRadars();
+	drawFlights();
 	drawShadow();
 	drawMarkers();
 	drawDetail();
-	drawFlights();
 }
 
 
@@ -1084,7 +1074,6 @@ void Globe::drawRadars()
 	if (!Options::globeRadarLines)
 		return;
 
-	double x, y;
 	double tr, range;
 	double lat, lon;
 	std::vector<double> ranges;
@@ -1112,8 +1101,6 @@ void Globe::drawRadars()
 		if (( !(AreSame(lon, 0.0) && AreSame(lat, 0.0)) )/* &&
 			!pointBack((*i)->getLongitude(), (*i)->getLatitude())*/)
 		{
-			polarToCart(lon, lat, &x, &y);
-
 			if (_hover && Options::globeAllRadarsOnBaseBuild)
 			{
 				for (size_t j=0; j<ranges.size(); j++) drawGlobeCircle(lat,lon,ranges[j],48);
@@ -1138,11 +1125,10 @@ void Globe::drawRadars()
 
 		for (std::vector<Craft*>::iterator j = (*i)->getCrafts()->begin(); j != (*i)->getCrafts()->end(); ++j)
 		{
-			lat=(*j)->getLatitude();
-			lon=(*j)->getLongitude();
 			if ((*j)->getStatus()!= "STR_OUT")
 				continue;
-			polarToCart(lon, lat, &x, &y);
+			lat=(*j)->getLatitude();
+			lon=(*j)->getLongitude();
 			range = (*j)->getRules()->getRadarRange();
 			range = range * (1 / 60.0) * (M_PI / 180);
 
@@ -1174,30 +1160,31 @@ void Globe::drawGlobeCircle(double lat, double lon, double radius, int segments)
 			continue;
 		}
 		if (!pointBack(lon1,lat1))
-			XuLine(_radars, this, x, y, x2, y2, 4);
+			XuLine(_radars, this, x, y, x2, y2, 6);
 		x2=x; y2=y;
 	}
 }
-
 
 void Globe::setNewBaseHover(void)
 {
 	_hover=true;
 }
+
 void Globe::unsetNewBaseHover(void)
 {
 	_hover=false;
 }
-bool Globe::getNewBaseHover(void)
+
+bool Globe::getNewBaseHover(void) const
 {
 	return _hover;
 }
+
 void Globe::setNewBaseHoverPos(double lon, double lat)
 {
 	_hoverLon=lon;
 	_hoverLat=lat;
 }
-
 
 void Globe::drawVHLine(Surface *surface, double lon1, double lat1, double lon2, double lat2, Uint8 color)
 {
@@ -1612,10 +1599,13 @@ void Globe::mouseOver(Action *action, State *state)
 
 		_isMouseScrolled = true;
 
-		// Set the mouse cursor back
-		SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-		SDL_WarpMouse((_game->getScreen()->getWidth() - 100) / 2 , _game->getScreen()->getHeight() / 2);
-		SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+		if (Options::touchEnabled == false)
+		{
+			// Set the mouse cursor back
+			SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+			SDL_WarpMouse((_game->getScreen()->getWidth() - 100) / 2 , _game->getScreen()->getHeight() / 2);
+			SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+		}
 
 		// Check the threshold
 		_totalMouseMoveX += action->getDetails()->motion.xrel;
@@ -1638,13 +1628,18 @@ void Globe::mouseOver(Action *action, State *state)
 			center(_cenLon + newLon / (Options::geoScrollSpeed / 10), _cenLat + newLat / (Options::geoScrollSpeed / 10));
 		}
 
-		// We don't want to look the mouse-cursor jumping :)
-		action->setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
-		action->getDetails()->motion.x = _xBeforeMouseScrolling; action->getDetails()->motion.y = _yBeforeMouseScrolling;
+		if (Options::touchEnabled == false)
+		{
+			// We don't want to see the mouse-cursor jumping :)
+			action->setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+			action->getDetails()->motion.x = _xBeforeMouseScrolling; action->getDetails()->motion.y = _yBeforeMouseScrolling;
+		}
+
 		_game->getCursor()->handle(action);
 	}
 
-	if (_isMouseScrolling &&
+	if (Options::touchEnabled == false &&
+		_isMouseScrolling &&
 		(action->getDetails()->motion.x != _xBeforeMouseScrolling ||
 		action->getDetails()->motion.y != _yBeforeMouseScrolling))
 	{
@@ -1812,24 +1807,9 @@ void Globe::getPolygonTextureAndShade(double lon, double lat, int *texture, int 
 							 7, 7, 8, 8, 9, 9,10,11,
 							11,12,12,13,13,14,15,15};
 
-	*texture = -1;
 	*shade = worldshades[ CreateShadow::getShadowValue(0, Cord(0.,0.,1.), getSunDirection(lon, lat), 0) ];
-
-	// We're only temporarily changing cenLon/cenLat so the "const" is actually preserved
-	Globe* const globe = const_cast<Globe* const>(this); // WARNING: BAD CODING PRACTICE
-	double oldLon = _cenLon, oldLat = _cenLat;
-	globe->_cenLon = lon;
-	globe->_cenLat = lat;
-	for (std::list<Polygon*>::iterator i = _rules->getPolygons()->begin(); i != _rules->getPolygons()->end(); ++i)
-	{
-		if (insidePolygon(lon, lat, *i))
-		{
-			*texture = (*i)->getTexture();
-			break;
-		}
-	}
-	globe->_cenLon = oldLon;
-	globe->_cenLat = oldLat;
+	Polygon *t = getPolygonFromLonLat(lon,lat);
+	*texture = (t==NULL)? -1 : t->getTexture();
 }
 
 /**
@@ -1915,4 +1895,5 @@ void Globe::stopScrolling(Action *action)
 	SDL_WarpMouse(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
 	action->setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
 }
+
 }

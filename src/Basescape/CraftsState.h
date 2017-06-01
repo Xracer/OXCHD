@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_CRAFTSSTATE_H
-#define OPENXCOM_CRAFTSSTATE_H
-
 #include "../Engine/State.h"
 
 namespace OpenXcom
@@ -29,6 +27,7 @@ class Window;
 class Text;
 class TextList;
 class Base;
+class Globe;
 
 /**
  * Equip Craft screen that lets the player
@@ -42,9 +41,10 @@ private:
 	Text *_txtTitle, *_txtBase, *_txtName, *_txtStatus, *_txtWeapon, *_txtCrew, *_txtHwp;
 	TextList *_lstCrafts;
 	Base *_base;
+	Globe *_globe;
 public:
 	/// Creates the Crafts state.
-	CraftsState(Base *base);
+	CraftsState(Base *base, Globe *globe);
 	/// Cleans up the Crafts state.
 	~CraftsState();
 	/// Updates the craft info.
@@ -56,5 +56,3 @@ public:
 };
 
 }
-
-#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -22,6 +22,7 @@
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
+#include "../Engine/MultiState.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
 #include "../Interface/Text.h"
@@ -30,7 +31,12 @@
 #include "../Mod/RuleCraft.h"
 #include "../Savegame/Base.h"
 #include "../Menu/ErrorMessageState.h"
+#include "BasescapeState.h"
 #include "CraftInfoState.h"
+#include "CraftSoldiersState.h"
+#include "CraftWeaponsState.h"
+#include "CraftEquipmentState.h"
+#include "CraftArmorState.h"
 #include "SellState.h"
 #include "../Savegame/SavedGame.h"
 #include "../Mod/RuleInterface.h"
@@ -43,43 +49,46 @@ namespace OpenXcom
  * @param game Pointer to the core game.
  * @param base Pointer to the base to get info from.
  */
-CraftsState::CraftsState(Base *base) : _base(base)
+CraftsState::CraftsState(Base *base, Globe *globe) : _base(base), _globe(globe)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(288, 16, 16, 176);
-	_txtTitle = new Text(298, 17, 16, 8);
-	_txtBase = new Text(298, 17, 16, 24);
-	_txtName = new Text(94, 9, 16, 40);
-	_txtStatus = new Text(50, 9, 110, 40);
-	_txtWeapon = new Text(50, 17, 160, 40);
-	_txtCrew = new Text(58, 9, 210, 40);
-	_txtHwp = new Text(46, 9, 268, 40);
-	_lstCrafts = new TextList(288, 118, 8, 58);
+	_window = new Window(this, 550, 110, 700, 3);
+	//_btnOk = new TextButton(288, 16, 716, 176);
+	_txtTitle = new Text(350, 17, 716, 9);
+	_txtBase = new Text(350, 17, 716, 25);
+	_txtName = new Text(110, 11, 716, 40);
+	_txtStatus = new Text(100, 11, 826, 40);
+	_txtWeapon = new Text(90, 11, 910, 40);
+	_txtCrew = new Text(80, 11, 1020, 40);
+	_txtHwp = new Text(50, 11, 1095, 40);
+	_lstCrafts = new TextList(508, 90, 708, 52);
 
 	// Set palette
-	setInterface("craftSelect");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftSelect");
-	add(_btnOk, "button", "craftSelect");
-	add(_txtTitle, "text", "craftSelect");
-	add(_txtBase, "text", "craftSelect");
-	add(_txtName, "text", "craftSelect");
-	add(_txtStatus, "text", "craftSelect");
-	add(_txtWeapon, "text", "craftSelect");
-	add(_txtCrew, "text", "craftSelect");
-	add(_txtHwp, "text", "craftSelect");
-	add(_lstCrafts, "list", "craftSelect");
+	add(_window, "window", "hdcraftInfo");
+	//add(_btnOk, "button", "hdcraftInfo");
+	add(_txtTitle, "title", "hdcraftInfo");
+	add(_txtBase, "text1", "hdcraftInfo");
+	add(_txtName, "text1", "hdcraftInfo");
+	add(_txtStatus, "text1", "hdcraftInfo");
+	add(_txtWeapon, "text1", "hdcraftInfo");
+	add(_txtCrew, "text1", "hdcraftInfo");
+	add(_txtHwp, "text1", "hdcraftInfo");
+	add(_lstCrafts, "list", "hdcraftInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
+	/*
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&CraftsState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&CraftsState::btnOkClick, Options::keyCancel);
-
+	*/
+	
 	_txtTitle->setBig();
 	_txtTitle->setText(tr("STR_INTERCEPTION_CRAFT"));
 
@@ -96,7 +105,7 @@ CraftsState::CraftsState(Base *base) : _base(base)
 	_txtCrew->setText(tr("STR_CREW"));
 
 	_txtHwp->setText(tr("STR_HWPS"));
-	_lstCrafts->setColumns(5, 94, 68, 44, 46, 28);
+	_lstCrafts->setColumns(5, 110, 100, 90, 80, 40);
 	_lstCrafts->setSelectable(true);
 	_lstCrafts->setBackground(_window);
 	_lstCrafts->setMargin(8);
@@ -140,7 +149,7 @@ void CraftsState::btnOkClick(Action *)
 	if (_game->getSavedGame()->getMonthsPassed() > -1 && Options::storageLimitsEnforced && _base->storesOverfull())
 	{
 		_game->pushState(new SellState(_base));
-		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()).c_str(), _palette, _game->getMod()->getInterface("craftSelect")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("craftSelect")->getElement("errorPalette")->color));
+		_game->pushState(new ErrorMessageState(tr("STR_STORAGE_EXCEEDED").arg(_base->getName()), _palette, _game->getMod()->getInterface("craftSelect")->getElement("errorMessage")->color, "BACK01.SCR", _game->getMod()->getInterface("craftSelect")->getElement("errorPalette")->color));
 	}
 }
 
@@ -150,9 +159,25 @@ void CraftsState::btnOkClick(Action *)
  */
 void CraftsState::lstCraftsClick(Action *)
 {
+
 	if (_base->getCrafts()->at(_lstCrafts->getSelectedRow())->getStatus() != "STR_OUT")
 	{
-		_game->pushState(new CraftInfoState(_base, _lstCrafts->getSelectedRow()));
+		_game->popState();
+		MultiState *state = new MultiState;
+		state->add(new BasescapeState(_base, _globe));
+		state->add(new CraftsState(_base, _globe));
+		state->add(new CraftInfoState(_base, _lstCrafts->getSelectedRow()));
+		if (_base->getCrafts()->at(_lstCrafts->getSelectedRow())->getNumSoldiers() > 0) // need to create a condition to show this states only if the craft is a transport
+		{
+			state->add(new CraftSoldiersState(_base, _lstCrafts->getSelectedRow()));
+			state->add(new CraftEquipmentState(_base, _lstCrafts->getSelectedRow()));
+			state->add(new CraftArmorState(_base, _lstCrafts->getSelectedRow()));
+		}
+
+		_game->pushState(state);
+
+		//if (_base->getCrafts()->getNumSoldiers() > 0)
+		//_game->pushState(new CraftInfoState(_base, _lstCrafts->getSelectedRow()));
 	}
 }
 

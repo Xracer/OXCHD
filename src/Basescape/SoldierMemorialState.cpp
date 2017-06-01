@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -18,7 +18,6 @@
  */
 #include "SoldierMemorialState.h"
 #include <sstream>
-#include <iomanip>
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
@@ -33,6 +32,7 @@
 #include "../Savegame/SoldierDeath.h"
 #include "../Savegame/GameTime.h"
 #include "SoldierInfoState.h"
+#include "../Menu/StatisticsState.h"
 
 namespace OpenXcom
 {
@@ -43,20 +43,23 @@ namespace OpenXcom
  */
 SoldierMemorialState::SoldierMemorialState()
 {
+
 	// Create objects
-	_window = new Window(this, 450, 350, 700, 358);
-	_txtTitle = new Text(440, 17, 705, 368);
-	_txtName = new Text(150, 11, 705, 398);
-	_txtRank = new Text(100, 11, 855, 398);
-	_txtDate = new Text(100, 11, 955, 398);
-	_txtRecruited = new Text(150, 11, 705, 384);
-	_txtLost = new Text(150, 11, 855, 384);
-	_lstSoldiers = new TextList(300, 300, 705, 410);
+	_window = new Window(this, 550, 265, 700, 271);
+	//_btnStatistics = new TextButton(148, 16, 8, 176);
+	_txtTitle = new Text(545, 17, 705, 274); 
+	_txtName = new Text(150, 11, 710, 308);
+	_txtRank = new Text(100, 11, 900, 308);
+	_txtDate = new Text(100, 11, 1040, 308);
+	_txtRecruited = new Text(160, 11, 710, 294);
+	_txtLost = new Text(150, 11, 900, 294);
+	_lstSoldiers = new TextList(515, 250, 700, 323);
 
 	// Set palette
 	setInterface("soldierMemorial");
 
-	add(_window, "window", "soldierMemorial");
+	add(_window, "window", "soldierList");
+	//add(_btnStatistics, "button", "soldierMemorial");
 	add(_txtTitle, "text", "soldierMemorial");
 	add(_txtName, "text", "soldierMemorial");
 	add(_txtRank, "text", "soldierMemorial");
@@ -68,6 +71,9 @@ SoldierMemorialState::SoldierMemorialState()
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
 	_window->setThinBorder();
+
+	//_btnStatistics->setText(tr("STR_STATISTICS"));
+	//_btnStatistics->onMouseClick((ActionHandler)&SoldierMemorialState::btnStatisticsClick);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -86,9 +92,9 @@ SoldierMemorialState::SoldierMemorialState()
 		recruited += (*i)->getTotalSoldiers();
 	}
 
-	_txtRecruited->setText(tr("STR_SOLDIERS_RECRUITED").arg(recruited));
+	_txtRecruited->setText(tr("STR_SOLDIERS_RECRUITED_UC").arg(recruited));
 
-	_txtLost->setText(tr("STR_SOLDIERS_LOST").arg(lost));
+	_txtLost->setText(tr("STR_SOLDIERS_LOST_UC").arg(lost));
 
 	_lstSoldiers->setColumns(5, 114, 88, 30, 25, 35);
 	_lstSoldiers->setSelectable(true);
@@ -115,6 +121,15 @@ SoldierMemorialState::~SoldierMemorialState()
 {
 
 }
+
+/**
+* Shows the Statistics screen.
+* @param action Pointer to an action.
+
+void SoldierMemorialState::btnStatisticsClick(Action *)
+{
+	_game->pushState(new StatisticsState);
+}*/
 
 /**
  * Shows the selected soldier's info.

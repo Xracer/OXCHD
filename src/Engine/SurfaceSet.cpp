@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -289,4 +289,5 @@ std::map<int, Surface*> *SurfaceSet::getFrames()
 {
 	return &_frames;
 }
+
 }

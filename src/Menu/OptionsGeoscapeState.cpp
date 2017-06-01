@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -39,25 +39,25 @@ OptionsGeoscapeState::OptionsGeoscapeState(OptionsOrigin origin) : OptionsBaseSt
 	setCategory(_btnGeoscape);
 
 	// Create objects
-	_txtDragScroll = new Text(114, 9, 206, 8);
-	_cbxDragScroll = new ComboBox(this, 104, 16, 206, 18);
+	_txtDragScroll = new Text(114, 11, 526, 128);
+	_cbxDragScroll = new ComboBox(this, 130, 18, 526, 140);
 
-	_txtScrollSpeed = new Text(114, 9, 94, 8);
-	_slrScrollSpeed = new Slider(104, 16, 94, 18);
+	_txtScrollSpeed = new Text(114, 11, 388, 128);
+	_slrScrollSpeed = new Slider(130, 18, 388, 140);
 
-	_txtDogfightSpeed = new Text(114, 9, 206, 40);
-	_slrDogfightSpeed = new Slider(104, 16, 206, 50);
+	_txtDogfightSpeed = new Text(114, 11, 526, 162);
+	_slrDogfightSpeed = new Slider(130, 18, 526, 174);
 
-	_txtClockSpeed = new Text(114, 9, 94, 40);
-	_slrClockSpeed = new Slider(104, 16, 94, 50);
+	_txtClockSpeed = new Text(114, 11, 388, 162);
+	_slrClockSpeed = new Slider(130, 18, 388, 174);
 
-	_txtGlobeDetails = new Text(114, 9, 94, 82);
-	_btnGlobeCountries = new ToggleTextButton(104, 16, 94, 92);
-	_btnGlobeRadars = new ToggleTextButton(104, 16, 94, 110);
-	_btnGlobePaths = new ToggleTextButton(104, 16, 94, 128);
+	_txtGlobeDetails = new Text(114, 11, 388, 202);
+	_btnGlobeCountries = new ToggleTextButton(130, 18, 388, 214);
+	_btnGlobeRadars = new ToggleTextButton(130, 18, 388, 234);
+	_btnGlobePaths = new ToggleTextButton(130, 18, 388, 254);
 
-	_txtOptions = new Text(114, 9, 206, 82);
-	_btnShowFunds = new ToggleTextButton(104, 16, 206, 92);
+	_txtOptions = new Text(114, 11, 526, 202);
+	_btnShowFunds = new ToggleTextButton(130, 18, 526, 214);
 
 	add(_txtScrollSpeed, "text", "geoscapeMenu");
 	add(_slrScrollSpeed, "button", "geoscapeMenu");

@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,10 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_TEXT_H
-#define OPENXCOM_TEXT_H
-
-#include "../Engine/Surface.h"
+#include "../Engine/InteractiveSurface.h"
 #include <vector>
 #include <string>
 #include <stdint.h>
@@ -39,7 +37,7 @@ enum TextVAlign { ALIGN_TOP, ALIGN_MIDDLE, ALIGN_BOTTOM };
  * to display a string of text, taking care of any required aligning
  * or wrapping.
  */
-class Text : public Surface
+class Text : public InteractiveSurface
 {
 private:
 	Font *_big, *_small, *_font;
@@ -90,6 +88,8 @@ public:
 	TextHAlign getAlign() const;
 	/// Sets the text's vertical alignment.
 	void setVerticalAlign(TextVAlign valign);
+	/// Gets the text's vertical alignment.
+	TextVAlign getVerticalAlign() const;
 	/// Sets the text's color.
 	void setColor(Uint8 color);
 	/// Gets the text's color.
@@ -109,5 +109,3 @@ public:
 };
 
 }
-
-#endif

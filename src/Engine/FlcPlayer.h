@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,17 +18,15 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma once
 /*
  * Based on http://www.libsdl.org/projects/flxplay/
  */
-
-#ifndef OPENXCOM_FLCPLAYER_H
-#define OPENXCOM_FLCPLAYER_H
-
 #include <SDL.h>
 
 namespace OpenXcom
 {
+
 class Screen;
 class Game;
 
@@ -68,7 +67,7 @@ private:
 	int _dx, _dy;
 	int _offset;
 	int _playingState;
-	bool _hasAudio;
+	bool _hasAudio, _useInternalAudio;
 	int _videoDelay;
 	double _volume;
 
@@ -130,7 +129,7 @@ public:
 	~FlcPlayer();
 
 	/// Open FLC or FLI file, read header, prepare to play it
-	bool init(const char *filename, void(*frameCallBack)(), Game *game, int dx, int dy);
+	bool init(const char *filename, void(*frameCallBack)(), Game *game, bool useAudio, int dx, int dy);
 	/// Play the loaded file; set flc.mainScreen first!
 	void play(bool skipLastFrame);
 	/// Free memory, free love, etc.
@@ -145,5 +144,3 @@ public:
 };
 
 }
-
-#endif

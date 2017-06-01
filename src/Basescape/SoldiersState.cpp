@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -29,7 +29,23 @@
 #include "../Savegame/Base.h"
 #include "../Savegame/Soldier.h"
 #include "SoldierInfoState.h"
+#include "SoldierDiaryOverviewState.h"
+#include "SoldierDiaryMissionState.h"
+#include "SoldierDiaryPerformanceState.h"
 #include "SoldierMemorialState.h"
+#include "../Engine/MultiState.h"
+
+#include "../Savegame/Craft.h"
+#include "../Mod/RuleCraft.h"
+#include "../Savegame/ItemContainer.h"
+#include "../Savegame/Vehicle.h"
+#include "../Savegame/SavedGame.h"
+#include "../Menu/ErrorMessageState.h"
+#include "../Battlescape/InventoryState.h"
+#include "../Battlescape/BattlescapeGenerator.h"
+#include "../Savegame/SavedBattleGame.h"
+#include "../Mod/RuleInterface.h"
+
 
 namespace OpenXcom
 {
@@ -44,13 +60,13 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 	bool isPsiBtnVisible = Options::anytimePsiTraining && _base->getAvailablePsiLabs() > 0;
 
 	// Create objects
-	_window = new Window(this, 450, 350, 700, 3);
+	_window = new Window(this, 550, 265, 700, 3);
 
-	_txtTitle = new Text(440, 17, 705, 13);
-	_txtName = new Text(150, 11, 705, 30);
-	_txtRank = new Text(100, 11, 855, 30);
-	_txtCraft = new Text(100, 11, 955, 30);
-	_lstSoldiers = new TextList(300, 300, 708, 45);
+	_txtTitle = new Text(545, 17, 705, 13);
+	_txtName = new Text(150, 11, 710, 30);
+	_txtRank = new Text(100, 11, 900, 30);
+	_txtCraft = new Text(100, 11, 1040, 30);
+	_lstSoldiers = new TextList(515, 250, 700, 45);
 
 	// Set palette
 	setInterface("soldierList");
@@ -78,7 +94,7 @@ SoldiersState::SoldiersState(Base *base) : _base(base)
 
 	_txtCraft->setText(tr("STR_CRAFT"));
 
-	_lstSoldiers->setColumns(3, 114, 92, 74);
+	_lstSoldiers->setColumns(3, 190, 140, 170);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
@@ -123,7 +139,42 @@ void SoldiersState::init()
  */
 void SoldiersState::lstSoldiersClick(Action *)
 {
-	_game->pushState(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+	
+	MultiState *state = new MultiState;
+	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
+	state->add(info);
+	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow(), info)); //trying to add the awards screen
+//	state->add(new SoldierDiaryMissionState(_base, _lstSoldiers->getSelectedRow(), info));
+//	state->add(new SoldierDiaryPerformanceState(_base, _lstSoldiers->getSelectedRow(), info));
+	_game->pushState(state);
+
+	/*
+	 * Trying to put the inventory into the soldier info screen to 
+	 * make an unified view of all soldier information and loadout
+	 * The was Warboy did to the InventoryState
+	 *
+
+	Craft *craft = _base->getCrafts()->at(_craft);
+	if (craft->getNumSoldiers() != 0)
+	{
+		SavedBattleGame *bgame = new SavedBattleGame();
+		_game->getSavedGame()->setBattleGame(bgame);
+
+		BattlescapeGenerator bgen = BattlescapeGenerator(_game);
+		bgen.runInventory(craft);
+
+		_game->popState();
+		MultiState *state = new MultiState;
+		state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
+		state->add(new InventoryState(false, 0));
+		_game->pushState(state);
+	}
+	*/
+
+
+
+	//_game->pushState(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
 }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -24,6 +24,7 @@
 #include "InfoboxState.h"
 #include "Map.h"
 #include "Camera.h"
+#include "../Savegame/SavedGame.h"
 #include "../Savegame/SavedBattleGame.h"
 #include "../Savegame/Tile.h"
 #include "../Engine/Game.h"
@@ -31,6 +32,7 @@
 #include "../Engine/Language.h"
 #include "../Engine/Sound.h"
 #include "../Mod/Mod.h"
+#include "../Savegame/BattleUnitStatistics.h"
 
 namespace OpenXcom
 {
@@ -139,7 +141,7 @@ void PsiAttackBState::psiAttack()
 	{
 		defenseStrength += 20;
 	}
-
+	
 	_unit->addPsiSkillExp();
 	if (Options::allowPsiStrengthImprovement) _target->addPsiStrengthExp();
 	if (attackStrength > defenseStrength)
@@ -147,11 +149,28 @@ void PsiAttackBState::psiAttack()
 		Game *game = _parent->getSave()->getBattleState()->getGame();
 		_action.actor->addPsiSkillExp();
 		_action.actor->addPsiSkillExp();
+
+		BattleUnitKills killStat;
+		killStat.setUnitStats(_target);
+		killStat.setTurn(_parent->getSave()->getTurn(), _parent->getSave()->getSide());
+		killStat.weapon = _action.weapon->getRules()->getName();
+		killStat.weaponAmmo = _action.weapon->getRules()->getName(); //Psi weapons got no ammo, just filling up the field
+		killStat.faction = _target->getFaction();
+		killStat.mission = _parent->getSave()->getGeoscapeSave()->getMissionStatistics()->size();
+		killStat.id = _target->getId();
+
 		if (_action.type == BA_PANIC)
 		{
 			int moraleLoss = (110-_target->getBaseStats()->bravery);
 			if (moraleLoss > 0)
 			_target->moraleChange(-moraleLoss);
+			_target->setMindControllerId(_unit->getId());
+			// Award Panic battle unit kill
+			if (!_unit->getStatistics()->duplicateEntry(STATUS_PANICKING, _target->getId()))
+			{
+				killStat.status = STATUS_PANICKING;
+				_unit->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
+			}
 			if (_parent->getSave()->getSide() == FACTION_PLAYER)
 			{
 				game->pushState(new InfoboxState(game->getLanguage()->getString("STR_MORALE_ATTACK_SUCCESSFUL")));
@@ -159,6 +178,13 @@ void PsiAttackBState::psiAttack()
 		}
 		else if (_action.type == BA_MINDCONTROL)
 		{
+			// Award MC battle unit kill
+			if (!_unit->getStatistics()->duplicateEntry(STATUS_TURNING, _target->getId()))
+			{
+				killStat.status = STATUS_TURNING;
+				_unit->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
+			}
+			_target->setMindControllerId(_unit->getId());
 			_target->convertToFaction(_unit->getFaction());
 			_parent->getTileEngine()->calculateFOV(_target->getPosition());
 			_parent->getTileEngine()->calculateUnitLighting();
@@ -168,17 +194,9 @@ void PsiAttackBState::psiAttack()
 			// if all units from either faction are mind controlled - auto-end the mission.
 			if (_parent->getSave()->getSide() == FACTION_PLAYER)
 			{
-				if (Options::battleAutoEnd && Options::allowPsionicCapture)
+				if (Options::allowPsionicCapture)
 				{
-					int liveAliens = 0;
-					int liveSoldiers = 0;
-					_parent->tallyUnits(liveAliens, liveSoldiers);
-					if (liveAliens == 0 || liveSoldiers == 0)
-					{
-						_parent->getSave()->setSelectedUnit(0);
-						_parent->cancelCurrentAction(true);
-						_parent->requestEndTurn();
-					}
+					_parent->autoEndBattle();
 				}
 				game->pushState(new InfoboxState(game->getLanguage()->getString("STR_MIND_CONTROL_SUCCESSFUL")));
 				_parent->getSave()->getBattleState()->updateSoldierInfo();

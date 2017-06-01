@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_RULECOMMENDATIONS_H
-#define OPENXCOM_RULECOMMENDATIONS_H
-
 #include <yaml-cpp/yaml.h>
 
 namespace OpenXcom
@@ -34,7 +32,7 @@ class RuleCommendations
 {
 private:
 	std::map<std::string, std::vector<int> > _criteria;
-    std::vector<std::map<int, std::vector<std::string> > > _killCriteria;
+	std::vector<std::vector<std::pair<int, std::vector<std::string> > > > _killCriteria;
 	std::string _description;
 	int _sprite;
 public:
@@ -49,12 +47,10 @@ public:
 	/// Get the commendation's award criteria.
 	std::map<std::string, std::vector<int> > *getCriteria();
 	/// Get the commendation's award kill related criteria.
-	std::vector<std::map<int, std::vector<std::string> > > *getKillCriteria();
+	std::vector<std::vector<std::pair<int, std::vector<std::string> > > > *getKillCriteria();
 	/// Get the commendation's sprite.
 	int getSprite() const;
 
 };
 
 }
-
-#endif

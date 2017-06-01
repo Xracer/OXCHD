@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_RESEARCHSTATE_H
-#define OPENXCOM_RESEARCHSTATE_H
-
 #include "../Engine/State.h"
 
 namespace OpenXcom
@@ -48,9 +46,9 @@ public:
 	/// Cleans up the Research state.
 	~ResearchState();
 	/// Handler for clicking the OK button.
-	void btnOkClick(Action *action);
+//	void btnOkClick(Action *action);
 	/// Handler for clicking the New Research button.
-	void btnNewClick(Action *action);
+//	void btnNewClick(Action *action);
 	/// Handler for clicking the ResearchProject list.
 	void onSelectProject(Action *action);
 	/// Fills the ResearchProject list with Base ResearchProjects.
@@ -60,5 +58,3 @@ public:
 };
 
 }
-
-#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -29,8 +29,6 @@
 #include "../Mod/Armor.h"
 #include "../Mod/Mod.h"
 #include "../Mod/StatString.h"
-#include "../Engine/Options.h"
-#include "SavedGame.h"
 
 namespace OpenXcom
 {
@@ -41,11 +39,8 @@ namespace OpenXcom
  * @param armor Soldier armor.
  * @param id Unique soldier id for soldier generation.
  */
-
- Soldier::Soldier(RuleSoldier *rules, Armor *armor, const std::vector<SoldierNamePool*> *names, int id) : _id(id), _improvement(0), _psiStrImprovement(0), _rules(rules), _rank(RANK_ROOKIE), _craft(0), _gender(GENDER_MALE), _look(LOOK_BLONDE), _missions(0), _kills(0), _recovery(0), _recentlyPromoted(false), _psiTraining(false), _armor(armor), _death(0), _diary()
+Soldier::Soldier(RuleSoldier *rules, Armor *armor, int id) : _id(id), _improvement(0), _psiStrImprovement(0), _rules(rules), _rank(RANK_ROOKIE), _craft(0), _gender(GENDER_MALE), _look(LOOK_BLONDE), _missions(0), _kills(0), _recovery(0), _recentlyPromoted(false), _psiTraining(false), _armor(armor), _death(0), _diary(new SoldierDiary())
 {
-	_diary = new SoldierDiary();
-
 	if (id != 0)
 	{
 		UnitStats minStats = rules->getMinStats();
@@ -63,7 +58,7 @@ namespace OpenXcom
 		_initialStats.melee = RNG::generate(minStats.melee, maxStats.melee);
 		_initialStats.psiSkill = minStats.psiSkill;
 
-		_currentStats = _initialStats;	
+		_currentStats = _initialStats;
 
 		const std::vector<SoldierNamePool*> &names = rules->getNames();
 		if (!names.empty())
@@ -74,9 +69,11 @@ namespace OpenXcom
 		}
 		else
 		{
-			_name = L"";
+			// No possible names, just wing it
 			_gender = (RNG::percent(rules->getFemaleFrequency()) ? GENDER_FEMALE : GENDER_MALE);
 			_look = (SoldierLook)RNG::generate(0,3);
+			_name = (_gender == GENDER_FEMALE) ? L"Jane" : L"John";
+			_name += L" Doe";
 		}
 	}
 }
@@ -186,9 +183,9 @@ YAML::Node Soldier::save() const
 	{
 		node["death"] = _death->save();
 	}
-	if (!_diary->getMissionIdList().empty() || !_diary->getSoldierCommendations()->empty())
+	if (Options::soldierDiaries && (!_diary->getMissionIdList().empty() || !_diary->getSoldierCommendations()->empty()))
 	{
-	node["diary"] = _diary->save();
+		node["diary"] = _diary->save();
 	}
 
 	return node;
@@ -568,7 +565,7 @@ void Soldier::trainPsi1Day()
  * returns whether or not the unit is in psi training
  * @return true/false
  */
-bool Soldier::isInPsiTraining()
+bool Soldier::isInPsiTraining() const
 {
 	return _psiTraining;
 }
@@ -585,7 +582,7 @@ void Soldier::setPsiTraining()
  * returns this soldier's psionic skill improvement score for this month.
  * @return score
  */
-int Soldier::getImprovement()
+int Soldier::getImprovement() const
 {
 	return _improvement;
 }
@@ -593,7 +590,7 @@ int Soldier::getImprovement()
 /**
  * returns this soldier's psionic strength improvement score for this month.
  */
-int Soldier::getPsiStrImprovement()
+int Soldier::getPsiStrImprovement() const
 {
 	return _psiStrImprovement;
 }
@@ -645,7 +642,7 @@ SoldierDiary *Soldier::getDiary()
  */
 void Soldier::calcStatString(const std::vector<StatString *> &statStrings, bool psiStrengthEval)
 {
-	_statString = StatString::calcStatString(_currentStats, statStrings, psiStrengthEval);
+	_statString = StatString::calcStatString(_currentStats, statStrings, psiStrengthEval, _psiTraining);
 }
 
 }

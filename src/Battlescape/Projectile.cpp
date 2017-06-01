@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include "Projectile.h"
 #include "TileEngine.h"
 #include "Map.h"
@@ -34,6 +32,7 @@
 #include "../Savegame/Tile.h"
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
+#include "../fmath.h"
 
 namespace OpenXcom
 {
@@ -118,7 +117,7 @@ int Projectile::calculateTrajectory(double accuracy)
 	return calculateTrajectory(accuracy, originVoxel);
 }
 
-int Projectile::calculateTrajectory(double accuracy, Position originVoxel, bool excludeUnit)
+int Projectile::calculateTrajectory(double accuracy, const Position& originVoxel, bool excludeUnit)
 {
 	Tile *targetTile = _save->getTile(_action.target);
 	BattleUnit *bu = _action.actor;
@@ -256,7 +255,8 @@ int Projectile::calculateThrow(double accuracy)
 			if (_action.type == BA_THROW
 				&& endTile
 				&& endTile->getMapData(O_OBJECT)
-				&& endTile->getMapData(O_OBJECT)->getTUCost(MT_WALK) == 255)
+				&& endTile->getMapData(O_OBJECT)->getTUCost(MT_WALK) == 255
+				&& !(endTile->isBigWall() && (endTile->getMapData(O_OBJECT)->getBigWall()<1 || endTile->getMapData(O_OBJECT)->getBigWall()>3)))
 			{
 				test = V_OUTOFBOUNDS;
 			}
@@ -274,7 +274,7 @@ int Projectile::calculateThrow(double accuracy)
  * @param keepRange Whether range affects accuracy.
  * @param extendLine should this line get extended to maximum distance?
  */
-void Projectile::applyAccuracy(const Position& origin, Position *target, double accuracy, bool keepRange, bool extendLine)
+void Projectile::applyAccuracy(Position origin, Position *target, double accuracy, bool keepRange, bool extendLine)
 {
 	int xdiff = origin.x - target->x;
 	int ydiff = origin.y - target->y;
@@ -356,6 +356,7 @@ void Projectile::applyAccuracy(const Position& origin, Position *target, double 
 		target->z = (int)(origin.z + maxRange * sin_fi);
 	}
 }
+
 /**
  * Moves further in the trajectory.
  * @return false if the trajectory is finished - no new position exists in the trajectory.
@@ -439,7 +440,7 @@ void Projectile::skipTrajectory()
  * Gets the Position of origin for the projectile
  * @return origin as a tile position.
  */
-Position Projectile::getOrigin()
+Position Projectile::getOrigin() const
 {
 	// instead of using the actor's position, we'll use the voxel origin translated to a tile position
 	// this is a workaround for large units.
@@ -452,7 +453,7 @@ Position Projectile::getOrigin()
  * but rather the targetted tile
  * @return target as a tile position.
  */
-Position Projectile::getTarget()
+Position Projectile::getTarget() const
 {
 	return _action.target;
 }
@@ -485,4 +486,5 @@ void Projectile::addVaporCloud()
 		}
 	}
 }
+
 }

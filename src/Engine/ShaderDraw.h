@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef OPENXCOM_SHADERDRAW_H
-#define	OPENXCOM_SHADERDRAW_H
-
 #include "ShaderDrawHelper.h"
 	
 namespace OpenXcom
@@ -103,7 +100,7 @@ static inline void ShaderDraw(const DestType& dest_frame, const Src0Type& src0_f
 		//iteration on x-axis
 		for (int x = end_x-begin_x; x>0; --x, dest.inc_x(), src0.inc_x(), src1.inc_x(), src2.inc_x(), src3.inc_x())
 		{
-			ColorFunc::func(dest.get_ref(), src0.get_ref(), src1.get_ref(), src2.get_ref(), src3.get_ref());				
+			ColorFunc::func(dest.get_ref(), src0.get_ref(), src1.get_ref(), src2.get_ref(), src3.get_ref());
 		}
 	}
 
@@ -152,7 +149,3 @@ const Uint8 BLACK = 15;
 }//namespace helper
 
 }//namespace OpenXcom
-
-
-#endif	/* OPENXCOM_SHADERDRAW_H */
-

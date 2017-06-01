@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -79,7 +79,7 @@ SackSoldierState::SackSoldierState(Base *base, size_t soldierId) : _base(base), 
 	ss << _base->getSoldiers()->at(_soldierId)->getName(true) << "?";
 
 	_txtSoldier->setAlign(ALIGN_CENTER);
-	_txtSoldier->setText(ss.str().c_str());
+	_txtSoldier->setText(ss.str());
 }
 
 /**

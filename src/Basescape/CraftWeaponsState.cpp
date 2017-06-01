@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -47,13 +47,13 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 220, 160, 50, 20, POPUP_BOTH);
-	_btnCancel = new TextButton(140, 16, 90, 156);
-	_txtTitle = new Text(208, 17, 56, 28);
-	_txtArmament = new Text(76, 9, 66, 52);
-	_txtQuantity = new Text(50, 9, 140, 52);
-	_txtAmmunition = new Text(68, 17, 200, 44);
-	_lstWeapons = new TextList(188, 80, 58, 68);
+	_window = new Window(this, 550, 180, 700, 224, POPUP_BOTH);
+	_btnCancel = new TextButton(200, 19, 800, 375);
+	_txtTitle = new Text(545, 17, 705, 233);
+	_txtArmament = new Text(150, 13, 710, 251);
+	_txtQuantity = new Text(110, 13, 860, 251);
+	_txtAmmunition = new Text(150, 13, 970, 251);
+	_lstWeapons = new TextList(500, 140, 700, 267);
 
 	// Set palette
 	setInterface("craftWeapons");
@@ -66,10 +66,11 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	add(_txtAmmunition, "text", "craftWeapons");
 	add(_lstWeapons, "list", "craftWeapons");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
 	_btnCancel->setText(tr("STR_CANCEL_UC"));
 	_btnCancel->onMouseClick((ActionHandler)&CraftWeaponsState::btnCancelClick);
@@ -84,10 +85,8 @@ CraftWeaponsState::CraftWeaponsState(Base *base, size_t craft, size_t weapon) : 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
 	_txtAmmunition->setText(tr("STR_AMMUNITION_AVAILABLE"));
-	_txtAmmunition->setWordWrap(true);
-	_txtAmmunition->setVerticalAlign(ALIGN_BOTTOM);
 
-	_lstWeapons->setColumns(3, 94, 50, 36);
+	_lstWeapons->setColumns(3, 170, 150, 36);
 	_lstWeapons->setSelectable(true);
 	_lstWeapons->setBackground(_window);
 	_lstWeapons->setMargin(8);

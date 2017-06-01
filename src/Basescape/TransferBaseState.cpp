@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,11 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BaseScapeState.h"
 #include "TransferBaseState.h"
+#include "TransferBaseState.h"
+#include "TransfersState.h"
+#include "TransferItemsState.h"
 #include <sstream>
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/MultiState.h"
 #include "../Engine/Options.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Window.h"
@@ -43,33 +48,36 @@ namespace OpenXcom
 TransferBaseState::TransferBaseState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 280, 140, 20, 30);
-	_btnCancel = new TextButton(264, 16, 28, 146);
-	_txtTitle = new Text(270, 17, 25, 38);
-	_txtFunds = new Text(250, 9, 30, 54);
-	_txtName = new Text(130, 17, 28, 64);
-	_txtArea = new Text(130, 17, 160, 64);
-	_lstBases = new TextList(248, 64, 28, 80);
+	int xPos = 700;
+	int yPos = 206;
+
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos);
+	//_btnCancel = new TextButton(264, 16, 8 + xPos, 116 + yPos);
+	_txtTitle = new Text(550, 17, 5 + xPos, 8 + yPos);
+	_txtFunds = new Text(250, 11, 5 + xPos, 25 + yPos);
+	_txtName = new Text(200, 17, 5 + xPos, 38 + yPos);
+	_txtArea = new Text(200, 17, 225 + xPos, 38 + yPos);
+	_lstBases = new TextList(550, 160, 5 + xPos, 57 + yPos);
 
 	// Set palette
 	setInterface("transferBaseSelect");
 
 	add(_window, "window", "transferBaseSelect");
-	add(_btnCancel, "button", "transferBaseSelect");
+	//add(_btnCancel, "button", "transferBaseSelect");
 	add(_txtTitle, "text", "transferBaseSelect");
 	add(_txtFunds, "text", "transferBaseSelect");
 	add(_txtName, "text", "transferBaseSelect");
 	add(_txtArea, "text", "transferBaseSelect");
 	add(_lstBases, "list", "transferBaseSelect");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-	_btnCancel->setText(tr("STR_CANCEL"));
-	_btnCancel->onMouseClick((ActionHandler)&TransferBaseState::btnCancelClick);
-	_btnCancel->onKeyboardPress((ActionHandler)&TransferBaseState::btnCancelClick, Options::keyCancel);
+	//_btnCancel->setText(tr("STR_CANCEL"));
+	//_btnCancel->onMouseClick((ActionHandler)&TransferBaseState::btnCancelClick);
+	//_btnCancel->onKeyboardPress((ActionHandler)&TransferBaseState::btnCancelClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -83,7 +91,7 @@ TransferBaseState::TransferBaseState(Base *base) : _base(base)
 	_txtArea->setText(tr("STR_AREA"));
 	_txtArea->setBig();
 
-	_lstBases->setColumns(2, 130, 116);
+	_lstBases->setColumns(2, 220, 150);
 	_lstBases->setSelectable(true);
 	_lstBases->setBackground(_window);
 	_lstBases->setMargin(2);
@@ -123,11 +131,12 @@ TransferBaseState::~TransferBaseState()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ *
 void TransferBaseState::btnCancelClick(Action *)
 {
 	_game->popState();
 }
+*/
 
 /**
  * Shows the Transfer screen for the selected base.
@@ -136,6 +145,15 @@ void TransferBaseState::btnCancelClick(Action *)
 void TransferBaseState::lstBasesClick(Action *)
 {
 	_game->pushState(new TransferItemsState(_base, _bases[_lstBases->getSelectedRow()]));
+	
+	/*_game->popState();
+	MultiState *state = new MultiState;
+	state->add(new BasescapeState(_base, _globe));
+	state->add(new TransfersState(_base));
+	state->add(new TransferBaseState(_base));
+	state->add(new TransferItemsState(_base, _bases[_lstBases->getSelectedRow()]));
+	_game->pushState(state);
+	*/
 }
 
 }

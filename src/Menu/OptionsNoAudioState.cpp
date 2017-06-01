@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -33,7 +33,7 @@ OptionsNoAudioState::OptionsNoAudioState(OptionsOrigin origin) : OptionsBaseStat
 	setCategory(_btnAudio);
 
 	// Create objects
-	_txtError = new Text(218, 136, 94, 8);
+	_txtError = new Text(260, 100, 350, 200);
 
 	add(_txtError, "text", "audioMenu");
 

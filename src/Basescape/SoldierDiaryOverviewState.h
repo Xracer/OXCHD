@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,10 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_SOLDIERDIARYOVERVIEWSTATE_H
-#define OPENXCOM_SOLDIERDIARYOVERVIEWSTATE_H
-
 #include "../Engine/State.h"
+#include <vector>
 
 namespace OpenXcom
 {
@@ -33,8 +32,8 @@ class SoldierInfoState;
 class Soldier;
 
 /**
- * Medals screen that lets the player
- * see all the medals a soldier has.
+ * Diary screen that shows all the
+ * missions a soldier has.
  */
 class SoldierDiaryOverviewState : public State
 {
@@ -47,13 +46,13 @@ private:
 
 	TextButton *_btnOk, *_btnPrev, *_btnNext, *_btnKills, *_btnMissions, *_btnCommendations;
 	Window *_window;
-	Text *_txtTitle, *_txtLocation, *_txtStatus, *_txtDate;
+	Text *_txtTitle, *_txtMission, *_txtRating, *_txtDate;
 	TextList *_lstDiary;
 
 public:
-	/// Creates the Soldiers state.
+	/// Creates the Soldier Diary state.
 	SoldierDiaryOverviewState(Base *base, size_t soldierId, SoldierInfoState *soldierInfoState);
-	/// Cleans up the Soldiers state.
+	/// Cleans up the Soldier Diary state.
 	~SoldierDiaryOverviewState();
 	/// Updates the soldier info.
 	void init();
@@ -76,5 +75,3 @@ public:
 };
 
 }
-
-#endif

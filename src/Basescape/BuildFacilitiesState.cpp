@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -40,13 +40,16 @@ namespace OpenXcom
  */
 BuildFacilitiesState::BuildFacilitiesState(Base *base, State *state) : _base(base), _state(state)
 {
-	_screen = false;
+	_screen = false; 
+
+	int xPos = 550;
+	int yPos = 3;
 
 	// Create objects
-	_window = new Window(this, 128, 160, 192, 40, POPUP_VERTICAL);
-	_btnOk = new TextButton(112, 16, 200, 176);
-	_lstFacilities = new TextList(104, 104, 200, 64);
-	_txtTitle = new Text(118, 17, 197, 48);
+	_window = new Window(this, 150, 260, 0 + xPos, 0 + yPos, POPUP_VERTICAL);
+	_btnOk = new TextButton(112, 16, 10 + xPos, 240 + yPos);
+	_lstFacilities = new TextList(135, 220, 8 + xPos, 27 + yPos);
+	_txtTitle = new Text(140, 17, 8 + xPos, 8 + yPos);
 
 	// Set palette
 	setInterface("selectFacility");
@@ -56,10 +59,11 @@ BuildFacilitiesState::BuildFacilitiesState(Base *base, State *state) : _base(bas
 	add(_txtTitle, "text", "selectFacility");
 	add(_lstFacilities, "list", "selectFacility");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
+	_window->setThinBorder();
 
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&BuildFacilitiesState::btnOkClick);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,10 +17,10 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "PurchaseState.h"
+#include <algorithm>
 #include <sstream>
 #include <climits>
 #include <cfloat>
-#include <cmath>
 #include <iomanip>
 #include "../fmath.h"
 #include "../Engine/Game.h"
@@ -43,7 +43,6 @@
 #include "../Menu/ErrorMessageState.h"
 #include "../Mod/RuleInterface.h"
 #include "../Mod/RuleSoldier.h"
-#include "../Savegame/Soldier.h"
 #include "../Mod/RuleCraftWeapon.h"
 #include "../Mod/Armor.h"
 
@@ -58,17 +57,20 @@ namespace OpenXcom
 PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQty(0), _cQty(0), _iQty(0.0), _ammoColor(0)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(148, 16, 8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtFunds = new Text(150, 9, 10, 24);
-	_txtPurchases = new Text(150, 9, 160, 24);
-	_txtSpaceUsed = new Text(150, 9, 160, 34);
-	_txtCost = new Text(102, 9, 152, 44);
-	_txtQuantity = new Text(60, 9, 256, 44);
-	_cbxCategory = new ComboBox(this, 120, 16, 10, 36);
-	_lstItems = new TextList(287, 120, 8, 54);
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
+	_btnOk = new TextButton(556, 19, 8 + xPos, 720+ yPos);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 176+ yPos);
+	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
+	_txtFunds = new Text(200, 11, 10 + xPos, 27 + yPos);
+	_txtPurchases = new Text(200, 11, 200 + xPos, 27 + yPos);
+	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 27 + yPos);
+	_txtCost = new Text(102, 11, 180 + xPos, 50 + yPos);
+	_txtQuantity = new Text(70, 11, 385 + xPos, 50 + yPos);
+	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
+	_lstItems = new TextList(450, 670, 8 + xPos, 70 + yPos);
 
 	// Set palette
 	setInterface("buyMenu");
@@ -77,7 +79,7 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 
 	add(_window, "window", "buyMenu");
 	add(_btnOk, "button", "buyMenu");
-	add(_btnCancel, "button", "buyMenu");
+//	add(_btnCancel, "button", "buyMenu");
 	add(_txtTitle, "text", "buyMenu");
 	add(_txtFunds, "text", "buyMenu");
 	add(_txtPurchases, "text", "buyMenu");
@@ -87,18 +89,18 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 	add(_lstItems, "list", "buyMenu");
 	add(_cbxCategory, "text", "buyMenu");
 
-	centerAllSurfaces();
+//	centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
 
-	_btnOk->setText(tr("STR_OK"));
+	_btnOk->setText(tr("STR_PURCHASE_RECRUIT_LC"));
 	_btnOk->onMouseClick((ActionHandler)&PurchaseState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&PurchaseState::btnOkClick, Options::keyOk);
 
-	_btnCancel->setText(tr("STR_CANCEL"));
-	_btnCancel->onMouseClick((ActionHandler)&PurchaseState::btnCancelClick);
-	_btnCancel->onKeyboardPress((ActionHandler)&PurchaseState::btnCancelClick, Options::keyCancel);
+//	_btnCancel->setText(tr("STR_CANCEL"));
+//	_btnCancel->onMouseClick((ActionHandler)&PurchaseState::btnCancelClick);
+//	_btnCancel->onKeyboardPress((ActionHandler)&PurchaseState::btnCancelClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
@@ -117,8 +119,8 @@ PurchaseState::PurchaseState(Base *base) : _base(base), _sel(0), _total(0), _pQt
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_lstItems->setArrowColumn(227, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 150, 55, 50, 28);
+	_lstItems->setArrowColumn(330, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 120, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);
@@ -376,7 +378,7 @@ void PurchaseState::btnOkClick(Action *)
 			}
 		}
 	}
-	_game->popState();
+	// _game->popState(); dont want to pop the state because of multistate
 }
 
 /**
@@ -547,7 +549,8 @@ void PurchaseState::increaseByValue(int change)
 	if (errorMessage.empty())
 	{
 		int maxByMoney = (_game->getSavedGame()->getFunds() - _total) / getRow().cost;
-		change = std::min(maxByMoney, change);
+		if (maxByMoney >= 0)
+			change = std::min(maxByMoney, change);
 		switch (getRow().type)
 		{
 		case TRANSFER_SOLDIER:

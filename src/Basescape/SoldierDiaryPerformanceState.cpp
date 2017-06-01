@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -18,12 +18,10 @@
  */
 #include "SoldierDiaryPerformanceState.h"
 #include "SoldierDiaryOverviewState.h"
-#include "SoldierInfoState.h"
-#include <string>
+#include <sstream>
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
 #include "../Engine/Language.h"
-#include "../Engine/Palette.h"
 #include "../Engine/Options.h"
 #include "../Engine/SurfaceSet.h"
 #include "../Interface/TextButton.h"
@@ -36,112 +34,71 @@
 #include "../Mod/RuleCommendations.h"
 #include "../Engine/Action.h"
 
-
 namespace OpenXcom
 {
 
 /**
- * Initializes all the elements in the Soldiers screen.
- * @param game Pointer to the core game.
+ * Initializes all the elements in the Soldier Diary Totals screen.
  * @param base Pointer to the base to get info from.
+ * @param soldier ID of the selected soldier.
+ * @param soldierInfoState Pointer to the Soldier Diary screen.
+ * @param display Type of totals to display.
  */
-SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryOverviewState, int display) : _base(base), _soldierId(soldierId), _soldierDiaryOverviewState(soldierDiaryOverviewState), _display(display), _lastScrollPos(0)
+SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t soldierId, SoldierDiaryOverviewState *soldierDiaryOverviewState, SoldierDiaryDisplay display) : _base(base), _soldierId(soldierId), _soldierDiaryOverviewState(soldierDiaryOverviewState), _display(display), _lastScrollPos(0)
 {
 	if (_base == 0)
 	{
-		_list = _game->getSavedGame()->getDeadSoldiers();\
+		_list = _game->getSavedGame()->getDeadSoldiers();
 	}
 	else
 	{
 		_list = _base->getSoldiers();
 	}
 
-	if (_display == 0)
-    {
-        _displayKills = true;
-        _displayMissions = false;
-		_displayCommendations = false;
-    }
-	else if (_display == 1)
-    {
-        _displayKills = false;
-        _displayMissions = true;
-		_displayCommendations = false;
-    }
-    else
-    {
-        _displayKills = false;
-        _displayMissions = false;
-		_displayCommendations = true;
-    }
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnPrev = new TextButton(28, 14, 8, 8);
-	_btnNext = new TextButton(28, 14, 284, 8);
-    _btnKills = new TextButton(70, 16, 8, 176);
-	_btnMissions = new TextButton(70, 16, 86, 176);
-    _btnCommendations = new TextButton(70, 16, 164, 176);
-    _btnOk = new TextButton(70, 16, 242, 176);
-	_txtTitle = new Text(310, 16, 5, 8);
-	// Kill stats
-	_txtRace = new Text(90, 18, 16, 36);
-	_txtRank = new Text(90, 18, 114, 36);
-	_txtWeapon = new Text(90, 18, 212, 36);
-	_lstRace = new TextList(90, 140, 16, 52);
-	_lstRank = new TextList(90, 140, 114, 52);
-	_lstWeapon = new TextList(90, 140, 212, 52);
-	_lstKillTotals = new TextList(288, 9, 8, 167);
-	// Mission stats
-	_txtLocation = new Text(90, 18, 16, 36);
-	_txtType = new Text(110, 18, 108, 36);
-	_txtUFO = new Text(90, 18, 222, 36);
-	_lstLocation = new TextList(90, 140, 16, 52);
-	_lstType = new TextList(110, 140, 108, 52);
-	_lstUFO = new TextList(90, 140, 222, 52);
-	_lstMissionTotals = new TextList(296, 9, 8, 167);
-    // Commendation stats
-    _txtMedalName = new Text(90, 18, 16, 36);
-    _txtMedalLevel = new Text(90, 18, 206, 36);
-	_txtMedalInfo = new Text(280, 32, 20, 150);
-    _lstCommendations = new TextList(240, 80, 48, 52);
-	// Commendation sprites
-	_commendationSprite = _game->getMod()->getSurfaceSet("Commendations");
-	_commendationDecoration = _game->getMod()->getSurfaceSet("CommendationDecorations");
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 350, 200, 0 + xPos, 0 + yPos, POPUP_HORIZONTAL);
+	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
+	_btnNext = new TextButton(28, 14, 284 + xPos, 8 + yPos);
+	_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
+	_btnMissions = new TextButton(70, 16, 86 + xPos, 176 + yPos);
+	_btnCommendations = new TextButton(70, 16, 164 + xPos, 176 + yPos);
+	_btnOk = new TextButton(70, 16, 242 + xPos, 176 + yPos);
+	_txtTitle = new Text(310, 16, 5 + xPos, 8 + yPos);
+	_lstPerformance = new TextList(288, 128, 8 + xPos, 28 + yPos);
+	_lstKillTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
+	_lstMissionTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
+	// Commendation stats
+	_txtMedalName = new Text(120, 18, 16 + xPos, 36 + yPos);
+	_txtMedalLevel = new Text(120, 18, 186 + xPos, 36 + yPos);
+	_txtMedalInfo = new Text(280, 32, 20 + xPos, 135 + yPos);
+	_lstCommendations = new TextList(240, 80, 48 + xPos, 52 + yPos);
 	for (int i = 0; i != 10; ++i)
 	{
-		_commendations.push_back(new Surface(31, 8, 16, 52 + 8*i));
-		_commendationDecorations.push_back(new Surface(31, 8, 16, 52 + 8*i));
+		_commendations.push_back(new Surface(31, 8, 16 + xPos, 52 + 8 * i + yPos));
+		_commendationDecorations.push_back(new Surface(31, 8, 16 + xPos, 52 + 8 * i + yPos));
 	}
 
 	// Set palette
-	setPalette("PAL_BASESCAPE");
+	setInterface("soldierDiary");
 
-	add(_window);
-	add(_btnOk);
-	add(_btnKills);
-	add(_btnMissions);
-    add(_btnCommendations);
-	add(_btnPrev);
-	add(_btnNext); 
-	add(_txtTitle);
-	add(_txtRace);
-	add(_txtRank);
-	add(_txtWeapon);
-	add(_lstRace);
-	add(_lstRank);
-	add(_lstWeapon);
-	add(_lstKillTotals);
-	add(_txtLocation);
-	add(_txtType);
-	add(_txtUFO);
-	add(_lstLocation);
-	add(_lstType);
-	add(_lstUFO);
-	add(_lstMissionTotals);
-    add(_txtMedalName);
-    add(_txtMedalLevel);
-	add(_txtMedalInfo);
-    add(_lstCommendations);
+	add(_window, "window", "soldierDiary");
+	add(_btnOk, "button", "soldierDiary");
+	add(_btnKills, "button", "soldierDiary");
+	add(_btnMissions, "button", "soldierDiary");
+	add(_btnCommendations, "button", "soldierDiary");
+	add(_btnPrev, "button", "soldierDiary");
+	add(_btnNext, "button", "soldierDiary");
+	add(_txtTitle, "text1", "soldierDiary");
+	add(_lstPerformance, "list", "soldierDiary");
+	add(_lstKillTotals, "text2", "soldierDiary");
+	add(_lstMissionTotals, "text2", "soldierDiary");
+	add(_txtMedalName, "text2", "soldierDiary");
+	add(_txtMedalLevel, "text2", "soldierDiary");
+	add(_txtMedalInfo, "text2", "soldierDiary");
+	add(_lstCommendations, "list", "soldierDiary");
 	for (int i = 0; i != 10; ++i)
 	{
 		add(_commendations[i]);
@@ -151,27 +108,22 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 	centerAllSurfaces();
 
 	// Set up objects
-	_window->setColor(Palette::blockOffset(15)+1);
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
+	_window->setThinBorder();
 
-	_btnOk->setColor(Palette::blockOffset(13)+10);
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&SoldierDiaryPerformanceState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&SoldierDiaryPerformanceState::btnOkClick, Options::keyCancel);
 
-	_btnKills->setColor(Palette::blockOffset(13)+10);
-	_btnKills->setText(tr("STR_KILLS_UC"));
+	_btnKills->setText(tr("STR_COMBAT"));
 	_btnKills->onMouseClick((ActionHandler)&SoldierDiaryPerformanceState::btnKillsToggle);
 	
-	_btnMissions->setColor(Palette::blockOffset(13)+10);
-	_btnMissions->setText(tr("STR_MISSIONS_UC"));
+	_btnMissions->setText(tr("STR_PERFORMANCE"));
 	_btnMissions->onMouseClick((ActionHandler)&SoldierDiaryPerformanceState::btnMissionsToggle);
 
-    _btnCommendations->setColor(Palette::blockOffset(13)+10);
-	_btnCommendations->setText(tr("STR_AWARDS_UC"));
+	_btnCommendations->setText(tr("STR_AWARDS"));
 	_btnCommendations->onMouseClick((ActionHandler)&SoldierDiaryPerformanceState::btnCommendationsToggle);
 
-	_btnPrev->setColor(Palette::blockOffset(15)+6);
 	_btnPrev->setText(L"<<");
 	if (_base == 0)
 	{
@@ -184,7 +136,6 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 		_btnPrev->onKeyboardPress((ActionHandler)&SoldierDiaryPerformanceState::btnPrevClick, Options::keyBattlePrevUnit);
 	}
 
-	_btnNext->setColor(Palette::blockOffset(15)+6);
 	_btnNext->setText(L">>");
 	if (_base == 0)
 	{
@@ -197,102 +148,45 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 		_btnNext->onKeyboardPress((ActionHandler)&SoldierDiaryPerformanceState::btnNextClick, Options::keyBattleNextUnit);
 	}
 
-	_txtTitle->setColor(Palette::blockOffset(13)+10);
 	_txtTitle->setBig();
 	_txtTitle->setAlign(ALIGN_CENTER);
+
 	// Text is decided in init()
+	_lstPerformance->setColumns(2, 273, 15);
+	_lstPerformance->setDot(true);
 
-	_txtRace->setColor(Palette::blockOffset(15)+1);
-	_txtRace->setText(tr("STR_KILLS_BY_RACE"));
-	_txtRace->setWordWrap(true);
+	_lstKillTotals->setColumns(4, 74, 74, 74, 80);
 
-	_txtRank->setColor(Palette::blockOffset(15)+1);
-	_txtRank->setText(tr("STR_KILLS_BY_RANK"));
-	_txtRank->setWordWrap(true);
-
-	_txtWeapon->setColor(Palette::blockOffset(15)+1);
-	_txtWeapon->setText(tr("STR_KILLS_BY_WEAPON"));
-	_txtWeapon->setWordWrap(true);
-
-	_lstRace->setColor(Palette::blockOffset(13)+10);
-	_lstRace->setArrowColor(Palette::blockOffset(15)+1);
-	_lstRace->setColumns(2, 80, 10);
-	_lstRace->setBackground(_window);
-	_lstRace->setDot(true);
-
-	_lstRank->setColor(Palette::blockOffset(13)+10);
-	_lstRank->setArrowColor(Palette::blockOffset(15)+1);
-	_lstRank->setColumns(2, 80, 10);
-	_lstRank->setBackground(_window);
-	_lstRank->setDot(true);
-
-	_lstWeapon->setColor(Palette::blockOffset(13)+10);
-	_lstWeapon->setArrowColor(Palette::blockOffset(15)+1);
-	_lstWeapon->setColumns(2, 80, 10);
-	_lstWeapon->setBackground(_window);
-	_lstWeapon->setDot(true);
-
-	_lstKillTotals->setColor(Palette::blockOffset(15)+1);
-	_lstKillTotals->setSecondaryColor(Palette::blockOffset(13)+10);
-	_lstKillTotals->setColumns(4, 68, 68, 68, 84);
-	_lstKillTotals->setMargin(8);
-	_lstKillTotals->setBackground(_window);
+	_lstMissionTotals->setColumns(4, 74, 74, 74, 80);
 	
-	_txtLocation->setColor(Palette::blockOffset(15)+1);
-	_txtLocation->setText(tr("STR_MISSIONS_BY_LOCATION"));
-	_txtLocation->setWordWrap(true);
-	
-	_txtType->setColor(Palette::blockOffset(15)+1);
-	_txtType->setText(tr("STR_MISSIONS_BY_TYPE"));
-	_txtType->setWordWrap(true);
-	
-	_txtUFO->setColor(Palette::blockOffset(15)+1);
-	_txtUFO->setText(tr("STR_MISSIONS_BY_UFO"));
-	_txtUFO->setWordWrap(true);
-	
-	_lstLocation->setColor(Palette::blockOffset(13)+10);
-	_lstLocation->setArrowColor(Palette::blockOffset(15)+1);
-	_lstLocation->setColumns(2, 80, 10);
-	_lstLocation->setBackground(_window);
-	_lstLocation->setDot(true);
-	
-	_lstType->setColor(Palette::blockOffset(13)+10);
-	_lstType->setArrowColor(Palette::blockOffset(15)+1);
-	_lstType->setColumns(2, 100, 10);
-	_lstType->setBackground(_window);
-	_lstType->setDot(true);
-	
-	_lstUFO->setColor(Palette::blockOffset(13)+10);
-	_lstUFO->setArrowColor(Palette::blockOffset(15)+1);
-	_lstUFO->setColumns(2, 80, 10);
-	_lstUFO->setBackground(_window);
-	_lstUFO->setDot(true);
-
-	_lstMissionTotals->setColor(Palette::blockOffset(15)+1);
-	_lstMissionTotals->setSecondaryColor(Palette::blockOffset(13)+10);
-	_lstMissionTotals->setColumns(4, 68, 68, 68, 84);
-	_lstMissionTotals->setMargin(8);
-	_lstMissionTotals->setBackground(_window);
-	
-	_txtMedalName->setColor(Palette::blockOffset(15)+1);
 	_txtMedalName->setText(tr("STR_MEDAL_NAME"));
-	_txtMedalName->setWordWrap(true);
 
-	_txtMedalLevel->setColor(Palette::blockOffset(15)+1);
 	_txtMedalLevel->setText(tr("STR_MEDAL_DECOR_LEVEL"));
-	_txtMedalLevel->setWordWrap(true);
 
-	_txtMedalInfo->setColor(Palette::blockOffset(13)+10);
 	_txtMedalInfo->setWordWrap(true);
 
-	_lstCommendations->setColor(Palette::blockOffset(13)+10);
-	_lstCommendations->setArrowColor(Palette::blockOffset(15)+1);
-	_lstCommendations->setColumns(2, 158, 80);
+	_lstCommendations->setColumns(2, 138, 100);
 	_lstCommendations->setSelectable(true);
 	_lstCommendations->setBackground(_window);
 	_lstCommendations->onMouseOver((ActionHandler)&SoldierDiaryPerformanceState::lstInfoMouseOver);
 	_lstCommendations->onMouseOut((ActionHandler)&SoldierDiaryPerformanceState::lstInfoMouseOut);
 	_lstCommendations->onMousePress((ActionHandler)&SoldierDiaryPerformanceState::handle);
+
+	if (_display == DIARY_KILLS)
+	{
+		_group = _btnKills;
+	}
+	else if (_display == DIARY_MISSIONS)
+	{
+		_group = _btnMissions;
+	}
+	else if (_display == DIARY_COMMENDATIONS)
+	{
+		_group = _btnCommendations;
+	}
+	_btnKills->setGroup(&_group);
+	_btnMissions->setGroup(&_group);
+	_btnCommendations->setGroup(&_group);
 
 	init(); // Populate the list
 }
@@ -307,7 +201,6 @@ SoldierDiaryPerformanceState::~SoldierDiaryPerformanceState()
 
 /**
  *  Clears all the variables and reinitializes the list of kills or missions for the soldier.
- *
  */
 void SoldierDiaryPerformanceState::init()
 {
@@ -319,52 +212,22 @@ void SoldierDiaryPerformanceState::init()
 		_commendationDecorations[i]->clear();
 	}
 	// Reset scroll depth for lists
-	_lstRank->scrollTo(0);
-	_lstRace->scrollTo(0);
-	_lstWeapon->scrollTo(0);
+	_lstPerformance->scrollTo(0);
 	_lstKillTotals->scrollTo(0);
-	_lstLocation->scrollTo(0);
-	_lstType->scrollTo(0);
-	_lstUFO->scrollTo(0);
 	_lstMissionTotals->scrollTo(0);
 	_lstCommendations->scrollTo(0);
 	_lastScrollPos = 0;
+	_lstPerformance->setVisible(_display != DIARY_COMMENDATIONS);
 	// Set visibility for kills
-	_txtRace->setVisible(_displayKills);
-	_txtRank->setVisible(_displayKills);
-	_txtWeapon->setVisible(_displayKills);
-	_lstRace->setVisible(_displayKills);
-	_lstRank->setVisible(_displayKills);
-	_lstWeapon->setVisible(_displayKills);
-	_lstKillTotals->setVisible(_displayKills);
+	_lstKillTotals->setVisible(_display == DIARY_KILLS);
 	// Set visibility for missions
-	_txtLocation->setVisible(_displayMissions);
-	_txtType->setVisible(_displayMissions);
-	_txtUFO->setVisible(_displayMissions);
-	_lstLocation->setVisible(_displayMissions);
-	_lstType->setVisible(_displayMissions);
-	_lstUFO->setVisible(_displayMissions);
-	_lstMissionTotals->setVisible(_displayMissions);
+	_lstMissionTotals->setVisible(_display == DIARY_MISSIONS);
 	// Set visibility for commendations
-	if (_game->getMod()->getCommendation().empty())
-	{
-		_displayCommendations = false;
-	}
-    _txtMedalName->setVisible(_displayCommendations);
-    _txtMedalLevel->setVisible(_displayCommendations);
-	_txtMedalInfo->setVisible(_displayCommendations);
-    _lstCommendations->setVisible(_displayCommendations);
-	// Set visibility for buttons
-	_btnKills->setVisible(!_displayKills);
-	_btnMissions->setVisible(!_displayMissions);
-	if (_game->getMod()->getCommendation().empty())
-	{
-		_btnCommendations->setVisible(false);
-	}
-	else
-	{
-		_btnCommendations->setVisible(!_displayCommendations);
-	}
+	_txtMedalName->setVisible(_display == DIARY_COMMENDATIONS);
+	_txtMedalLevel->setVisible(_display == DIARY_COMMENDATIONS);
+	_txtMedalInfo->setVisible(_display == DIARY_COMMENDATIONS);
+	_lstCommendations->setVisible(_display == DIARY_COMMENDATIONS);
+	_btnCommendations->setVisible(!_game->getMod()->getCommendation().empty());
 
 	if (_list->empty())
 	{
@@ -379,85 +242,103 @@ void SoldierDiaryPerformanceState::init()
 	_lstKillTotals->clearList();
 	_lstMissionTotals->clearList();
 	_commendationsListEntry.clear();
-	if (_soldier->getCurrentStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
-	{
-		_lstKillTotals->addRow(4, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
-								  tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str(),
-								  tr("STR_PANICKS").arg(_soldier->getDiary()->getPanickTotal()).c_str(),
-								  tr("STR_CONTROLS").arg(_soldier->getDiary()->getControlTotal()).c_str());
-	}
-	else
-	{
-		_lstKillTotals->addRow(2, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
-								  tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str());
-	}
-	_lstMissionTotals->addRow(4, tr("STR_MISSIONS").arg(_soldier->getDiary()->getMissionTotal()).c_str(),
-								 tr("STR_WINS").arg(_soldier->getDiary()->getWinTotal()).c_str(),
-								 tr("STR_SCORE_VALUE").arg(_soldier->getDiary()->getScoreTotal()).c_str(),
-								 tr("STR_DAYS_WOUNDED").arg(_soldier->getDiary()->getDaysWoundedTotal()).c_str());
-
 	_txtTitle->setText(_soldier->getName());
-	_lstRace->clearList();
-	_lstRank->clearList();
-	_lstWeapon->clearList();
-	_lstLocation->clearList();
-	_lstType->clearList();
-	_lstUFO->clearList();
-    _lstCommendations->clearList();
-
-	std::map<std::string, int> mapArray[6] = {_soldier->getDiary()->getAlienRaceTotal(), _soldier->getDiary()->getAlienRankTotal(), _soldier->getDiary()->getWeaponTotal(), 
-												_soldier->getDiary()->getRegionTotal(), _soldier->getDiary()->getTypeTotal(), _soldier->getDiary()->getUFOTotal()};
-	TextList *lstArray[6] = {_lstRace, _lstRank, _lstWeapon, 
-								_lstLocation, _lstType, _lstUFO};
-
-	for (int i = 0; i != 6; ++i)
+	_lstPerformance->clearList();
+	_lstCommendations->clearList();
+	if (_display == DIARY_KILLS)
 	{
-		for (std::map<std::string, int>::const_iterator j = mapArray[i].begin() ; j != mapArray[i].end() ; ++j)
-		{
-			if ((*j).first == "NO_UFO") continue;
-			std::wstringstream ss1, ss2;
+		std::map<std::string, int> mapArray[] = { _soldier->getDiary()->getAlienRaceTotal(), _soldier->getDiary()->getAlienRankTotal(), _soldier->getDiary()->getWeaponTotal() };
+		std::string titleArray[] = { "STR_NEUTRALIZATIONS_BY_RACE", "STR_NEUTRALIZATIONS_BY_RANK", "STR_NEUTRALIZATIONS_BY_WEAPON" };
 
-			ss1 << tr((*j).first.c_str());
-			ss2 << (*j).second;
-			lstArray[i]->addRow(2, ss1.str().c_str(), ss2.str().c_str());
-		}
-	}
-    
-    for (std::vector<SoldierCommendations*>::const_iterator i = _soldier->getDiary()->getSoldierCommendations()->begin() ; i != _soldier->getDiary()->getSoldierCommendations()->end() ; ++i)
-	{
-		if (_game->getMod()->getCommendation().empty())
+		for (int i = 0; i != 3; ++i)
 		{
-			break;
+			_lstPerformance->addRow(1, tr(titleArray[i]).c_str());
+			_lstPerformance->setRowColor(_lstPerformance->getRows() - 1, _lstPerformance->getSecondaryColor());
+			for (std::map<std::string, int>::const_iterator j = mapArray[i].begin(); j != mapArray[i].end(); ++j)
+			{
+				std::wostringstream ss;
+				ss << (*j).second;
+				_lstPerformance->addRow(2, tr((*j).first).c_str(), ss.str().c_str());
+			}
+			if (i != 2)
+			{
+				_lstPerformance->addRow(1, L"");
+			}
 		}
-		RuleCommendations* commendation = _game->getMod()->getCommendation()[(*i)->getType()];
-		std::wstringstream ss1, ss2, ss3;
 
-		if ((*i)->getNoun() != "noNoun")
+		if (_soldier->getCurrentStats()->psiSkill > 0 || (Options::psiStrengthEval && _game->getSavedGame()->isResearched(_game->getMod()->getPsiRequirements())))
 		{
-			ss1 << tr((*i)->getType().c_str()).arg(tr((*i)->getNoun()).c_str());
-			ss3 << tr(commendation->getDescription().c_str()).arg(tr((*i)->getNoun()).c_str());
+			_lstKillTotals->addRow(4, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
+										tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str(),
+										tr("STR_DIARY_ACCURACY").arg(_soldier->getDiary()->getAccuracy()).c_str(),
+										tr("STR_MINDCONTROLS").arg(_soldier->getDiary()->getControlTotal()).c_str());
 		}
 		else
 		{
-			ss1 << tr((*i)->getType().c_str());
-			ss3 << tr(commendation->getDescription().c_str());
+			_lstKillTotals->addRow(3, tr("STR_KILLS").arg(_soldier->getDiary()->getKillTotal()).c_str(),
+										tr("STR_STUNS").arg(_soldier->getDiary()->getStunTotal()).c_str(),
+										tr("STR_DIARY_ACCURACY").arg(_soldier->getDiary()->getAccuracy()).c_str());
 		}
-		ss2 << tr((*i)->getDecorationDescription().c_str());
-		_lstCommendations->addRow(2, ss1.str().c_str(), ss2.str().c_str());
 		
-		_commendationsListEntry.push_back(ss3.str().c_str());
+	}
+	else if (_display == DIARY_MISSIONS)
+	{
+		std::map<std::string, int> mapArray[] = { _soldier->getDiary()->getRegionTotal(_game->getSavedGame()->getMissionStatistics()), _soldier->getDiary()->getTypeTotal(_game->getSavedGame()->getMissionStatistics()), _soldier->getDiary()->getUFOTotal(_game->getSavedGame()->getMissionStatistics()) };
+		std::string titleArray[] = { "STR_MISSIONS_BY_LOCATION", "STR_MISSIONS_BY_TYPE", "STR_MISSIONS_BY_UFO" };
 
+		for (int i = 0; i != 3; ++i)
+		{
+			_lstPerformance->addRow(1, tr(titleArray[i]).c_str());
+			_lstPerformance->setRowColor(_lstPerformance->getRows() - 1, _lstPerformance->getSecondaryColor());
+			for (std::map<std::string, int>::const_iterator j = mapArray[i].begin(); j != mapArray[i].end(); ++j)
+			{
+				if ((*j).first == "NO_UFO") continue;
+				std::wostringstream ss;
+				ss << (*j).second;
+				_lstPerformance->addRow(2, tr((*j).first).c_str(), ss.str().c_str());
+			}
+			if (i != 2)
+			{
+				_lstPerformance->addRow(1, L"");
+			}
+		}
+
+		_lstMissionTotals->addRow(4, tr("STR_MISSIONS").arg(_soldier->getDiary()->getMissionTotal()).c_str(),
+									tr("STR_WINS").arg(_soldier->getDiary()->getWinTotal(_game->getSavedGame()->getMissionStatistics())).c_str(),
+									tr("STR_SCORE_VALUE").arg(_soldier->getDiary()->getScoreTotal(_game->getSavedGame()->getMissionStatistics())).c_str(),
+									tr("STR_DAYS_WOUNDED").arg(_soldier->getDiary()->getDaysWoundedTotal()).c_str());
+	}
+	else if (_display == DIARY_COMMENDATIONS && !_game->getMod()->getCommendation().empty())
+	{
+		for (std::vector<SoldierCommendations*>::const_iterator i = _soldier->getDiary()->getSoldierCommendations()->begin(); i != _soldier->getDiary()->getSoldierCommendations()->end(); ++i)
+		{
+			RuleCommendations* commendation = _game->getMod()->getCommendation()[(*i)->getType()];
+			if ((*i)->getNoun() != "noNoun")
+			{
+				_lstCommendations->addRow(2, tr((*i)->getType()).arg(tr((*i)->getNoun())).c_str(), tr((*i)->getDecorationDescription()).c_str());
+				_commendationsListEntry.push_back(tr(commendation->getDescription()).arg(tr((*i)->getNoun())));
+			}
+			else
+			{
+				_lstCommendations->addRow(2, tr((*i)->getType()).c_str(), tr((*i)->getDecorationDescription()).c_str());
+				_commendationsListEntry.push_back(tr(commendation->getDescription()));
+			}
+		}
 		drawSprites();
 	}
 }
 
 /**
  * Draws sprites
- * 
+ *
  */
 void SoldierDiaryPerformanceState::drawSprites()
 {
-	if (!_displayCommendations) return;
+	if (_display != DIARY_COMMENDATIONS) return;
+
+	// Commendation sprites
+	_commendationSprite = _game->getMod()->getSurfaceSet("Commendations");
+	_commendationDecoration = _game->getMod()->getSurfaceSet("CommendationDecorations");
 
 	// Clear sprites
 	for (int i = 0; i != 10; ++i)
@@ -473,7 +354,7 @@ void SoldierDiaryPerformanceState::drawSprites()
 	{
 		RuleCommendations* commendation = _game->getMod()->getCommendation()[(*i)->getType()];
 		// Skip commendations that are not visible in the textlist
-		if ( vectorIterator < scrollDepth || vectorIterator - scrollDepth >= _commendations.size())
+		if ( vectorIterator < scrollDepth || vectorIterator - scrollDepth >= (int)_commendations.size())
 		{
 			vectorIterator++;
 			continue;
@@ -539,9 +420,7 @@ void SoldierDiaryPerformanceState::btnNextClick(Action *)
  */
 void SoldierDiaryPerformanceState::btnKillsToggle(Action *)
 {
-	_displayKills = true;
-	_displayMissions = false;
-    _displayCommendations = false;
+	_display = DIARY_KILLS;
 	init();
 }
 
@@ -550,9 +429,7 @@ void SoldierDiaryPerformanceState::btnKillsToggle(Action *)
  */
 void SoldierDiaryPerformanceState::btnMissionsToggle(Action *)
 {
-	_displayKills = false;
-	_displayMissions = true;
-    _displayCommendations = false;
+	_display = DIARY_MISSIONS;
 	init();
 }
 
@@ -561,9 +438,7 @@ void SoldierDiaryPerformanceState::btnMissionsToggle(Action *)
  */
 void SoldierDiaryPerformanceState::btnCommendationsToggle(Action *)
 {
-	_displayKills = false;
-	_displayMissions = false;
-    _displayCommendations = true;
+	_display = DIARY_COMMENDATIONS;
 	init();
 }
 
@@ -579,7 +454,7 @@ void SoldierDiaryPerformanceState::lstInfoMouseOver(Action *)
 	{
 		_txtMedalInfo->setText(L"");
 	}
-	else 
+	else
 	{
 		_txtMedalInfo->setText(_commendationsListEntry[_sel]);
 	}
@@ -601,7 +476,7 @@ void SoldierDiaryPerformanceState::think()
 {
 	State::think();
 
-	if (_lastScrollPos != _lstCommendations->getScroll())
+	if ((unsigned int)_lastScrollPos != _lstCommendations->getScroll())
 	{
 		drawSprites();
 		_lastScrollPos = _lstCommendations->getScroll();
