@@ -384,11 +384,12 @@ void PurchaseState::btnOkClick(Action *)
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void PurchaseState::btnCancelClick(Action *)
 {
 	_game->popState();
 }
+*/ // we do not want this since it is going to be part of the main state
 
 /**
  * Starts increasing the item.
