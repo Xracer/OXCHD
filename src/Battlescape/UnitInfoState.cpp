@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -30,7 +30,6 @@
 #include "../Interface/Text.h"
 #include "../Interface/TextButton.h"
 #include "../Engine/InteractiveSurface.h"
-#include "../Mod/Armor.h"
 #include "../Mod/Unit.h"
 #include "../Engine/Options.h"
 #include "BattlescapeGame.h"
@@ -59,112 +58,113 @@ UnitInfoState::UnitInfoState(BattleUnit *unit, BattlescapeState *parent, bool fr
 	_battleGame = _game->getSavedGame()->getSavedBattle();
 
 	// Create objects
-	_bg = new Surface(320, 200, 0, 0);
+	//_bg = new Surface(320, 200, 0, 0);
 	_exit = new InteractiveSurface(320, 180, 0, 20);
-	_txtName = new Text(288, 17, 16, 4);
+	_txtName = new Text(400, 20, 32, 10);
 
-	int yPos = 38;
-	int step = 9;
+	int xPos = 700;
+	int yPos = 60;
+	int step = 13;
 
-	_txtTimeUnits = new Text(140, 9, 8, yPos);
-	_numTimeUnits = new Text(18, 9, 150, yPos);
-	_barTimeUnits = new Bar(150, 5, 170, yPos + 1);
+	_txtTimeUnits = new Text(140, 13, 8 + xPos, yPos);
+	_numTimeUnits = new Text(18, 13, 150 + xPos, yPos);
+	_barTimeUnits = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtEnergy = new Text(140, 9, 8, yPos);
-	_numEnergy = new Text(18, 9, 150, yPos);
-	_barEnergy = new Bar(150, 5, 170, yPos + 1);
+	_txtEnergy = new Text(140, 13, 8 + xPos, yPos);
+	_numEnergy = new Text(18, 13, 150 + xPos, yPos);
+	_barEnergy = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtHealth = new Text(140, 9, 8, yPos);
-	_numHealth = new Text(18, 9, 150, yPos);
-	_barHealth = new Bar(150, 5, 170, yPos + 1);
+	_txtHealth = new Text(140, 13, 8 + xPos, yPos);
+	_numHealth = new Text(18, 13, 150 + xPos, yPos);
+	_barHealth = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtFatalWounds = new Text(140, 9, 8, yPos);
-	_numFatalWounds = new Text(18, 9, 150, yPos);
-	_barFatalWounds = new Bar(150, 5, 170, yPos + 1);
+	_txtFatalWounds = new Text(140, 13, 8 + xPos, yPos);
+	_numFatalWounds = new Text(18, 13, 150 + xPos, yPos);
+	_barFatalWounds = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtBravery = new Text(140, 9, 8, yPos);
-	_numBravery = new Text(18, 9, 150, yPos);
-	_barBravery = new Bar(150, 5, 170, yPos + 1);
+	_txtBravery = new Text(140, 13, 8 + xPos, yPos);
+	_numBravery = new Text(18, 13, 150 + xPos, yPos);
+	_barBravery = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtMorale = new Text(140, 9, 8, yPos);
-	_numMorale = new Text(18, 9, 150, yPos);
-	_barMorale = new Bar(150, 5, 170, yPos + 1);
+	_txtMorale = new Text(140, 13, 8 + xPos, yPos);
+	_numMorale = new Text(18, 13, 150 + xPos, yPos);
+	_barMorale = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtReactions = new Text(140, 9, 8, yPos);
-	_numReactions = new Text(18, 9, 150, yPos);
-	_barReactions = new Bar(150, 5, 170, yPos + 1);
+	_txtReactions = new Text(140, 13, 8 + xPos, yPos);
+	_numReactions = new Text(18, 13, 150 + xPos, yPos);
+	_barReactions = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtFiring = new Text(140, 9, 8, yPos);
-	_numFiring = new Text(18, 9, 150, yPos);
-	_barFiring = new Bar(150, 5, 170, yPos + 1);
+	_txtFiring = new Text(140, 13, 8 + xPos, yPos);
+	_numFiring = new Text(18, 13, 150 + xPos, yPos);
+	_barFiring = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtThrowing = new Text(140, 9, 8, yPos);
-	_numThrowing = new Text(18, 9, 150, yPos);
-	_barThrowing = new Bar(150, 5, 170, yPos + 1);
+	_txtThrowing = new Text(140, 13, 8 + xPos, yPos);
+	_numThrowing = new Text(18, 13, 150 + xPos, yPos);
+	_barThrowing = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtMelee = new Text(140, 9, 8, yPos);
-	_numMelee = new Text(18, 9, 150, yPos);
-	_barMelee = new Bar(150, 5, 170, yPos + 1);
+	_txtMelee = new Text(140, 13, 8 + xPos, yPos);
+	_numMelee = new Text(18, 13, 150 + xPos, yPos);
+	_barMelee = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtStrength = new Text(140, 9, 8, yPos);
-	_numStrength = new Text(18, 9, 150, yPos);
-	_barStrength = new Bar(150, 5, 170, yPos + 1);
+	_txtStrength = new Text(140, 13, 8 + xPos, yPos);
+	_numStrength = new Text(18, 13, 150 + xPos, yPos);
+	_barStrength = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtPsiStrength = new Text(140, 9, 8, yPos);
-	_numPsiStrength = new Text(18, 9, 150, yPos);
-	_barPsiStrength = new Bar(150, 5, 170, yPos + 1);
+	_txtPsiStrength = new Text(140, 13, 8 + xPos, yPos);
+	_numPsiStrength = new Text(18, 13, 150 + xPos, yPos);
+	_barPsiStrength = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtPsiSkill = new Text(140, 9, 8, yPos);
-	_numPsiSkill = new Text(18, 9, 150, yPos);
-	_barPsiSkill = new Bar(150, 5, 170, yPos + 1);
+	_txtPsiSkill = new Text(140, 13, 8 + xPos, yPos);
+	_numPsiSkill = new Text(18, 13, 150 + xPos, yPos);
+	_barPsiSkill = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtFrontArmor = new Text(140, 9, 8, yPos);
-	_numFrontArmor= new Text(18, 9, 150, yPos);
-	_barFrontArmor = new Bar(150, 5, 170, yPos + 1);
+	_txtFrontArmor = new Text(140, 13, 8 + xPos, yPos);
+	_numFrontArmor = new Text(18, 13, 150 + xPos, yPos);
+	_barFrontArmor = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtLeftArmor = new Text(140, 9, 8, yPos);
-	_numLeftArmor = new Text(18, 9, 150, yPos);
-	_barLeftArmor = new Bar(150, 5, 170, yPos + 1);
+	_txtLeftArmor = new Text(140, 13, 8 + xPos, yPos);
+	_numLeftArmor = new Text(18, 13, 150 + xPos, yPos);
+	_barLeftArmor = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtRightArmor = new Text(140, 9, 8, yPos);
-	_numRightArmor = new Text(18, 9, 150, yPos);
-	_barRightArmor = new Bar(150, 5, 170, yPos + 1);
+	_txtRightArmor = new Text(140, 13, 8 + xPos, yPos);
+	_numRightArmor = new Text(18, 13, 150 + xPos, yPos);
+	_barRightArmor = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtRearArmor = new Text(140, 9, 8, yPos);
-	_numRearArmor = new Text(18, 9, 150, yPos);
-	_barRearArmor = new Bar(150, 5, 170, yPos + 1);
+	_txtRearArmor = new Text(140, 13, 8 + xPos, yPos);
+	_numRearArmor = new Text(18, 13, 150 + xPos, yPos);
+	_barRearArmor = new Bar(150, 7, 170 + xPos, yPos + 1);
 	yPos += step;
 
-	_txtUnderArmor = new Text(140, 9, 8, yPos);
-	_numUnderArmor = new Text(18, 9, 150, yPos);
-	_barUnderArmor = new Bar(150, 5, 170, yPos + 1);
+	_txtUnderArmor = new Text(140, 13, 8 + xPos, yPos);
+	_numUnderArmor = new Text(18, 13, 150 + xPos, yPos);
+	_barUnderArmor = new Bar(150, 7, 170 + xPos, yPos + 1);
 
 	if (!_mindProbe)
 	{
-		_btnPrev = new TextButton(14, 18, 2, 2);
-		_btnNext = new TextButton(14, 18, 304, 2);
+		_btnPrev = new TextButton(24, 20, 1175, 6);
+		_btnNext = new TextButton(24, 20, 1250, 6);
 	}
 
 	// Set palette
 	setPalette("PAL_BATTLESCAPE");
 
-	add(_bg);
+	//add(_bg);
 	add(_exit);
 	add(_txtName, "textName", "stats", 0);
 
@@ -246,10 +246,10 @@ UnitInfoState::UnitInfoState(BattleUnit *unit, BattlescapeState *parent, bool fr
 		add(_btnNext, "button", "stats");
 	}
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
-	_game->getMod()->getSurface("UNIBORD.PCK")->blit(_bg);
+	//_game->getMod()->getSurface("UNIBORD.PCK")->blit(_bg);
 
 	_exit->onMouseClick((ActionHandler)&UnitInfoState::exitClick);
 	_exit->onKeyboardPress((ActionHandler)&UnitInfoState::exitClick, Options::keyCancel);
@@ -258,7 +258,7 @@ UnitInfoState::UnitInfoState(BattleUnit *unit, BattlescapeState *parent, bool fr
 	Uint8 color = _game->getMod()->getInterface("stats")->getElement("text")->color;
 	Uint8 color2 = _game->getMod()->getInterface("stats")->getElement("text")->color2;
 
-	_txtName->setAlign(ALIGN_CENTER);
+	_txtName->setAlign(ALIGN_LEFT);
 	_txtName->setBig();
 	_txtName->setHighContrast(true);
 
@@ -506,19 +506,19 @@ void UnitInfoState::init()
 	_barReactions->setValue(_unit->getBaseStats()->reactions);
 
 	ss.str(L"");
-	ss << (int)((_unit->getBaseStats()->firing * _unit->getHealth()) / _unit->getBaseStats()->health);
+	ss << ((_unit->getBaseStats()->firing * _unit->getHealth()) / _unit->getBaseStats()->health);
 	_numFiring->setText(ss.str());
 	_barFiring->setMax(_unit->getBaseStats()->firing);
 	_barFiring->setValue((_unit->getBaseStats()->firing * _unit->getHealth()) / _unit->getBaseStats()->health);
 
 	ss.str(L"");
-	ss << (int)((_unit->getBaseStats()->throwing * _unit->getHealth()) / _unit->getBaseStats()->health);
+	ss << ((_unit->getBaseStats()->throwing * _unit->getHealth()) / _unit->getBaseStats()->health);
 	_numThrowing->setText(ss.str());
 	_barThrowing->setMax(_unit->getBaseStats()->throwing);
 	_barThrowing->setValue((_unit->getBaseStats()->throwing * _unit->getHealth()) / _unit->getBaseStats()->health);
 
 	ss.str(L"");
-	ss << (int)((_unit->getBaseStats()->melee * _unit->getHealth()) / _unit->getBaseStats()->health);
+	ss << ((_unit->getBaseStats()->melee * _unit->getHealth()) / _unit->getBaseStats()->health);
 	_numMelee->setText(ss.str());
 	_barMelee->setMax(_unit->getBaseStats()->melee);
 	_barMelee->setValue((_unit->getBaseStats()->melee * _unit->getHealth()) / _unit->getBaseStats()->health);
@@ -570,31 +570,31 @@ void UnitInfoState::init()
 	ss.str(L"");
 	ss << _unit->getArmor(SIDE_FRONT);
 	_numFrontArmor->setText(ss.str());
-	_barFrontArmor->setMax(_unit->getArmor()->getFrontArmor());
+	_barFrontArmor->setMax(_unit->getMaxArmor(SIDE_FRONT));
 	_barFrontArmor->setValue(_unit->getArmor(SIDE_FRONT));
 
 	ss.str(L"");
 	ss << _unit->getArmor(SIDE_LEFT);
 	_numLeftArmor->setText(ss.str());
-	_barLeftArmor->setMax(_unit->getArmor()->getSideArmor());
+	_barLeftArmor->setMax(_unit->getMaxArmor(SIDE_LEFT));
 	_barLeftArmor->setValue(_unit->getArmor(SIDE_LEFT));
 
 	ss.str(L"");
 	ss << _unit->getArmor(SIDE_RIGHT);
 	_numRightArmor->setText(ss.str());
-	_barRightArmor->setMax(_unit->getArmor()->getSideArmor());
+	_barRightArmor->setMax(_unit->getMaxArmor(SIDE_RIGHT));
 	_barRightArmor->setValue(_unit->getArmor(SIDE_RIGHT));
 
 	ss.str(L"");
 	ss << _unit->getArmor(SIDE_REAR);
 	_numRearArmor->setText(ss.str());
-	_barRearArmor->setMax(_unit->getArmor()->getRearArmor());
+	_barRearArmor->setMax(_unit->getMaxArmor(SIDE_REAR));
 	_barRearArmor->setValue(_unit->getArmor(SIDE_REAR));
 
 	ss.str(L"");
 	ss << _unit->getArmor(SIDE_UNDER);
 	_numUnderArmor->setText(ss.str());
-	_barUnderArmor->setMax(_unit->getArmor()->getUnderArmor());
+	_barUnderArmor->setMax(_unit->getMaxArmor(SIDE_UNDER));
 	_barUnderArmor->setValue(_unit->getArmor(SIDE_UNDER));
 }
 

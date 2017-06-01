@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include <sstream>
 #include "BattlescapeGame.h"
 #include "BattlescapeState.h"
@@ -35,8 +33,7 @@
 #include "UnitInfoState.h"
 #include "UnitDieBState.h"
 #include "UnitPanicBState.h"
-#include "AlienBAIState.h"
-#include "CivilianBAIState.h"
+#include "AIModule.h"
 #include "Pathfinding.h"
 #include "../Mod/AlienDeployment.h"
 #include "../Engine/Game.h"
@@ -59,6 +56,8 @@
 #include "InfoboxOKState.h"
 #include "UnitFallBState.h"
 #include "../Engine/Logger.h"
+#include "../Savegame/BattleUnitStatistics.h"
+#include "../fmath.h"
 
 namespace OpenXcom
 {
@@ -208,15 +207,12 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 		// it should also hide units when they've killed the guy spotting them
 		// it's also for good luck
 
-	BattleAIState *ai = unit->getCurrentAIState();
+	AIModule *ai = unit->getAIModule();
 	if (!ai)
 	{
 		// for some reason the unit had no AI routine assigned..
-		if (unit->getFaction() == FACTION_HOSTILE)
-			unit->setAIState(new AlienBAIState(_save, unit, 0));
-		else
-			unit->setAIState(new CivilianBAIState(_save, unit, 0));
-		ai = unit->getCurrentAIState();
+		unit->setAIModule(new AIModule(_save, unit, 0));
+		ai = unit->getAIModule();
 	}
 	_AIActionCounter++;
 	if (_AIActionCounter == 1)
@@ -225,7 +221,6 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 		unit->setHiding(false);
 		if (Options::traceAI) { Log(LOG_INFO) << "#" << unit->getId() << "--" << unit->getType(); }
 	}
-	//AlienBAIState *aggro = dynamic_cast<AlienBAIState*>(ai); // this cast only works when ai was already AlienBAIState at heart
 
 	BattleAction action;
 	action.actor = unit;
@@ -239,8 +234,8 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 	}
 
 	_AIActionCounter = action.number;
-
-	if (!unit->getMainHandWeapon() || !unit->getMainHandWeapon()->getAmmoItem())
+	BattleItem *weapon = unit->getMainHandWeapon();
+	if (!weapon || !weapon->getAmmoItem())
 	{
 		if (unit->getOriginalFaction() == FACTION_HOSTILE && unit->getVisibleUnits()->empty())
 		{
@@ -274,7 +269,7 @@ void BattlescapeGame::handleAI(BattleUnit *unit)
 	if (action.type == BA_SNAPSHOT || action.type == BA_AUTOSHOT || action.type == BA_AIMEDSHOT || action.type == BA_THROW || action.type == BA_HIT || action.type == BA_MINDCONTROL || action.type == BA_PANIC || action.type == BA_LAUNCH)
 	{
 		ss.clear();
-		ss << L"Attack type=" << action.type << " target="<< action.target << " weapon=" << action.weapon->getRules()->getName().c_str();
+		ss << L"Attack type=" << action.type << " target="<< action.target << " weapon=" << Language::utf8ToWstr(action.weapon->getRules()->getName());
 		_parentState->debug(ss.str());
 		action.TU = unit->getActionTUs(action.type, action.weapon);
 		if (action.type == BA_MINDCONTROL || action.type == BA_PANIC)
@@ -450,15 +445,61 @@ void BattlescapeGame::endTurn()
 	// if all units from either faction are killed - the mission is over.
 	int liveAliens = 0;
 	int liveSoldiers = 0;
+	int inExit = 0;
 
-	tallyUnits(liveAliens, liveSoldiers);
+	// Calculate values
+	for (std::vector<BattleUnit*>::iterator j = _save->getUnits()->begin(); j != _save->getUnits()->end(); ++j)
+	{
+		if (!(*j)->isOut())
+		{
+			if ((*j)->getOriginalFaction() == FACTION_HOSTILE)
+			{
+				if (!Options::allowPsionicCapture || (*j)->getFaction() != FACTION_PLAYER)
+				{
+					liveAliens++;
+				}
+			}
+			else if ((*j)->getOriginalFaction() == FACTION_PLAYER)
+			{
+				if ((*j)->isInExitArea(END_POINT))
+				{
+					inExit++;
+				}
+				if ((*j)->getFaction() == FACTION_PLAYER)
+				{
+					liveSoldiers++;
+				}
+				else
+				{
+					liveAliens++;
+				}
+			}
+		}
+	}
 
 	if (_save->allObjectivesDestroyed() && _save->getObjectiveType() == MUST_DESTROY)
 	{
 		_parentState->finishBattle(false, liveSoldiers);
 		return;
 	}
-
+	if (_save->getTurnLimit() > 0 && _save->getTurn() > _save->getTurnLimit())
+	{
+		switch (_save->getChronoTrigger())
+		{
+		case FORCE_ABORT:
+			_save->setAborted(true);
+			_parentState->finishBattle(true, inExit);
+			return;
+		case FORCE_WIN:
+			_parentState->finishBattle(false, liveSoldiers);
+			return;
+		case FORCE_LOSE:
+		default:
+			_save->setAborted(true);
+			_parentState->finishBattle(true, 0);
+			return;
+		}
+	}
 
 	if (liveAliens > 0 && liveSoldiers > 0)
 	{
@@ -487,74 +528,54 @@ void BattlescapeGame::endTurn()
 /**
  * Checks for casualties and adjusts morale accordingly.
  * @param murderweapon Need to know this, for a HE explosion there is an instant death.
- * @param murderer This is needed for credits for the kill.
+ * @param origMurderer This is needed for credits for the kill.
  * @param hiddenExplosion Set to true for the explosions of UFO Power sources at start of battlescape.
  * @param terrainExplosion Set to true for the explosions of terrain.
  */
-void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *murderer, bool hiddenExplosion, bool terrainExplosion)
+void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *origMurderer, bool hiddenExplosion, bool terrainExplosion)
 {
-	std::string killStatRank, killStatRace, killStatWeapon, killStatWeaponAmmo;
-	int killStatMission, killStatTurn;
-
 	// If the victim was killed by the murderer's death explosion, fetch who killed the murderer and make HIM the murderer!
-	if (murderer && !murderer->getGeoscapeSoldier() && murderer->getUnitRules()->getSpecialAbility() == SPECAB_EXPLODEONDEATH && murderer->getStatus() == STATUS_DEAD && murderer->getMurdererId() != 0)
+	if (origMurderer && !origMurderer->getGeoscapeSoldier() && (origMurderer->getUnitRules()->getSpecialAbility() == SPECAB_EXPLODEONDEATH || origMurderer->getUnitRules()->getSpecialAbility() == SPECAB_BURN_AND_EXPLODE)
+		&& origMurderer->getStatus() == STATUS_DEAD && origMurderer->getMurdererId() != 0)
 	{
 		for (std::vector<BattleUnit*>::const_iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 		{
-			if ((*i)->getId() == murderer->getMurdererId())
+			if ((*i)->getId() == origMurderer->getMurdererId())
 			{
-				murderer = (*i);
+				origMurderer = (*i);
 			}
 		}
-	}
-
-	killStatWeapon = "STR_WEAPON_UNKNOWN";
-	killStatWeaponAmmo = "STR_WEAPON_UNKNOWN";
-	if (murderer != 0)
-	{
-		killStatMission = _save->getGeoscapeSave()->getMissionStatistics()->size();
-	}
-	if (_save->getSide() == FACTION_PLAYER)
-	{
-		killStatTurn = _save->getTurn()*3 + 0;
-	}
-	else if (_save->getSide() == FACTION_HOSTILE)
-	{
-		killStatTurn = _save->getTurn()*3 + 1;
-	}
-	else if (_save->getSide() == FACTION_NEUTRAL)
-	{
-		killStatTurn = _save->getTurn()*3 + 2;
 	}
 
 	// Fetch the murder weapon
-	if (murderer && murderer->getGeoscapeSoldier())
+	std::string tempWeapon = "STR_WEAPON_UNKNOWN", tempAmmo = "STR_WEAPON_UNKNOWN";
+	if (origMurderer)
 	{
 		if (murderweapon)
 		{
-			killStatWeaponAmmo = murderweapon->getRules()->getName();
-			killStatWeapon = killStatWeaponAmmo;
+			tempAmmo = murderweapon->getRules()->getName();
+			tempWeapon = tempAmmo;
 		}
 
-		BattleItem *weapon = murderer->getItem("STR_RIGHT_HAND");
+		BattleItem *weapon = origMurderer->getItem("STR_RIGHT_HAND");
 		if (weapon)
 		{
 			for (std::vector<std::string>::iterator c = weapon->getRules()->getCompatibleAmmo()->begin(); c != weapon->getRules()->getCompatibleAmmo()->end(); ++c)
 			{
-				if ((*c) == killStatWeaponAmmo)
+				if ((*c) == tempAmmo)
 				{
-					killStatWeapon = weapon->getRules()->getName();
+					tempWeapon = weapon->getRules()->getName();
 				}
 			}
 		}
-		weapon = murderer->getItem("STR_LEFT_HAND");
+		weapon = origMurderer->getItem("STR_LEFT_HAND");
 		if (weapon)
 		{
 			for (std::vector<std::string>::iterator c = weapon->getRules()->getCompatibleAmmo()->begin(); c != weapon->getRules()->getCompatibleAmmo()->end(); ++c)
 			{
-				if ((*c) == killStatWeaponAmmo)
+				if ((*c) == tempAmmo)
 				{
-					killStatWeapon = weapon->getRules()->getName();
+					tempWeapon = weapon->getRules()->getName();
 				}
 			}
 		}
@@ -562,273 +583,194 @@ void BattlescapeGame::checkForCasualties(BattleItem *murderweapon, BattleUnit *m
 	
 	for (std::vector<BattleUnit*>::iterator j = _save->getUnits()->begin(); j != _save->getUnits()->end(); ++j)
 	{
-		BattleUnit *victim = (*j);
-		
-		/// Decide victim race and rank
-		// Soldiers
-		if (victim->getGeoscapeSoldier() && victim->getOriginalFaction() == FACTION_PLAYER)
-		{
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRank() != "")
-			{
-				killStatRank = victim->getGeoscapeSoldier()->getRankString();
-			}
-			else
-			{
-				killStatRank = "STR_LIVE_SOLDIER";
-			}
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRace() != "")
-			{
-				killStatRace = victim->getUnitRules()->getRace();
-			}
-			else
-			{
-				killStatRace = "STR_HUMAN";
-			}
-		}
-		// HWPs
-		else if (victim->getOriginalFaction() == FACTION_PLAYER)
-		{
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRank() != "")
-			{
-				killStatRank = victim->getUnitRules()->getRank();
-			}
-			else
-			{
-				killStatRank = "STR_HEAVY_WEAPONS_PLATFORM_LC";
-			}
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRace() != "")
-			{
-				killStatRace = victim->getUnitRules()->getRace();
-			}
-			else
-			{
-				killStatRace = "STR_TANK";
-			}
-		}
-		// Aliens
-		else if (victim->getOriginalFaction() == FACTION_HOSTILE)
-		{
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRank() != "")
-			{
-				killStatRank = victim->getUnitRules()->getRank();
-			}
-			else
-			{
-				killStatRank = "STR_UNKNOWN";
-			}
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRace() != "")
-			{
-				killStatRace = victim->getUnitRules()->getRace();
-			}
-			else
-			{
-				killStatRace = "STR_LIVE_SOLDIER";
-			}
-		}
-		// Civilians
-		else if (victim->getOriginalFaction() == FACTION_NEUTRAL)
-		{
-			if (victim->getUnitRules() != NULL && victim->getUnitRules()->getRank() != "")
-			{
-				killStatRank = victim->getUnitRules()->getRank();
-			}
-			else
-			{
-				killStatRank = "STR_CIVILIAN";
-			}
-			if (victim->getUnitRules() != NULL && (victim->getUnitRules()->getRace() != "" || victim->getUnitRules()->getRace() != "STR_CIVILIAN"))
-			{
-				killStatRace = victim->getUnitRules()->getRace();
-			}
-			else
-			{
-				killStatRace = "STR_HUMAN";
-			}
-		}
-		// Error
-		else
-		{
-			killStatRank = "STR_UNKNOWN";
-			killStatRace = "STR_UNKNOWN";
-		}
-
 		if ((*j)->getStatus() == STATUS_IGNORE_ME) continue;
-		if ((*j)->getHealth() == 0 && (*j)->getStatus() != STATUS_DEAD && (*j)->getStatus() != STATUS_COLLAPSING)
+		BattleUnit *victim = (*j);
+		BattleUnit *murderer = origMurderer;
+
+		BattleUnitKills killStat;
+		killStat.mission = _parentState->getGame()->getSavedGame()->getMissionStatistics()->size();
+		killStat.setTurn(_save->getTurn(), _save->getSide());
+		killStat.setUnitStats(victim);
+		killStat.faction = victim->getFaction();
+		killStat.side = victim->getFatalShotSide();
+		killStat.bodypart = victim->getFatalShotBodyPart();
+		killStat.id = victim->getId();
+		killStat.weapon = tempWeapon;
+		killStat.weaponAmmo = tempAmmo;
+
+		// Determine murder type
+		if ((*j)->getStatus() != STATUS_DEAD)
 		{
-			// Assume that, in absence of a murderer and an explosion, the laster unit to hit the victim is the murderer.
-            // Possible causes of death: bleed out, fire.
-			// Assume that the fire that killed victim was started by the unit who hit victim with DT_IN.
-			if (!murderer && !terrainExplosion)
+			if ((*j)->getHealth() == 0)
 			{
-				for (std::vector<BattleUnit*>::const_iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
+				killStat.status = STATUS_DEAD;
+			}
+			else if ((*j)->getStunlevel() >= (*j)->getHealth() && (*j)->getStatus() != STATUS_UNCONSCIOUS)
+			{
+				killStat.status = STATUS_UNCONSCIOUS;
+			}
+		}
+
+		// Assume that, in absence of a murderer and an explosion, the laster unit to hit the victim is the murderer.
+		// Possible causes of death: bleed out, fire.
+		// Possible causes of unconciousness: wounds, smoke.
+		// Assumption : The last person to hit the victim is the murderer.
+		if (!murderer && !terrainExplosion)
+		{
+			for (std::vector<BattleUnit*>::const_iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
+			{
+				if ((*i)->getId() == victim->getMurdererId())
 				{
-					if ((*i)->getId() == victim->getMurdererId())
-					{
-						murderer = (*i);
-						// Now find a plausible weapon. First a gun loaded with IN ammo, then a gun that can use IN ammo found in the inventory,
-						// then simlpy the IN thing.
-						for (std::vector<BattleItem*>::iterator it = murderer->getInventory()->begin(); it != murderer->getInventory()->end(); ++it)
-						{
-							if ((*it)->getRules()->getBattleType() == BT_FIREARM && (*it)->getAmmoItem()->getRules()->getDamageType() == DT_IN)
-							{
-								killStatWeaponAmmo = (*it)->getAmmoItem()->getRules()->getName();
-								killStatWeapon = (*it)->getRules()->getName();
-								break;
-							}
-							else if ((*it)->getRules()->getDamageType() == DT_IN)
-							{
-								killStatWeaponAmmo = (*it)->getRules()->getName();
-								if ((*it)->getRules()->getBattleType() == BT_AMMO)
-								{
-									for (std::vector<std::string>::iterator c = (*it)->getRules()->getCompatibleAmmo()->begin(); c != (*it)->getRules()->getCompatibleAmmo()->end(); ++c)
-									{
-										if ((*c) == killStatWeaponAmmo)
-										{
-											killStatWeapon = (*it)->getRules()->getName();
-										}
-									}
-								}
-								else if ((*it)->getRules()->getBattleType() == BT_GRENADE || (*it)->getRules()->getBattleType() == BT_PROXIMITYGRENADE)
-								{
-									killStatWeapon = (*it)->getRules()->getName();
-								}
-							}
-						}
-					}
+					murderer = (*i);
+					killStat.weapon = victim->getMurdererWeapon();
+					killStat.weaponAmmo = victim->getMurdererWeaponAmmo();
+					break;
 				}
 			}
+		}
 
-			if (murderer)
+		if (murderer && killStat.status != STATUS_IGNORE_ME)
+		{
+			if (murderer->getFaction() == FACTION_PLAYER && murderer->getOriginalFaction() != FACTION_PLAYER)
 			{
-				if (murderer->getFaction() == FACTION_PLAYER && murderer->getOriginalFaction() != FACTION_PLAYER)
-				{
-					// This must be a mind controlled unit. Find out who mind controlled him and award the kill to that unit.
-					for (std::vector<BattleUnit*>::iterator j = _save->getUnits()->begin(); j != _save->getUnits()->end(); ++j)
-					{
-						if ((*j)->getId() == murderer->getMurdererId() && (*j)->getGeoscapeSoldier())
-						{
-							(*j)->getStatistics()->kills.push_back(new BattleUnitKills(killStatRank, killStatRace, killStatWeapon, killStatWeaponAmmo, victim->getFaction(), STATUS_DEAD, killStatMission, killStatTurn, victim->getFatalShotSide(), victim->getFatalShotBodyPart(), victim->getId() ));
-							if (victim->getFaction() == FACTION_HOSTILE)
-							{
-								(*j)->getStatistics()->slaveKills++;
-							}							
-							victim->setMurdererId((*j)->getId());
-							break;
-						}
-					}
-				}
-				else if (!murderer->getStatistics()->duplicateEntry(STATUS_DEAD, victim->getId()))
-				{
-					victim->setMurdererId(murderer->getId());
-				}
-				murderer->addKillCount();
-				victim->killedBy(murderer->getFaction());
-				int modifier = murderer->getFaction() == FACTION_PLAYER ? _save->getMoraleModifier() : 100;
-
-				// if there is a known murderer, he will get a morale bonus if he is of a different faction (what with neutral?)
-				if ((victim->getOriginalFaction() == FACTION_PLAYER && murderer->getFaction() == FACTION_HOSTILE) ||
-					(victim->getOriginalFaction() == FACTION_HOSTILE && murderer->getFaction() == FACTION_PLAYER))
-				{
-					murderer->moraleChange(20 * modifier / 100);
-				}
-				// murderer will get a penalty with friendly fire
-				if (victim->getOriginalFaction() == murderer->getOriginalFaction())
-				{
-					murderer->moraleChange(-(2000 / modifier));
-				}
-				if (victim->getOriginalFaction() == FACTION_NEUTRAL)
-				{
-					if (murderer->getOriginalFaction() == FACTION_PLAYER)
-					{
-						murderer->moraleChange(-(1000 / modifier));
-					}
-					else
-					{
-						murderer->moraleChange(10);
-					}
-				}
-			}
-
-			if (victim->getFaction() != FACTION_NEUTRAL)
-			{
-				int modifier = _save->getMoraleModifier(victim);
-				int loserMod = victim->getFaction() == FACTION_HOSTILE ? 100 : _save->getMoraleModifier();
-				int winnerMod = victim->getFaction() == FACTION_HOSTILE ? _save->getMoraleModifier() : 100;
+				// This must be a mind controlled unit. Find out who mind controlled him and award the kill to that unit.
 				for (std::vector<BattleUnit*>::iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
 				{
-					if (!(*i)->isOut() && (*i)->getArmor()->getSize() == 1)
+					if ((*i)->getId() == murderer->getMindControllerId() && (*i)->getGeoscapeSoldier())
 					{
-						// the losing squad all get a morale loss
-						if ((*i)->getOriginalFaction() == victim->getOriginalFaction())
+						(*i)->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
+						if (victim->getFaction() == FACTION_HOSTILE)
 						{
-							int bravery = (110 - (*i)->getBaseStats()->bravery) / 10;
-							(*i)->moraleChange(-(modifier * 200 * bravery / loserMod / 100));
-
-							if (victim->getFaction() == FACTION_HOSTILE && murderer)
-							{
-								murderer->setTurnsSinceSpotted(0);
-							}
+							(*i)->getStatistics()->slaveKills++;
 						}
-						// the winning squad all get a morale increase
-						else
-						{
-							(*i)->moraleChange(10 * winnerMod / 100);
-						}
-					}
-				}
-			}
-			if (murderweapon)
-			{
-				statePushNext(new UnitDieBState(this, (*j), murderweapon->getRules()->getDamageType(), false));
-			}
-			else
-			{
-				if (hiddenExplosion)
-				{
-					// this is instant death from UFO powersources, without screaming sounds
-					statePushNext(new UnitDieBState(this, (*j), DT_HE, true));
-				}
-				else
-				{
-					if (terrainExplosion)
-					{
-						// terrain explosion
-						statePushNext(new UnitDieBState(this, (*j), DT_HE, false));
-					}
-					else
-					{
-						// no murderer, and no terrain explosion, must be fatal wounds
-						statePushNext(new UnitDieBState(this, (*j), DT_NONE, false));  // DT_NONE = STR_HAS_DIED_FROM_A_FATAL_WOUND
-					}
-				}
-			}
-		}
-		else if ((*j)->getStunlevel() >= (*j)->getHealth() && (*j)->getStatus() != STATUS_DEAD && (*j)->getStatus() != STATUS_UNCONSCIOUS && (*j)->getStatus() != STATUS_COLLAPSING && (*j)->getStatus() != STATUS_TURNING)
-		{
-			if (murderer && murderer->getFaction() == FACTION_PLAYER && murderer->getOriginalFaction() != FACTION_PLAYER)
-			{
-				// This must be a mind controlled unit. Find out who mind controlled him and award the stun to that unit.
-				for (std::vector<BattleUnit*>::iterator j = _save->getUnits()->begin(); j != _save->getUnits()->end(); ++j)
-				{
-					if ((*j)->getId() == murderer->getMurdererId() && (*j)->getGeoscapeSoldier())
-					{
-						(*j)->getStatistics()->kills.push_back(new BattleUnitKills(killStatRank, killStatRace, killStatWeapon, killStatWeaponAmmo, victim->getFaction(), STATUS_UNCONSCIOUS, killStatMission, killStatTurn, victim->getFatalShotSide(), victim->getFatalShotBodyPart(), victim->getId() ));
-						(*j)->getStatistics()->slaveKills++;
-						victim->setMurdererId((*j)->getId());
+						victim->setMurdererId((*i)->getId());
 						break;
 					}
 				}
 			}
+			else if (!murderer->getStatistics()->duplicateEntry(killStat.status, victim->getId()))
+			{
+				murderer->getStatistics()->kills.push_back(new BattleUnitKills(killStat));
+				victim->setMurdererId(murderer->getId());
+			}
+		}
 
-			else if (murderer && !murderer->getStatistics()->duplicateEntry(STATUS_UNCONSCIOUS, victim->getId())) 
+		bool noSound = false;
+		bool noCorpse = false;
+		if ((*j)->getStatus() != STATUS_DEAD)
+		{
+			if ((*j)->getHealth() == 0)
 			{
-                    murderer->getStatistics()->kills.push_back(new BattleUnitKills(killStatRank, killStatRace, killStatWeapon, killStatWeaponAmmo, victim->getFaction(), STATUS_UNCONSCIOUS, killStatMission, killStatTurn, victim->getFatalShotSide(), victim->getFatalShotBodyPart(), victim->getId() ));
+				if ((*j)->getStatus() == STATUS_UNCONSCIOUS)
+				{
+					noCorpse = true;
+				}
+				if (murderer)
+				{
+					murderer->addKillCount();
+					victim->killedBy(murderer->getFaction());
+					int modifier = murderer->getFaction() == FACTION_PLAYER ? _save->getMoraleModifier() : 100;
+
+					// if there is a known murderer, he will get a morale bonus if he is of a different faction (what with neutral?)
+					if ((victim->getOriginalFaction() == FACTION_PLAYER && murderer->getFaction() == FACTION_HOSTILE) ||
+						(victim->getOriginalFaction() == FACTION_HOSTILE && murderer->getFaction() == FACTION_PLAYER))
+					{
+						murderer->moraleChange(20 * modifier / 100);
+					}
+					// murderer will get a penalty with friendly fire
+					if (victim->getOriginalFaction() == murderer->getOriginalFaction())
+					{
+						murderer->moraleChange(-(2000 / modifier));
+					}
+					if (victim->getOriginalFaction() == FACTION_NEUTRAL)
+					{
+						if (murderer->getOriginalFaction() == FACTION_PLAYER)
+						{
+							murderer->moraleChange(-(1000 / modifier));
+						}
+						else
+						{
+							murderer->moraleChange(10);
+						}
+					}
+				}
+
+				if (victim->getFaction() != FACTION_NEUTRAL)
+				{
+					int modifier = _save->getMoraleModifier(victim);
+					int loserMod = victim->getFaction() == FACTION_HOSTILE ? 100 : _save->getMoraleModifier();
+					int winnerMod = victim->getFaction() == FACTION_HOSTILE ? _save->getMoraleModifier() : 100;
+					for (std::vector<BattleUnit*>::iterator i = _save->getUnits()->begin(); i != _save->getUnits()->end(); ++i)
+					{
+						if (!(*i)->isOut() && (*i)->getArmor()->getSize() == 1)
+						{
+							// the losing squad all get a morale loss
+							if ((*i)->getOriginalFaction() == victim->getOriginalFaction())
+							{
+								int bravery = (110 - (*i)->getBaseStats()->bravery) / 10;
+								(*i)->moraleChange(-(modifier * 200 * bravery / loserMod / 100));
+
+								if (victim->getFaction() == FACTION_HOSTILE && murderer)
+								{
+									murderer->setTurnsSinceSpotted(0);
+								}
+							}
+							// the winning squad all get a morale increase
+							else
+							{
+								(*i)->moraleChange(10 * winnerMod / 100);
+							}
+						}
+					}
+				}
+				if (murderweapon)
+				{
+					statePushNext(new UnitDieBState(this, (*j), murderweapon->getRules()->getDamageType(), noSound, noCorpse));
+				}
+				else
+				{
+					if (hiddenExplosion)
+					{
+						// this is instant death from UFO powersources, without screaming sounds
+						noSound = true;
+						statePushNext(new UnitDieBState(this, (*j), DT_HE, noSound, noCorpse));
+					}
+					else
+					{
+						if (terrainExplosion)
+						{
+							// terrain explosion
+							statePushNext(new UnitDieBState(this, (*j), DT_HE, noSound, noCorpse));
+						}
+						else
+						{
+							// no murderer, and no terrain explosion, must be fatal wounds
+							statePushNext(new UnitDieBState(this, (*j), DT_NONE, noSound, noCorpse));  // DT_NONE = STR_HAS_DIED_FROM_A_FATAL_WOUND
+						}
+					}
+				}
+				// one of our own died, record the murderer instead of the victim
+				if (victim->getGeoscapeSoldier())
+				{
+					victim->getStatistics()->KIA = true;
+					BattleUnitKills *deathStat = new BattleUnitKills(killStat);
+					if (murderer)
+					{
+						deathStat->setUnitStats(murderer);
+						deathStat->faction = murderer->getFaction();
+					}
+					_parentState->getGame()->getSavedGame()->killSoldier(victim->getGeoscapeSoldier(), deathStat);
+				}
 			}
-			if (victim->getGeoscapeSoldier())
+			else if ((*j)->getStunlevel() >= (*j)->getHealth() && (*j)->getStatus() != STATUS_UNCONSCIOUS)
 			{
-				victim->getStatistics()->wasUnconcious = true;
+				if (victim->getGeoscapeSoldier())
+				{
+					victim->getStatistics()->wasUnconcious = true;
+				}
+				noSound = true;
+				statePushNext(new UnitDieBState(this, (*j), DT_STUN, noSound, noCorpse));
 			}
-			statePushNext(new UnitDieBState(this, (*j), DT_STUN, true));
 		}
 	}
 
@@ -861,12 +803,13 @@ void BattlescapeGame::missionComplete()
 	if (game->getMod()->getDeployment(_save->getMissionType()))
 	{
 		std::string missionComplete = game->getMod()->getDeployment(_save->getMissionType())->getObjectivePopup();
-		if (missionComplete != "")
+		if (!missionComplete.empty())
 		{
 			_infoboxQueue.push_back(new InfoboxOKState(game->getLanguage()->getString(missionComplete)));
 		}
 	}
 }
+
 /**
  * Handles the result of non target actions, like priming a grenade.
  */
@@ -953,7 +896,7 @@ void BattlescapeGame::setupCursor()
  * Is used to see if stats can be displayed and action buttons will work.
  * @return Whether a playable unit is selected.
  */
-bool BattlescapeGame::playableUnitSelected()
+bool BattlescapeGame::playableUnitSelected() const
 {
 	return _save->getSelectedUnit() != 0 && (_save->getSide() == FACTION_PLAYER || _save->getDebugMode());
 }
@@ -1055,7 +998,7 @@ void BattlescapeGame::popState()
 	BattleAction action = _states.front()->getAction();
 
 	if (action.actor && !action.result.empty() && action.actor->getFaction() == FACTION_PLAYER
-    && _playerPanicHandled && (_save->getSide() == FACTION_PLAYER || _debugPlay))
+		&& _playerPanicHandled && (_save->getSide() == FACTION_PLAYER || _debugPlay))
 	{
 		_parentState->warning(action.result);
 		actionFailed = true;
@@ -1165,7 +1108,10 @@ void BattlescapeGame::popState()
 		cancelCurrentAction();
 		getMap()->setCursorType(CT_NORMAL, 1);
 		_parentState->getGame()->getCursor()->setVisible(true);
-		_save->setSelectedUnit(0);
+		if (_save->getSide() == FACTION_PLAYER)
+			_save->setSelectedUnit(0);
+		else
+			_save->selectNextPlayerUnit(true, true);
 	}
 	_parentState->updateSoldierInfo();
 }
@@ -1186,6 +1132,7 @@ bool BattlescapeGame::noActionsPending(BattleUnit *bu)
 	}
 	return true;
 }
+
 /**
  * Sets the timer interval for think() calls of the state.
  * @param interval An interval in ms.
@@ -1213,7 +1160,7 @@ bool BattlescapeGame::checkReservedTU(BattleUnit *bu, int tu, bool justChecking)
 
 	if (_save->getSide() == FACTION_HOSTILE && !_debugPlay) // aliens reserve TUs as a percentage rather than just enough for a single action.
 	{
-		AlienBAIState *ai = dynamic_cast<AlienBAIState*>(bu->getCurrentAIState());
+		AIModule *ai = bu->getAIModule();
 		if (ai)
 		{
 			effectiveTuReserved = ai->getReserveMode();
@@ -1327,93 +1274,42 @@ bool BattlescapeGame::handlePanickingUnit(BattleUnit *unit)
 	int flee = RNG::generate(0,100);
 	BattleAction ba;
 	ba.actor = unit;
-	switch (status)
+	if (status == STATUS_PANICKING && flee <= 50) // 1/2 chance to freeze and 1/2 chance try to flee, STATUS_BERSERK is handled in the panic state.
 	{
-	case STATUS_PANICKING: // 1/2 chance to freeze and 1/2 chance try to flee
-		if (flee <= 50)
+		BattleItem *item = unit->getItem("STR_RIGHT_HAND");
+		if (item)
 		{
-			BattleItem *item = unit->getItem("STR_RIGHT_HAND");
-			if (item)
-			{
-				dropItem(unit->getPosition(), item, false, true);
-			}
-			item = unit->getItem("STR_LEFT_HAND");
-			if (item)
-			{
-				dropItem(unit->getPosition(), item, false, true);
-			}
-			unit->setCache(0);
-			// let's try a few times to get a tile to run to.
-			for (int i= 0; i < 20; i++)
-			{
-				ba.target = Position(unit->getPosition().x + RNG::generate(-5,5), unit->getPosition().y + RNG::generate(-5,5), unit->getPosition().z);
-
-				if (i >= 10 && ba.target.z > 0) // if we've had more than our fair share of failures, try going down.
-				{
-					ba.target.z--;
-					if (i >= 15 && ba.target.z > 0) // still failing? try further down.
-					{
-						ba.target.z--;
-					}
-				}
-				if (_save->getTile(ba.target)) // sanity check the tile.
-				{
-					_save->getPathfinding()->calculate(ba.actor, ba.target);
-					if (_save->getPathfinding()->getStartDirection() != -1) // sanity check the path.
-					{
-						statePushBack(new UnitWalkBState(this, ba));
-						break;
-					}
-				}
-			}
+			dropItem(unit->getPosition(), item, false, true);
 		}
-
-		break;
-	case STATUS_BERSERK: // berserk - do some weird turning around and then aggro towards an enemy unit or shoot towards random place
-		ba.type = BA_TURN;
-		for (int i= 0; i < 4; i++)
+		item = unit->getItem("STR_LEFT_HAND");
+		if (item)
+		{
+			dropItem(unit->getPosition(), item, false, true);
+		}
+		unit->setCache(0);
+		// let's try a few times to get a tile to run to.
+		for (int i= 0; i < 20; i++)
 		{
 			ba.target = Position(unit->getPosition().x + RNG::generate(-5,5), unit->getPosition().y + RNG::generate(-5,5), unit->getPosition().z);
-			statePushBack(new UnitTurnBState(this, ba, false));
-		}
-		for (std::vector<BattleUnit*>::iterator j = unit->getVisibleUnits()->begin(); j != unit->getVisibleUnits()->end(); ++j)
-		{
-			ba.target = (*j)->getPosition();
-			statePushBack(new UnitTurnBState(this, ba, false));
-		}
-		if (_save->getTile(ba.target) != 0)
-		{
-			ba.weapon = unit->getMainHandWeapon();
-			if (ba.weapon && (_save->getDepth() != 0 || ba.weapon->getRules()->isWaterOnly() == false))
+
+			if (i >= 10 && ba.target.z > 0) // if we've had more than our fair share of failures, try going down.
 			{
-				if (ba.weapon->getRules()->getBattleType() == BT_FIREARM)
+				ba.target.z--;
+				if (i >= 15 && ba.target.z > 0) // still failing? try further down.
 				{
-					ba.type = BA_SNAPSHOT;
-					int tu = ba.actor->getActionTUs(ba.type, ba.weapon);
-					for (int i= 0; i < 10; i++)
-					{
-						// fire shots until unit runs out of TUs
-						if (!ba.actor->spendTimeUnits(tu))
-							break;
-						statePushBack(new ProjectileFlyBState(this, ba));
-					}
+					ba.target.z--;
 				}
-				else if (ba.weapon->getRules()->getBattleType() == BT_GRENADE)
+			}
+			if (_save->getTile(ba.target)) // sanity check the tile.
+			{
+				_save->getPathfinding()->calculate(ba.actor, ba.target);
+				if (_save->getPathfinding()->getStartDirection() != -1) // sanity check the path.
 				{
-					if (ba.weapon->getFuseTimer() == -1)
-					{
-						ba.weapon->setFuseTimer(0);
-					}
-					ba.type = BA_THROW;
-					statePushBack(new ProjectileFlyBState(this, ba));
+					statePushBack(new UnitWalkBState(this, ba));
+					break;
 				}
 			}
 		}
-		// replace the TUs from shooting
-		unit->setTimeUnits(unit->getBaseStats()->tu);
-		ba.type = BA_NONE;
-		break;
-	default: break;
 	}
 	// Time units can only be reset after everything else occurs
 	statePushBack(new UnitPanicBState(this, ba.actor));
@@ -1474,6 +1370,7 @@ bool BattlescapeGame::cancelCurrentAction(bool bForce)
 
 	return false;
 }
+
 /**
  * Gets a pointer to access action members directly.
  * @return Pointer to action.
@@ -1487,7 +1384,7 @@ BattleAction *BattlescapeGame::getCurrentAction()
  * Determines whether an action is currently going on?
  * @return true or false.
  */
-bool BattlescapeGame::isBusy()
+bool BattlescapeGame::isBusy() const
 {
 	return !_states.empty();
 }
@@ -1496,7 +1393,7 @@ bool BattlescapeGame::isBusy()
  * Activates primary action (left click).
  * @param pos Position on the map.
  */
-void BattlescapeGame::primaryAction(const Position &pos)
+void BattlescapeGame::primaryAction(Position pos)
 {
 	bool bPreviewed = Options::battleNewPreviewPath != PATH_NONE;
 
@@ -1504,9 +1401,17 @@ void BattlescapeGame::primaryAction(const Position &pos)
 	{
 		if (_currentAction.type == BA_LAUNCH)
 		{
-			_parentState->showLaunchButton(true);
-			_currentAction.waypoints.push_back(pos);
-			getMap()->getWaypoints()->push_back(pos);
+			int maxWaypoints = _currentAction.weapon->getRules()->getWaypoints();
+			if (maxWaypoints == 0)
+			{
+				maxWaypoints = _currentAction.weapon->getAmmoItem()->getRules()->getWaypoints();
+			}
+			if ((int)_currentAction.waypoints.size() < maxWaypoints || maxWaypoints == -1)
+			{
+				_parentState->showLaunchButton(true);
+				_currentAction.waypoints.push_back(pos);
+				getMap()->getWaypoints()->push_back(pos);
+			}
 		}
 		else if (_currentAction.type == BA_USE && _currentAction.weapon->getRules()->getBattleType() == BT_MINDPROBE)
 		{
@@ -1601,15 +1506,15 @@ void BattlescapeGame::primaryAction(const Position &pos)
 			{
 				_save->getPathfinding()->removePreview();
 			}
+			_currentAction.target = pos;
+			_save->getPathfinding()->calculate(_currentAction.actor, _currentAction.target);
 			_currentAction.run = false;
-			_currentAction.strafe = Options::strafe && modifierPressed && _save->getSelectedUnit()->getTurretType() == -1;
-			if (_currentAction.strafe && _save->getTileEngine()->distance(_currentAction.actor->getPosition(), pos) > 1)
+			_currentAction.strafe = Options::strafe && modifierPressed && _save->getSelectedUnit()->getArmor()->getSize() == 1;
+			if (_currentAction.strafe && _save->getPathfinding()->getPath().size() > 1)
 			{
 				_currentAction.run = true;
 				_currentAction.strafe = false;
 			}
-			_currentAction.target = pos;
-			_save->getPathfinding()->calculate(_currentAction.actor, _currentAction.target);
 			if (bPreviewed && !_save->getPathfinding()->previewPath() && _save->getPathfinding()->getStartDirection() != -1)
 			{
 				_save->getPathfinding()->removePreview();
@@ -1631,7 +1536,7 @@ void BattlescapeGame::primaryAction(const Position &pos)
  * Activates secondary action (right click).
  * @param pos Position on the map.
  */
-void BattlescapeGame::secondaryAction(const Position &pos)
+void BattlescapeGame::secondaryAction(Position pos)
 {
 	//  -= turn to or open door =-
 	_currentAction.target = pos;
@@ -1730,9 +1635,9 @@ void BattlescapeGame::setTUReserved(BattleActionType tur)
  * @param newItem Bool whether this is a new item.
  * @param removeItem Bool whether to remove the item from the owner.
  */
-void BattlescapeGame::dropItem(const Position &position, BattleItem *item, bool newItem, bool removeItem)
+void BattlescapeGame::dropItem(Position position, BattleItem *item, bool newItem, bool removeItem)
 {
-	Position p = position;
+	const Position& p = position;
 
 	// don't spawn anything outside of bounds
 	if (_save->getTile(p) == 0)
@@ -1742,7 +1647,7 @@ void BattlescapeGame::dropItem(const Position &position, BattleItem *item, bool 
 	if (item->getRules()->isFixed())
 		return;
 
-	_save->getTile(p)->addItem(item, getMod()->getInventory("STR_GROUND"));
+	_save->getTile(p)->addItem(item, getMod()->getInventory("STR_GROUND", true));
 
 	if (item->getUnit())
 	{
@@ -1783,8 +1688,9 @@ void BattlescapeGame::dropItem(const Position &position, BattleItem *item, bool 
  * @param newType The type of unit to convert to.
  * @return Pointer to the new unit.
  */
-BattleUnit *BattlescapeGame::convertUnit(BattleUnit *unit, const std::string &newType)
+BattleUnit *BattlescapeGame::convertUnit(BattleUnit *unit)
 {
+	const std::string newType = unit->getSpawnUnit();
 	bool visible = unit->getVisible();
 	getSave()->getBattleState()->showPsiButton(false);
 	// in case the unit was unconscious
@@ -1804,19 +1710,18 @@ BattleUnit *BattlescapeGame::convertUnit(BattleUnit *unit, const std::string &ne
 	unit->setTile(0);
 
 	getSave()->getTile(unit->getPosition())->setUnit(0);
-	std::ostringstream newArmor;
-	newArmor << getMod()->getUnit(newType)->getArmor();
-	std::string terroristWeapon = getMod()->getUnit(newType)->getRace().substr(4);
+	Unit *newRule = getMod()->getUnit(newType, true);
+	std::string newArmor = newRule->getArmor();
+	std::string terroristWeapon = newRule->getRace().substr(4);
 	terroristWeapon += "_WEAPON";
 	RuleItem *newItem = getMod()->getItem(terroristWeapon);
-	int difficulty = _parentState->getGame()->getSavedGame()->getDifficultyCoefficient();
 
-	BattleUnit *newUnit = new BattleUnit(getMod()->getUnit(newType), FACTION_HOSTILE, _save->getUnits()->back()->getId() + 1, getMod()->getArmor(newArmor.str()), difficulty, getDepth());
-
-	if (!difficulty)
-	{
-		newUnit->halveArmor();
-	}
+	BattleUnit *newUnit = new BattleUnit(newRule,
+		FACTION_HOSTILE,
+		_save->getUnits()->back()->getId() + 1,
+		getMod()->getArmor(newArmor, true),
+		getMod()->getStatAdjustment(_parentState->getGame()->getSavedGame()->getDifficulty()),
+		getDepth());
 
 	getSave()->getTile(unit->getPosition())->setUnit(newUnit, _save->getTile(unit->getPosition() + Position(0,0,-1)));
 	newUnit->setPosition(unit->getPosition());
@@ -1825,17 +1730,19 @@ BattleUnit *BattlescapeGame::convertUnit(BattleUnit *unit, const std::string &ne
 	newUnit->setTimeUnits(0);
 	newUnit->setSpecialWeapon(getSave(), getMod());
 	getSave()->getUnits()->push_back(newUnit);
-	newUnit->setAIState(new AlienBAIState(getSave(), newUnit, 0));
-	BattleItem *bi = new BattleItem(newItem, getSave()->getCurrentItemId());
-	bi->moveToOwner(newUnit);
-	bi->setSlot(getMod()->getInventory("STR_RIGHT_HAND"));
-	getSave()->getItems()->push_back(bi);
+	newUnit->setAIModule(new AIModule(getSave(), newUnit, 0));
+	if (newItem)
+	{
+		BattleItem *bi = new BattleItem(newItem, getSave()->getCurrentItemId());
+		bi->moveToOwner(newUnit);
+		bi->setSlot(getMod()->getInventory("STR_RIGHT_HAND", true));
+		getSave()->getItems()->push_back(bi);
+	}
 	newUnit->setVisible(visible);
 	getTileEngine()->calculateFOV(newUnit->getPosition());
 	getTileEngine()->applyGravity(newUnit->getTile());
 	newUnit->dontReselect();
 	getMap()->cacheUnit(newUnit);
-	//newUnit->getCurrentAIState()->think();
 	return newUnit;
 
 }
@@ -1848,6 +1755,7 @@ Map *BattlescapeGame::getMap()
 {
 	return _parentState->getMap();
 }
+
 /**
  * Gets the save.
  * @return save.
@@ -1856,6 +1764,7 @@ SavedBattleGame *BattlescapeGame::getSave()
 {
 	return _save;
 }
+
 /**
  * Gets the tilengine.
  * @return tilengine.
@@ -1878,7 +1787,7 @@ Pathfinding *BattlescapeGame::getPathfinding()
  * Gets the mod.
  * @return mod.
  */
-Mod *BattlescapeGame::getMod() const
+Mod *BattlescapeGame::getMod()
 {
 	return _parentState->getGame()->getMod();
 }
@@ -1980,7 +1889,7 @@ bool BattlescapeGame::worthTaking(BattleItem* item, BattleAction *action)
 		worthToTake = item->getRules()->getAttraction();
 
 		// it's always going to be worth while to try and take a blaster launcher, apparently
-		if (!item->getRules()->isWaypoint() && item->getRules()->getBattleType() != BT_AMMO)
+		if (item->getRules()->getWaypoints() == 0 && item->getRules()->getBattleType() != BT_AMMO)
 		{
 			// we only want weapons that HAVE ammo, or weapons that we have ammo FOR
 			bool ammoFound = true;
@@ -2065,7 +1974,6 @@ bool BattlescapeGame::worthTaking(BattleItem* item, BattleAction *action)
  */
 int BattlescapeGame::takeItemFromGround(BattleItem* item, BattleAction *action)
 {
-	const int unhandledError = -1;
 	const int success = 0;
 	const int notEnoughTimeUnits = 1;
 	const int notEnoughSpace = 2;
@@ -2103,8 +2011,6 @@ int BattlescapeGame::takeItemFromGround(BattleItem* item, BattleAction *action)
 			}
 		}
 	}
-	// shouldn't ever end up here
-	return unhandledError;
 }
 
 
@@ -2136,7 +2042,7 @@ bool BattlescapeGame::takeItem(BattleItem* item, BattleAction *action)
 				if (!action->actor->getItem("STR_BELT", i))
 				{
 					item->moveToOwner(action->actor);
-					item->setSlot(mod->getInventory("STR_BELT"));
+					item->setSlot(mod->getInventory("STR_BELT", true));
 					item->setSlotX(i);
 					placed = true;
 					break;
@@ -2151,7 +2057,7 @@ bool BattlescapeGame::takeItem(BattleItem* item, BattleAction *action)
 			if (!action->actor->getItem("STR_BELT", i))
 			{
 				item->moveToOwner(action->actor);
-				item->setSlot(mod->getInventory("STR_BELT"));
+				item->setSlot(mod->getInventory("STR_BELT", true));
 				item->setSlotX(i);
 				placed = true;
 				break;
@@ -2163,7 +2069,7 @@ bool BattlescapeGame::takeItem(BattleItem* item, BattleAction *action)
 		if (!action->actor->getItem("STR_RIGHT_HAND"))
 		{
 			item->moveToOwner(action->actor);
-			item->setSlot(mod->getInventory("STR_RIGHT_HAND"));
+			item->setSlot(mod->getInventory("STR_RIGHT_HAND", true));
 			placed = true;
 		}
 		break;
@@ -2172,7 +2078,7 @@ bool BattlescapeGame::takeItem(BattleItem* item, BattleAction *action)
 		if (!action->actor->getItem("STR_BACK_PACK"))
 		{
 			item->moveToOwner(action->actor);
-			item->setSlot(mod->getInventory("STR_BACK_PACK"));
+			item->setSlot(mod->getInventory("STR_BACK_PACK", true));
 			placed = true;
 		}
 		break;
@@ -2180,7 +2086,7 @@ bool BattlescapeGame::takeItem(BattleItem* item, BattleAction *action)
 		if (!action->actor->getItem("STR_LEFT_HAND"))
 		{
 			item->moveToOwner(action->actor);
-			item->setSlot(mod->getInventory("STR_LEFT_HAND"));
+			item->setSlot(mod->getInventory("STR_LEFT_HAND", true));
 			placed = true;
 		}
 		break;
@@ -2250,12 +2156,13 @@ bool BattlescapeGame::convertInfected()
 				game->pushState(new InfoboxState(game->getLanguage()->getString("STR_HAS_BEEN_KILLED", (*i)->getGender()).arg((*i)->getName(game->getLanguage()))));
 			}
 		
-			convertUnit((*i), (*i)->getSpawnUnit());
+			convertUnit((*i));
 			i = _save->getUnits()->begin();
 		}
 	}
 	return retVal;
 }
+
 /**
  * Sets the kneel reservation setting.
  * @param reserved Should we reserve an extra 4 TUs to kneel?
@@ -2269,7 +2176,7 @@ void BattlescapeGame::setKneelReserved(bool reserved)
  * Gets the kneel reservation setting.
  * @return Kneel reservation setting.
  */
-bool BattlescapeGame::getKneelReserved()
+bool BattlescapeGame::getKneelReserved() const
 {
 	return _save->getKneelReserved();
 }
@@ -2337,6 +2244,40 @@ void BattlescapeGame::cleanupDeleted()
 int BattlescapeGame::getDepth() const
 {
 	return _save->getDepth();
+}
+
+std::list<BattleState*> BattlescapeGame::getStates()
+{
+	return _states;
+}
+
+/**
+ * Ends the turn if auto-end battle is enabled
+ * and all mission objectives are completed.
+ */
+void BattlescapeGame::autoEndBattle()
+{
+	if (Options::battleAutoEnd)
+	{
+		bool end = false;
+		if (_save->getObjectiveType() == MUST_DESTROY)
+		{
+			end = _save->allObjectivesDestroyed();
+		}
+		else
+		{
+			int liveAliens = 0;
+			int liveSoldiers = 0;
+			tallyUnits(liveAliens, liveSoldiers);
+			end = (liveAliens == 0 || liveSoldiers == 0);
+		}
+		if (end)
+		{
+			_save->setSelectedUnit(0);
+			cancelCurrentAction(true);
+			requestEndTurn();
+		}
+	}
 }
 
 }

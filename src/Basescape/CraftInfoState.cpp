@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "CraftInfoState.h"
+#include <cmath>
 #include <sstream>
 #include "../Engine/Game.h"
 #include "../Mod/Mod.h"
@@ -53,62 +54,65 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 	// Create objects
 	if (_game->getSavedGame()->getMonthsPassed() != -1)
 	{
-		_window = new Window(this, 320, 200, 0, 0, POPUP_BOTH);
+		_window = new Window(this, 550, 100, 700, 123, POPUP_BOTH);
 	}
 	else
 	{
-		_window = new Window(this, 320, 200, 0, 0, POPUP_NONE);
+		_window = new Window(this, 500, 100, 700, 123, POPUP_NONE);
 	}
-	_btnOk = new TextButton(64, 24, 128, 168);
-	_btnW1 = new TextButton(24, 32, 14, 48);
-	_btnW2 = new TextButton(24, 32, 282, 48);
-	_btnCrew = new TextButton(64, 16, 14, 96);
-	_btnEquip = new TextButton(64, 16, 14, 120);
-	_btnArmor = new TextButton(64, 16, 14, 144);
-	_edtCraft = new TextEdit(this, 140, 16, 80, 8);
-	_txtDamage = new Text(100, 17, 14, 24);
-	_txtFuel = new Text(82, 17, 228, 24);
-	_txtW1Name = new Text(95, 16, 46, 48);
-	_txtW1Ammo = new Text(75, 24, 46, 64);
-	_txtW2Name = new Text(95, 16, 184, 48);
-	_txtW2Ammo = new Text(75, 24, 204, 64);
-	_sprite = new Surface(32, 40, 144, 52);
-	_weapon1 = new Surface(15, 17, 121, 63);
-	_weapon2 = new Surface(15, 17, 184, 63);
-	_crew = new Surface(220, 18, 85, 96);
-	_equip = new Surface(220, 18, 85, 121);
+//	_btnOk = new TextButton(64, 24, 828, 288);
+	_btnW1 = new TextButton(24, 40, 714, 167);
+	_btnW2 = new TextButton(24, 40, 1130, 167);
+//	_btnCrew = new TextButton(75, 16, 714, 216);
+//	_btnEquip = new TextButton(75, 16, 714, 240);
+//	_btnArmor = new TextButton(75, 16, 714, 264);
+	_edtCraft = new TextEdit(this, 200, 16, 800, 128);
+	_txtDamage = new Text(300, 12, 714, 144);
+	_txtFuel = new Text(300, 12, 1025, 144);
+	_txtW1Name = new Text(95, 16, 746, 167);
+	_txtW1Ammo = new Text(75, 24, 746, 183);
+	_txtW2Name = new Text(95, 16, 1025, 167);
+	_txtW2Ammo = new Text(75, 24, 1025, 183);
+	_sprite = new Surface(40, 40, 900, 172);
+	_weapon1 = new Surface(15, 17, 880, 187);
+	_weapon2 = new Surface(15, 17, 945, 187);
+//	_crew = new Surface(220, 18, 795, 216);
+//	_equip = new Surface(220, 18, 795, 241);
 
 	// Set palette
-	setInterface("craftInfo");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftInfo");
-	add(_btnOk, "button", "craftInfo");
-	add(_btnW1, "button", "craftInfo");
-	add(_btnW2, "button", "craftInfo");
-	add(_btnCrew, "button", "craftInfo");
-	add(_btnEquip, "button", "craftInfo");
-	add(_btnArmor, "button", "craftInfo");
-	add(_edtCraft, "text1", "craftInfo");
-	add(_txtDamage, "text1", "craftInfo");
-	add(_txtFuel, "text1", "craftInfo");
-	add(_txtW1Name, "text2", "craftInfo");
-	add(_txtW1Ammo, "text2", "craftInfo");
-	add(_txtW2Name, "text2", "craftInfo");
-	add(_txtW2Ammo, "text2", "craftInfo");
+	add(_window, "window", "hdcraftInfo");
+//	add(_btnOk, "button", "hdcraftInfo");
+	add(_btnW1, "button", "hdcraftInfo");
+	add(_btnW2, "button", "hdcraftInfo");
+//	add(_btnCrew, "button", "hdcraftInfo");
+//	add(_btnEquip, "button", "hdcraftInfo");
+//	add(_btnArmor, "button", "hdcraftInfo");
+	add(_edtCraft, "title", "hdcraftInfo");
+	add(_txtDamage, "text1", "hdcraftInfo");
+	add(_txtFuel, "text1", "hdcraftInfo");
+	add(_txtW1Name, "text2", "hdcraftInfo");
+	add(_txtW1Ammo, "text2", "hdcraftInfo");
+	add(_txtW2Name, "text2", "hdcraftInfo");
+	add(_txtW2Ammo, "text2", "hdcraftInfo");
 	add(_sprite);
 	add(_weapon1);
 	add(_weapon2);
-	add(_crew);
-	add(_equip);
+//	add(_crew);
+//	add(_equip);
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
+	/*
 	_btnOk->setText(tr("STR_OK"));
 	_btnOk->onMouseClick((ActionHandler)&CraftInfoState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&CraftInfoState::btnOkClick, Options::keyCancel);
+	*/
 
 	_btnW1->setText(L"1");
 	_btnW1->onMouseClick((ActionHandler)&CraftInfoState::btnW1Click);
@@ -116,6 +120,7 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 	_btnW2->setText(L"2");
 	_btnW2->onMouseClick((ActionHandler)&CraftInfoState::btnW2Click);
 
+	/*
 	_btnCrew->setText(tr("STR_CREW"));
 	_btnCrew->onMouseClick((ActionHandler)&CraftInfoState::btnCrewClick);
 
@@ -124,6 +129,7 @@ CraftInfoState::CraftInfoState(Base *base, size_t craftId) : _base(base), _craft
 
 	_btnArmor->setText(tr("STR_ARMOR"));
 	_btnArmor->onMouseClick((ActionHandler)&CraftInfoState::btnArmorClick);
+	*/
 
 	_edtCraft->setBig();
 	_edtCraft->setAlign(ALIGN_CENTER);
@@ -160,25 +166,25 @@ void CraftInfoState::init()
 	texture->getFrame(_craft->getRules()->getSprite() + 33)->setY(0);
 	texture->getFrame(_craft->getRules()->getSprite() + 33)->blit(_sprite);
 
-	std::wostringstream ss;
-	ss << tr("STR_DAMAGE_UC_").arg(Text::formatPercentage(_craft->getDamagePercentage()));
+	std::wostringstream firlsLine;
+	firlsLine << tr("STR_DAMAGE_UC_").arg(Text::formatPercentage(_craft->getDamagePercentage()));
 	if (_craft->getStatus() == "STR_REPAIRS" && _craft->getDamage() > 0)
 	{
 		int damageHours = (int)ceil((double)_craft->getDamage() / _craft->getRules()->getRepairRate());
-		ss << formatTime(damageHours);
+		firlsLine << formatTime(damageHours);
 	}
-	_txtDamage->setText(ss.str());
+	_txtDamage->setText(firlsLine.str());
 
-	std::wostringstream ss2;
-	ss2 << tr("STR_FUEL").arg(Text::formatPercentage(_craft->getFuelPercentage()));
+	std::wostringstream secondLine;
+	secondLine << tr("STR_FUEL").arg(Text::formatPercentage(_craft->getFuelPercentage()));
 	if (_craft->getStatus() == "STR_REFUELLING" && _craft->getRules()->getMaxFuel() - _craft->getFuel() > 0)
 	{
 		int fuelHours = (int)ceil((double)(_craft->getRules()->getMaxFuel() - _craft->getFuel()) / _craft->getRules()->getRefuelRate() / 2.0);
-		ss2 << formatTime(fuelHours);
+		secondLine << formatTime(fuelHours);
 	}
-	_txtFuel->setText(ss2.str());
+	_txtFuel->setText(secondLine.str());
 
-	if (_craft->getRules()->getSoldiers() > 0)
+	/*if (_craft->getRules()->getSoldiers() > 0)
 	{
 		_crew->clear();
 		_equip->clear();
@@ -214,6 +220,7 @@ void CraftInfoState::init()
 		_btnEquip->setVisible(false);
 		_btnArmor->setVisible(false);
 	}
+	*/
 
 	if (_craft->getRules()->getWeapons() > 0)
 	{
@@ -227,18 +234,18 @@ void CraftInfoState::init()
 			frame->setY(0);
 			frame->blit(_weapon1);
 
-			std::wostringstream ss;
-			ss << L'\x01' << tr(w1->getRules()->getType());
-			_txtW1Name->setText(ss.str());
-			ss.str(L"");
-			ss << tr("STR_AMMO_").arg(w1->getAmmo()) << L"\n\x01";
-			ss << tr("STR_MAX").arg(w1->getRules()->getAmmoMax());
+			std::wostringstream leftWeaponLine;
+			leftWeaponLine << L'\x01' << tr(w1->getRules()->getType());
+			_txtW1Name->setText(leftWeaponLine.str());
+			leftWeaponLine.str(L"");
+			leftWeaponLine << tr("STR_AMMO_").arg(w1->getAmmo()) << L"\n\x01";
+			leftWeaponLine << tr("STR_MAX").arg(w1->getRules()->getAmmoMax());
 			if (_craft->getStatus() == "STR_REARMING" && w1->getAmmo() < w1->getRules()->getAmmoMax())
 			{
 				int rearmHours = (int)ceil((double)(w1->getRules()->getAmmoMax() - w1->getAmmo()) / w1->getRules()->getRearmRate());
-				ss << formatTime(rearmHours);
+				leftWeaponLine << formatTime(rearmHours);
 			}
-			_txtW1Ammo->setText(ss.str());
+			_txtW1Ammo->setText(leftWeaponLine.str());
 		}
 		else
 		{
@@ -266,18 +273,18 @@ void CraftInfoState::init()
 			frame->setY(0);
 			frame->blit(_weapon2);
 
-			std::wostringstream ss;
-			ss << L'\x01' << tr(w2->getRules()->getType());
-			_txtW2Name->setText(ss.str());
-			ss.str(L"");
-			ss << tr("STR_AMMO_").arg(w2->getAmmo()) << L"\n\x01";
-			ss << tr("STR_MAX").arg(w2->getRules()->getAmmoMax());
+			std::wostringstream rightWeaponLine;
+			rightWeaponLine << L'\x01' << tr(w2->getRules()->getType());
+			_txtW2Name->setText(rightWeaponLine.str());
+			rightWeaponLine.str(L"");
+			rightWeaponLine << tr("STR_AMMO_").arg(w2->getAmmo()) << L"\n\x01";
+			rightWeaponLine << tr("STR_MAX").arg(w2->getRules()->getAmmoMax());
 			if (_craft->getStatus() == "STR_REARMING" && w2->getAmmo() < w2->getRules()->getAmmoMax())
 			{
 				int rearmHours = (int)ceil((double)(w2->getRules()->getAmmoMax() - w2->getAmmo()) / w2->getRules()->getRearmRate());
-				ss << formatTime(rearmHours);
+				rightWeaponLine << formatTime(rearmHours);
 			}
-			_txtW2Ammo->setText(ss.str());
+			_txtW2Ammo->setText(rightWeaponLine.str());
 		}
 		else
 		{
@@ -292,20 +299,19 @@ void CraftInfoState::init()
 		_txtW2Name->setVisible(false);
 		_txtW2Ammo->setVisible(false);
 	}
-	_defaultName = tr("STR_CRAFTNAME").arg(tr(_craft->getRules()->getType())).arg(_craft->getId());
 }
 
 /**
  * Turns an amount of time into a
  * day/hour string.
- * @param total
+ * @param total Amount in hours.
  */
 std::wstring CraftInfoState::formatTime(int total)
 {
 	std::wostringstream ss;
 	int days = total / 24;
 	int hours = total % 24;
-	ss << L"\n(";
+	ss << L" (";
 	if (days > 0)
 	{
 		ss << tr("STR_DAY", days) << L"/";
@@ -321,11 +327,12 @@ std::wstring CraftInfoState::formatTime(int total)
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftInfoState::btnOkClick(Action *)
 {
 	_game->popState();
 }
+*/
 
 /**
  * Goes to the Select Armament window for
@@ -350,7 +357,7 @@ void CraftInfoState::btnW2Click(Action *)
 /**
  * Goes to the Select Squad screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftInfoState::btnCrewClick(Action *)
 {
 	_game->pushState(new CraftSoldiersState(_base, _craftId));
@@ -359,7 +366,7 @@ void CraftInfoState::btnCrewClick(Action *)
 /**
  * Goes to the Select Equipment screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftInfoState::btnEquipClick(Action *)
 {
 	_game->pushState(new CraftEquipmentState(_base, _craftId));
@@ -368,11 +375,12 @@ void CraftInfoState::btnEquipClick(Action *)
 /**
  * Goes to the Select Armor screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftInfoState::btnArmorClick(Action *)
 {
 	_game->pushState(new CraftArmorState(_base, _craftId));
 }
+*/
 
 /**
  * Changes the Craft name.
@@ -380,10 +388,13 @@ void CraftInfoState::btnArmorClick(Action *)
  */
 void CraftInfoState::edtCraftChange(Action *action)
 {
-	_craft->setName(_edtCraft->getText());
-	if (_craft->getName(_game->getLanguage()) == _defaultName)
+	if (_edtCraft->getText() == _craft->getDefaultName(_game->getLanguage()))
 	{
 		_craft->setName(L"");
+	}
+	else
+	{
+		_craft->setName(_edtCraft->getText());
 	}
 	if (action->getDetails()->key.keysym.sym == SDLK_RETURN ||
 		action->getDetails()->key.keysym.sym == SDLK_KP_ENTER)

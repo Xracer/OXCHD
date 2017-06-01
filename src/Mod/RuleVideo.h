@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_RULEVIDEO_H
-#define OPENXCOM_RULEVIDEO_H
-
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <string>
@@ -27,6 +25,7 @@
 
 namespace OpenXcom
 {
+
 struct SlideshowHeader
 {
 	std::string musicId; // just the extension-less filename, like "GMWIN"
@@ -47,7 +46,7 @@ class RuleVideo
 private:
 	std::string _id;
 	bool _useUfoAudioSequence;
-	std::vector<std::string> _videos;
+	std::vector<std::string> _videos, _audioTracks;
 	SlideshowHeader _slideshowHeader;
 	std::vector<SlideshowSlide> _slides;
 public:
@@ -60,7 +59,7 @@ public:
 	const std::vector<std::string> * getVideos() const;
 	const SlideshowHeader & getSlideshowHeader() const;
 	const std::vector<SlideshowSlide> * getSlides() const;
+	const std::vector<std::string> * getAudioTracks() const;
 };
 
 }
-#endif

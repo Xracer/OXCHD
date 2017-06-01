@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -195,7 +195,7 @@ void BriefingState::btnOkClick(Action *)
 	{
 		Options::baseXResolution = Options::baseXGeoscape;
 		Options::baseYResolution = Options::baseYGeoscape;
-		_game->getScreen()->resetDisplay(false);;
+		_game->getScreen()->resetDisplay(false);
 		delete bs;
 		_game->pushState(new AliensCrashState);
 	}

@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_ALIENRACE_H
-#define OPENXCOM_ALIENRACE_H
-
 #include <string>
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -37,7 +35,6 @@ class AlienRace
 private:
 	std::string _id;
 	std::vector<std::string> _members;
-	bool _retaliation;
 public:
 	/// Creates a blank alien race ruleset.
 	AlienRace(const std::string &id);
@@ -49,10 +46,6 @@ public:
 	std::string getId() const;
 	/// Gets a certain member of this alien race family.
 	std::string getMember(int id) const;
-	/// Gets if the race can retaliate.
-	bool canRetaliate() const;
 };
 
 }
-
-#endif

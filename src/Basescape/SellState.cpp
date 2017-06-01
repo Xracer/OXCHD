@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "SellState.h"
+#include <algorithm>
 #include <sstream>
 #include <climits>
 #include <cmath>
@@ -60,18 +61,21 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	bool overfull = Options::storageLimitsEnforced && _base->storesOverfull();
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(overfull? 288:148, 16, overfull? 16:8, 176);
-	_btnCancel = new TextButton(148, 16, 164, 176);
-	_txtTitle = new Text(310, 17, 5, 8);
-	_txtSales = new Text(150, 9, 10, 24);
-	_txtFunds = new Text(150, 9, 160, 24);
-	_txtSpaceUsed = new Text(150, 9, 160, 34);
-	_txtQuantity = new Text(54, 9, 136, 44);
-	_txtSell = new Text(96, 9, 190, 44);
-	_txtValue = new Text(40, 9, 270, 44);
-	_cbxCategory = new ComboBox(this, 120, 16, 10, 36);
-	_lstItems = new TextList(287, 120, 8, 54);
+	int xPos = 700;
+	int yPos = 3;
+
+	_window = new Window(this, 570, 747, 0 + xPos, 0 + yPos);
+	_btnOk = new TextButton(overfull ? 556 : 556, 19, overfull ? 16 : 8 + xPos, 720 + yPos);
+	//_btnCancel = new TextButton(148, 16, 164 + xPos, 173+ yPos);
+	_txtTitle = new Text(570, 17, 5 + xPos, 8 + yPos);
+	_txtSales = new Text(200, 11, 10 + xPos, 27 + yPos);
+	_txtFunds = new Text(200, 11, 200 + xPos, 27 + yPos);
+	_txtSpaceUsed = new Text(150, 11, 405 + xPos, 27 + yPos);
+	_txtQuantity = new Text(70, 11, 180 + xPos, 50 + yPos);
+	_txtSell = new Text(105, 11, 280 + xPos, 50 + yPos);
+	_txtValue = new Text(60, 11, 400 + xPos, 50 + yPos);
+	_cbxCategory = new ComboBox(this, 150, 16, 10 + xPos, 50 + yPos);
+	_lstItems = new TextList(450, 690, 8 + xPos, 70 + yPos);
 
 	// Set palette
 	setInterface("sellMenu");
@@ -80,7 +84,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	add(_window, "window", "sellMenu");
 	add(_btnOk, "button", "sellMenu");
-	add(_btnCancel, "button", "sellMenu");
+	//add(_btnCancel, "button", "sellMenu");
 	add(_txtTitle, "text", "sellMenu");
 	add(_txtSales, "text", "sellMenu");
 	add(_txtFunds, "text", "sellMenu");
@@ -91,7 +95,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	add(_lstItems, "list", "sellMenu");
 	add(_cbxCategory, "text", "sellMenu");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK13.SCR"));
@@ -100,9 +104,9 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	_btnOk->onMouseClick((ActionHandler)&SellState::btnOkClick);
 	_btnOk->onKeyboardPress((ActionHandler)&SellState::btnOkClick, Options::keyOk);
 
-	_btnCancel->setText(tr("STR_CANCEL"));
-	_btnCancel->onMouseClick((ActionHandler)&SellState::btnCancelClick);
-	_btnCancel->onKeyboardPress((ActionHandler)&SellState::btnCancelClick, Options::keyCancel);
+	//_btnCancel->setText(tr("STR_CANCEL"));
+	//_btnCancel->onMouseClick((ActionHandler)&SellState::btnCancelClick);
+	//_btnCancel->onKeyboardPress((ActionHandler)&SellState::btnCancelClick, Options::keyCancel);
 
 	if (overfull)
 	{
@@ -127,12 +131,12 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 
 	_txtQuantity->setText(tr("STR_QUANTITY_UC"));
 
-	_txtSell->setText(tr("STR_SELL_SACK"));
+	_txtSell->setText(tr("STR_SELL_SACK_UC"));
 
-	_txtValue->setText(tr("STR_VALUE"));
+	_txtValue->setText(tr("STR_VALUE_UC"));
 
-	_lstItems->setArrowColumn(182, ARROW_VERTICAL);
-	_lstItems->setColumns(4, 156, 54, 24, 53);
+	_lstItems->setArrowColumn(320, ARROW_VERTICAL);
+	_lstItems->setColumns(4, 190, 100, 100, 50);
 	_lstItems->setSelectable(true);
 	_lstItems->setBackground(_window);
 	_lstItems->setMargin(2);
@@ -210,7 +214,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 	for (std::vector<std::string>::const_iterator i = items.begin(); i != items.end(); ++i)
 	{
 		int qty = _base->getStorageItems()->getItem(*i);
-		if (Options::storageLimitsEnforced && origin == OPT_BATTLESCAPE)
+		if (Options::storageLimitsEnforced && _origin == OPT_BATTLESCAPE)
 		{
 			for (std::vector<Transfer*>::iterator j = _base->getTransfers()->begin(); j != _base->getTransfers()->end(); ++j)
 			{
@@ -224,7 +228,7 @@ SellState::SellState(Base *base, OptionsOrigin origin) : _base(base), _sel(0), _
 				qty += (*j)->getItems()->getItem(*i);
 			}
 		}
-		RuleItem *rule = _game->getMod()->getItem(*i);
+		RuleItem *rule = _game->getMod()->getItem(*i, true);
 		if (qty > 0 && (Options::canSellLiveAliens || !rule->isAlien()))
 		{
 			TransferRow row = { TRANSFER_ITEM, rule, tr(*i), rule->getSellCost(), qty, 0, 0 };
@@ -333,7 +337,7 @@ void SellState::updateList()
 			}
 		}
 		std::wostringstream ssQty, ssAmount;
-		ssQty << _items[i].qtySrc;
+		ssQty << _items[i].qtySrc - _items[i].amount;
 		ssAmount << _items[i].amount;
 		_lstItems->addRow(4, name.c_str(), ssQty.str().c_str(), ssAmount.str().c_str(), Text::formatFunding(_items[i].cost).c_str());
 		_rows.push_back(i);
@@ -382,42 +386,10 @@ void SellState::btnOkClick(Action *)
 			case TRANSFER_CRAFT:
 				craft = (Craft*)i->rule;
 
-				// Remove weapons from craft
-				for (std::vector<CraftWeapon*>::iterator w = craft->getWeapons()->begin(); w != craft->getWeapons()->end(); ++w)
-				{
-					if ((*w) != 0)
-					{
-						_base->getStorageItems()->addItem((*w)->getRules()->getLauncherItem());
-						_base->getStorageItems()->addItem((*w)->getRules()->getClipItem(), (*w)->getClipsLoaded(_game->getMod()));
-					}
-				}
+				// Unload craft
+				craft->unload(_game->getMod());
 
-				// Remove items from craft
-				for (std::map<std::string, int>::iterator it = craft->getItems()->getContents()->begin(); it != craft->getItems()->getContents()->end(); ++it)
-				{
-					_base->getStorageItems()->addItem(it->first, it->second);
-				}
-
-				// Remove vehicles from craft
-				for (std::vector<Vehicle*>::iterator v = craft->getVehicles()->begin(); v != craft->getVehicles()->end(); ++v)
-				{
-					_base->getStorageItems()->addItem((*v)->getRules()->getType());
-					if (!(*v)->getRules()->getCompatibleAmmo()->empty())
-					{
-						_base->getStorageItems()->addItem((*v)->getRules()->getCompatibleAmmo()->front(), (*v)->getAmmo());
-					}
-				}
-
-				// Remove soldiers from craft
-				for (std::vector<Soldier*>::iterator s = _base->getSoldiers()->begin(); s != _base->getSoldiers()->end(); ++s)
-				{
-					if ((*s)->getCraft() == craft)
-					{
-						(*s)->setCraft(0);
-					}
-				}
-
-				// Clear Hangar
+				// Clear hangar
 				for (std::vector<BaseFacility*>::iterator f = _base->getFacilities()->begin(); f != _base->getFacilities()->end(); ++f)
 				{
 					if ((*f)->getCraft() == craft)
@@ -499,7 +471,7 @@ void SellState::btnOkClick(Action *)
 			}
 		}
 	}
-	_game->popState();
+	// _game->popState(); dont want to pop the state because of multistate
 }
 
 /**
@@ -657,7 +629,7 @@ void SellState::changeByValue(int change, int dir)
 		soldier = (Soldier*)getRow().rule;
 		if (soldier->getArmor()->getStoreItem() != Armor::NONE)
 		{
-			armor = _game->getMod()->getItem(soldier->getArmor()->getStoreItem());
+			armor = _game->getMod()->getItem(soldier->getArmor()->getStoreItem(), true);
 			_spaceChange += dir * armor->getSize();
 		}
 		break;
@@ -667,7 +639,7 @@ void SellState::changeByValue(int change, int dir)
 		{
 			if (*w)
 			{
-				weapon = _game->getMod()->getItem((*w)->getRules()->getLauncherItem());
+				weapon = _game->getMod()->getItem((*w)->getRules()->getLauncherItem(), true);
 				total += weapon->getSize();
 				ammo = _game->getMod()->getItem((*w)->getRules()->getClipItem());
 				if (ammo)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -18,6 +18,7 @@
  */
 #include "BaseInfoState.h"
 #include <sstream>
+#include <cmath>
 #include "../Engine/Game.h"
 #include "../Engine/Action.h"
 #include "../Mod/Mod.h"
@@ -49,7 +50,7 @@ namespace OpenXcom
 BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _state(state)
 {
 	// Create objects
-	_window = new Window(this, 450, 203, 700, 3, POPUP_BOTH);
+	_window = new Window(this, 550, 203, 700, 3, POPUP_BOTH);
 	_bg = new Surface(400, 203, 700, 3);
 	//_edtBase = new TextEdit(this, 127, 16, 8, 8);
 
@@ -98,54 +99,54 @@ BaseInfoState::BaseInfoState(Base *base, BasescapeState *state) : _base(base), _
 	_barLongRange = new Bar(150, 9, 908, 192);
 
 	// Set palette
-	setInterface("baseInfo");
+	setInterface("hdbaseInfo");
 
 	add(_bg);
 	//add(_edtBase, "text1", "baseInfo");
 
-	add(_txtPersonnel, "text1", "baseInfo");
-	add(_txtSoldiers, "text2", "baseInfo");
-	add(_numSoldiers, "numbers", "baseInfo");
-	add(_barSoldiers, "personnelBars", "baseInfo");
-	add(_txtEngineers, "text2", "baseInfo");
-	add(_numEngineers, "numbers", "baseInfo");
-	add(_barEngineers, "personnelBars", "baseInfo");
-	add(_txtScientists, "text2", "baseInfo");
-	add(_numScientists, "numbers", "baseInfo");
-	add(_barScientists, "personnelBars", "baseInfo");
+	add(_txtPersonnel, "text1", "hdbaseInfo");
+	add(_txtSoldiers, "text2", "hdbaseInfo");
+	add(_numSoldiers, "numbers", "hdbaseInfo");
+	add(_barSoldiers, "personnelBars", "hdbaseInfo");
+	add(_txtEngineers, "text2", "hdbaseInfo");
+	add(_numEngineers, "numbers", "hdbaseInfo");
+	add(_barEngineers, "personnelBars", "hdbaseInfo");
+	add(_txtScientists, "text2", "hdbaseInfo");
+	add(_numScientists, "numbers", "hdbaseInfo");
+	add(_barScientists, "personnelBars", "hdbaseInfo");
 
-	add(_txtSpace, "text1", "baseInfo");
-	add(_txtQuarters, "text2", "baseInfo");
-	add(_numQuarters, "numbers", "baseInfo");
-	add(_barQuarters, "facilityBars", "baseInfo");
-	add(_txtStores, "text2", "baseInfo");
-	add(_numStores, "numbers", "baseInfo");
-	add(_barStores, "facilityBars", "baseInfo");
-	add(_txtLaboratories, "text2", "baseInfo");
-	add(_numLaboratories, "numbers", "baseInfo");
-	add(_barLaboratories, "facilityBars", "baseInfo");
-	add(_txtWorkshops, "text2", "baseInfo");
-	add(_numWorkshops, "numbers", "baseInfo");
-	add(_barWorkshops, "facilityBars", "baseInfo");
+	add(_txtSpace, "text1", "hdbaseInfo");
+	add(_txtQuarters, "text2", "hdbaseInfo");
+	add(_numQuarters, "numbers", "hdbaseInfo");
+	add(_barQuarters, "facilityBars", "hdbaseInfo");
+	add(_txtStores, "text2", "hdbaseInfo");
+	add(_numStores, "numbers", "hdbaseInfo");
+	add(_barStores, "facilityBars", "hdbaseInfo");
+	add(_txtLaboratories, "text2", "hdbaseInfo");
+	add(_numLaboratories, "numbers", "hdbaseInfo");
+	add(_barLaboratories, "facilityBars", "hdbaseInfo");
+	add(_txtWorkshops, "text2", "hdbaseInfo");
+	add(_numWorkshops, "numbers", "hdbaseInfo");
+	add(_barWorkshops, "facilityBars", "hdbaseInfo");
 	if (Options::storageLimitsEnforced)
 	{
-		add(_txtContainment, "text2", "baseInfo");
-		add(_numContainment, "numbers", "baseInfo");
-		add(_barContainment, "facilityBars", "baseInfo");
+		add(_txtContainment, "text2", "hdbaseInfo");
+		add(_numContainment, "numbers", "hdbaseInfo");
+		add(_barContainment, "facilityBars", "hdbaseInfo");
 	}
-	add(_txtHangars, "text2", "baseInfo");
-	add(_numHangars, "numbers", "baseInfo");
-	add(_barHangars, "facilityBars", "baseInfo");
+	add(_txtHangars, "text2", "hdbaseInfo");
+	add(_numHangars, "numbers", "hdbaseInfo");
+	add(_barHangars, "facilityBars", "hdbaseInfo");
 
-	add(_txtDefense, "text2", "baseInfo");
-	add(_numDefense, "numbers", "baseInfo");
-	add(_barDefense, "defenceBar", "baseInfo");
-	add(_txtShortRange, "text2", "baseInfo");
-	add(_numShortRange, "numbers", "baseInfo");
-	add(_barShortRange, "detectionBars", "baseInfo");
-	add(_txtLongRange, "text2", "baseInfo");
-	add(_numLongRange, "numbers", "baseInfo");
-	add(_barLongRange, "detectionBars", "baseInfo");
+	add(_txtDefense, "text2", "hdbaseInfo");
+	add(_numDefense, "numbers", "hdbaseInfo");
+	add(_barDefense, "defenceBar", "hdbaseInfo");
+	add(_txtShortRange, "text2", "hdbaseInfo");
+	add(_numShortRange, "numbers", "hdbaseInfo");
+	add(_barShortRange, "detectionBars", "hdbaseInfo");
+	add(_txtLongRange, "text2", "hdbaseInfo");
+	add(_numLongRange, "numbers", "hdbaseInfo");
+	add(_barLongRange, "detectionBars", "hdbaseInfo");
 
 	// Set up objects
 	_window->setThinBorder();

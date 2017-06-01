@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -34,6 +34,8 @@
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/ItemContainer.h"
 #include "../Mod/RuleInterface.h"
+#include "../Mod/RuleSoldier.h"
+#include <algorithm>
 
 namespace OpenXcom
 {
@@ -47,33 +49,34 @@ namespace OpenXcom
 CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft(craft)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(288, 16, 16, 176);
-	_txtTitle = new Text(300, 17, 16, 7);
-	_txtName = new Text(114, 9, 16, 32);
-	_txtCraft = new Text(76, 9, 130, 32);
-	_txtArmor = new Text(100, 9, 199, 32);
-	_lstSoldiers = new TextList(292, 128, 8, 40);
+	_window = new Window(this, 550, 170, 700, 393);
+	//_btnOk = new TextButton(288, 16, 716, 576);
+	_txtTitle = new Text(300, 17, 716, 399);
+	_txtName = new Text(200, 11, 716, 416);
+	_txtCraft = new Text(120, 11, 916, 416);
+	_txtArmor = new Text(120, 11, 1036, 416);
+	_lstSoldiers = new TextList(508, 125, 708, 428);
 
 	// Set palette
-	setInterface("craftArmor");
+	setInterface("hdcraftInfo");
 
-	add(_window, "window", "craftArmor");
-	add(_btnOk, "button", "craftArmor");
-	add(_txtTitle, "text", "craftArmor");
-	add(_txtName, "text", "craftArmor");
-	add(_txtCraft, "text", "craftArmor");
-	add(_txtArmor, "text", "craftArmor");
-	add(_lstSoldiers, "list", "craftArmor");
+	add(_window, "window", "hdcraftInfo");
+	//add(_btnOk, "button", "hdcraftInfo");
+	add(_txtTitle, "text1", "hdcraftInfo");
+	add(_txtName, "text1", "hdcraftInfo");
+	add(_txtCraft, "text1", "hdcraftInfo");
+	add(_txtArmor, "text1", "hdcraftInfo");
+	add(_lstSoldiers, "list", "hdcraftInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK14.SCR"));
+	_window->setThinBorder();
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&CraftArmorState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&CraftArmorState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&CraftArmorState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&CraftArmorState::btnOkClick, Options::keyCancel);
 
 	_txtTitle->setBig();
 	_txtTitle->setText(tr("STR_SELECT_ARMOR"));
@@ -84,7 +87,7 @@ CraftArmorState::CraftArmorState(Base *base, size_t craft) : _base(base), _craft
 
 	_txtArmor->setText(tr("STR_ARMOR"));
 
-	_lstSoldiers->setColumns(3, 114, 69, 101);
+	_lstSoldiers->setColumns(3, 200, 120, 120);
 	_lstSoldiers->setSelectable(true);
 	_lstSoldiers->setBackground(_window);
 	_lstSoldiers->setMargin(8);
@@ -141,11 +144,11 @@ void CraftArmorState::init()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftArmorState::btnOkClick(Action *)
 {
 	_game->popState();
-}
+}*/
 
 /**
  * Shows the Select Armor window.
@@ -165,27 +168,30 @@ void CraftArmorState::lstSoldiersClick(Action *action)
 			SavedGame *save;
 			save = _game->getSavedGame();
 			Armor *a = _game->getMod()->getArmor(save->getLastSelectedArmor());
-			if (save->getMonthsPassed() != -1)
+			if (a && (a->getUnits().empty() || std::find(a->getUnits().begin(), a->getUnits().end(), s->getRules()->getType()) != a->getUnits().end()))
 			{
-				if (_base->getStorageItems()->getItem(a->getStoreItem()) > 0 || a->getStoreItem() == Armor::NONE)
+				if (save->getMonthsPassed() != -1)
 				{
-					if (s->getArmor()->getStoreItem() != Armor::NONE)
+					if (_base->getStorageItems()->getItem(a->getStoreItem()) > 0 || a->getStoreItem() == Armor::NONE)
 					{
-						_base->getStorageItems()->addItem(s->getArmor()->getStoreItem());
-					}
-					if (a->getStoreItem() != Armor::NONE)
-					{
-						_base->getStorageItems()->removeItem(a->getStoreItem());
-					}
+						if (s->getArmor()->getStoreItem() != Armor::NONE)
+						{
+							_base->getStorageItems()->addItem(s->getArmor()->getStoreItem());
+						}
+						if (a->getStoreItem() != Armor::NONE)
+						{
+							_base->getStorageItems()->removeItem(a->getStoreItem());
+						}
 
+						s->setArmor(a);
+						_lstSoldiers->setCellText(_lstSoldiers->getSelectedRow(), 2, tr(a->getType()));
+					}
+				}
+				else
+				{
 					s->setArmor(a);
 					_lstSoldiers->setCellText(_lstSoldiers->getSelectedRow(), 2, tr(a->getType()));
 				}
-			}
-			else
-			{
-				s->setArmor(a);
-				_lstSoldiers->setCellText(_lstSoldiers->getSelectedRow(), 2, tr(a->getType()));
 			}
 		}
 	}

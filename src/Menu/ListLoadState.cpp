@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,6 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ListLoadState.h"
+#include <algorithm>
 #include "../Engine/Game.h"
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Action.h"
@@ -38,21 +39,13 @@ namespace OpenXcom
 ListLoadState::ListLoadState(OptionsOrigin origin) : ListGamesState(origin, 0, true)
 {
 	// Create objects
-	_btnOld = new TextButton(100, 25, 360, 500);
+	_btnOld = new TextButton(130, 25, 350, 500);
+	_btnCancel->setX(180);
 
 	add(_btnOld, "button", "saveMenus");
 	
 	// Set up objects
 	_txtTitle->setText(tr("STR_SELECT_GAME_TO_LOAD"));
-
-	if (origin != OPT_MENU)
-	{
-		_btnOld->setVisible(false);
-	}
-	else
-	{
-		_btnCancel->setX(500);
-	}
 
 	_btnOld->setText(tr("STR_ORIGINAL_XCOM"));
 	_btnOld->onMouseClick((ActionHandler)&ListLoadState::btnOldClick);
@@ -74,7 +67,7 @@ ListLoadState::~ListLoadState()
  */
 void ListLoadState::btnOldClick(Action *)
 {
-	_game->pushState(new ListLoadOriginalState);
+	_game->pushState(new ListLoadOriginalState(_origin));
 }
 
 /**
@@ -90,7 +83,17 @@ void ListLoadState::lstSavesPress(Action *action)
 		const SaveInfo &saveInfo(_saves[_lstSaves->getSelectedRow()]);
 		for (std::vector<std::string>::const_iterator i = saveInfo.mods.begin(); i != saveInfo.mods.end(); ++i)
 		{
-			if (std::find(Options::mods.begin(), Options::mods.end(), std::pair<std::string, bool>(*i, true)) == Options::mods.end())
+			std::string name;
+			size_t versionInfoBreakPoint = (*i).find(" ver: ");
+			if (versionInfoBreakPoint == std::string::npos)
+			{
+				name = *i;
+			}
+			else
+			{
+				name = (*i).substr(0, versionInfoBreakPoint);
+			}
+			if (std::find(Options::mods.begin(), Options::mods.end(), std::make_pair(name, true)) == Options::mods.end())
 			{
 				confirm = true;
 				break;

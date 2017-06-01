@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -92,7 +92,7 @@ ConfirmLandingState::ConfirmLandingState(Craft *craft, Texture *texture, int sha
 	_txtBegin->setAlign(ALIGN_CENTER);
 	std::wostringstream ss;
 	ss << L'\x01' << tr("STR_BEGIN_MISSION");
-	_txtBegin->setText(ss.str().c_str());
+	_txtBegin->setText(ss.str());
 }
 
 /**
@@ -148,7 +148,7 @@ void ConfirmLandingState::btnYesClick(Action *)
 	}
 	else if (b != 0)
 	{
-		bgame->setMissionType("STR_ALIEN_BASE_ASSAULT");
+		bgame->setMissionType(b->getDeployment()->getType());
 		bgen.setAlienBase(b);
 		bgen.setAlienRace(b->getAlienRace());
 		bgen.setWorldTexture(0);

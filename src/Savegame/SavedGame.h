@@ -1,31 +1,30 @@
+#pragma once
 /*
- *Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
- *This file is part of OpenXcom.
+ * This file is part of OpenXcom.
  *
- *OpenXcom is free software: you can redistribute it and/or modify
- *it under the terms of the GNU General Public License as published by
- *the Free Software Foundation, either version 3 of the License, or
- *(at your option) any later version.
+ * OpenXcom is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *OpenXcom is distributed in the hope that it will be useful,
- *but WITHOUT ANY WARRANTY; without even the implied warranty of
- *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *GNU General Public License for more details.
+ * OpenXcom is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *You should have received a copy of the GNU General Public License
- *along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_SAVEDGAME_H
-#define OPENXCOM_SAVEDGAME_H
 #include <map>
 #include <vector>
 #include <string>
 #include <time.h>
 #include <stdint.h>
-#include "CraftId.h"
 #include "GameTime.h"
 #include "../Mod/RuleAlienMission.h"
+#include "../Savegame/Craft.h"
 
 namespace OpenXcom
 {
@@ -51,84 +50,25 @@ class AlienMission;
 class Target;
 class Soldier;
 class Craft;
+struct MissionStatistics;
+struct BattleUnitKills;
 
 /**
- *Enumerator containing all the possible game difficulties.
+ * Enumerator containing all the possible game difficulties.
  */
 enum GameDifficulty { DIFF_BEGINNER = 0, DIFF_EXPERIENCED, DIFF_VETERAN, DIFF_GENIUS, DIFF_SUPERHUMAN };
+
 /**
- * Container for mission statistics.
- */
-struct MissionStatistics
-{
-    /// Variables
-    int id;
-	GameTime time;
-	std::string region, country, type, ufo;	
-	bool success;
-	std::string rating;
-	int score;
-	std::string alienRace;
-	int daylight;
-	std::map<int, int> injuryList;
-	bool valiantCrux;
-    
-    /// Functions
-	std::string getMissionTypeLowerCase()
-	{
-	if		(type == "STR_UFO_CRASH_RECOVERY")	return "STR_UFO_CRASH_RECOVERY_LC";
-	else if (type == "STR_UFO_GROUND_ASSAULT")	return "STR_UFO_GROUND_ASSAULT_LC";
-	else if (type == "STR_BASE_DEFENSE")		return "STR_BASE_DEFENSE_LC";
-	else if (type == "STR_ALIEN_BASE_ASSAULT")	return "STR_ALIEN_BASE_ASSAULT_LC";
-	else if (type == "STR_TERROR_MISSION")		return "STR_TERROR_MISSION_LC";
-	else										return "type error";
-	}
-    // Load
-    void load(const YAML::Node &node)
-    {
-        id = node["id"].as<int>(id);
-        time.load(node["time"]);
-        region = node["region"].as<std::string>(region);
-        country = node["country"].as<std::string>(country);
-        type = node["type"].as<std::string>(type);
-        ufo = node["ufo"].as<std::string>(ufo);
-        success = node["success"].as<bool>(success);
-        score = node["score"].as<int>(score);
-        rating = node["rating"].as<std::string>(rating);
-        alienRace = node["alienRace"].as<std::string>(alienRace);
-        daylight = node["daylight"].as<int>(daylight);
-        injuryList = node["injuryList"].as<std::map<int, int> >(injuryList);
-        valiantCrux = node["valiantCrux"].as<bool>(valiantCrux);
-    }
-    // Save
-    YAML::Node save() const
-    {
-        YAML::Node node;
-        node["id"] = id;
-        node["time"] = time.save();
-        node["region"] = region;
-        node["country"] = country;
-        node["type"] = type;
-        node["ufo"] = ufo;
-        node["success"] = success;
-        node["score"] = score;
-        node["rating"] = rating;
-        node["alienRace"] = alienRace;
-        node["daylight"] = daylight;
-        node["injuryList"] = injuryList;
-        if (valiantCrux) node["valiantCrux"] = valiantCrux;
-        return node;
-    }
-    MissionStatistics(const YAML::Node& node) : time(0,0,0,0,0,0,0) { load(node); }
-    MissionStatistics() : id (0), time(0,0,0,0,0,0,0), region("STR_REGION_UNKNOWN"), country("STR_UNKNOWN"), type(), ufo("NO_UFO"), success(false), score(0), rating(), alienRace("STR_UNKNOWN"), daylight(0), injuryList(), valiantCrux(false) { }
-    ~MissionStatistics() { }
-};
- /**
  * Enumerator for the various save types.
  */
 enum SaveType { SAVE_DEFAULT, SAVE_QUICK, SAVE_AUTO_GEOSCAPE, SAVE_AUTO_BATTLESCAPE, SAVE_IRONMAN, SAVE_IRONMAN_END };
 /**
- *Container for savegame info displayed on listings.
+ * Enumerator for the current game ending.
+ */
+enum GameEnding { END_NONE, END_WIN, END_LOSE };
+
+/**
+ * Container for savegame info displayed on listings.
  */
 struct SaveInfo
 {
@@ -149,6 +89,7 @@ struct PromotionInfo
 	int totalSergeants;
 	PromotionInfo(): totalCommanders(0), totalColonels(0), totalCaptains(0), totalSergeants(0){}
 };
+
 /**
  *The game data that gets written to disk when the game is saved.
  *A saved game holds all the variable info in a game like funds,
@@ -159,6 +100,7 @@ class SavedGame
 private:
 	std::wstring _name;
 	GameDifficulty _difficulty;
+	GameEnding _end;
 	bool _ironman;
 	GameTime *_time;
 	std::vector<int> _researchScores;
@@ -185,8 +127,8 @@ private:
 	std::vector<const RuleResearch*> _poppedResearch;
 	std::vector<Soldier*> _deadSoldiers;
 	size_t _selectedBase;
-    std::vector<MissionStatistics*> _missionStatistics;
 	std::string _lastselectedArmor; //contains the last selected armour
+	std::vector<MissionStatistics*> _missionStatistics;
 
 	void getDependableResearchBasic (std::vector<RuleResearch*> & dependables, const RuleResearch *research, const Mod *mod, Base *base) const;
 	static SaveInfo getSaveInfo(const std::string &file, Language *lang);
@@ -208,9 +150,14 @@ public:
 	void setName(const std::wstring &name);
 	/// Gets the game difficulty.
 	GameDifficulty getDifficulty() const;
-	int getDifficultyCoefficient() const;
 	/// Sets the game difficulty.
 	void setDifficulty(GameDifficulty difficulty);
+	/// Gets the game difficulty coefficient.
+	int getDifficultyCoefficient() const;
+	/// Gets the game ending.
+	GameEnding getEnding() const;
+	/// Sets the game ending.
+	void setEnding(GameEnding end);
 	/// Gets if the game is in ironman mode.
 	bool isIronman() const;
 	/// Sets if the game is in ironman mode.
@@ -238,11 +185,13 @@ public:
 	/// Gets the current game time.
 	GameTime *getTime() const;
 	/// Sets the current game time.
-	void setTime(GameTime time);
+	void setTime(const GameTime& time);
 	/// Gets the current ID for an object.
 	int getId(const std::string &name);
 	/// Resets the list of object IDs.
-	void setIds(const std::map<std::string, int> &ids);
+	const std::map<std::string, int> &getAllIds() const;
+	/// Resets the list of object IDs.
+	void setAllIds(const std::map<std::string, int> &ids);
 	/// Gets the list of countries.
 	std::vector<Country*> *getCountries();
 	/// Gets the total country funding.
@@ -349,20 +298,22 @@ public:
 	void removePoppedResearch(const RuleResearch* research);
 	/// Gets the list of dead soldiers.
 	std::vector<Soldier*> *getDeadSoldiers();
-    /// Gets the last selected player base.
+	/// Gets the last selected player base.
 	Base *getSelectedBase();
 	/// Set the last selected player base.
 	void setSelectedBase(size_t base);
 	/// Evaluate the score of a soldier based on all of his stats, missions and kills.
 	int getSoldierScore(Soldier *soldier);
-    /// Gets the list of missions statistics
-	std::vector<MissionStatistics*> *getMissionStatistics();
 	/// Sets the last selected armour
 	void setLastSelectedArmor(const std::string &value);
 	/// Gets the last selected armour
-	std::string getLastSelectedArmor();
+	std::string getLastSelectedArmor() const;
 	/// Returns the craft corresponding to the specified unique id.
 	Craft *findCraftByUniqueId(const CraftId& craftId) const;
+	/// Gets the list of missions statistics
+	std::vector<MissionStatistics*> *getMissionStatistics();
+	/// Handles a soldier's death.
+	std::vector<Soldier*>::iterator killSoldier(Soldier *soldier, BattleUnitKills *cause = 0);
 };
+
 }
-#endif

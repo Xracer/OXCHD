@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_PATHFINDINGNODE_H
-#define OPENXCOM_PATHFINDINGNODE_H
-
 #include "Position.h"
 
 namespace OpenXcom
@@ -49,7 +47,7 @@ public:
 	/// Cleans up the PathfindingNode.
 	~PathfindingNode();
 	/// Gets the node position.
-	const Position &getPosition() const;
+	Position getPosition() const;
 	/// Resets the node.
 	void reset();
 	/// Is checked?
@@ -72,7 +70,7 @@ public:
 	#endif
 
 	/// Connects to previous node along the path.
-	void connect(int tuCost, PathfindingNode* prevNode, int prevDir, const Position &target);
+	void connect(int tuCost, PathfindingNode* prevNode, int prevDir, Position target);
 	/// Connects to previous node along a visit.
 	void connect(int tuCost, PathfindingNode* prevNode, int prevDir);
 };
@@ -96,5 +94,3 @@ public:
 };
 
 }
-
-#endif

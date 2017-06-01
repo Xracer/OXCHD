@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -49,15 +49,15 @@ InterceptState::InterceptState(Globe *globe, Base *base, Target *target) : _glob
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 320, 140, 0, 30, POPUP_HORIZONTAL);
-	_btnCancel = new TextButton(_base ? 142 : 288, 16, 16, 146);
-	_btnGotoBase = new TextButton(142, 16, 162, 146);
-	_txtTitle = new Text(300, 17, 10, 46);
-	_txtCraft = new Text(86, 9, 14, 70);
-	_txtStatus = new Text(70, 9, 100, 70);
-	_txtBase = new Text(80, 9, 170, 70);
-	_txtWeapons = new Text(80, 17, 238, 62);
-	_lstCrafts = new TextList(288, 64, 8, 78);
+	_window = new Window(this, 400, 200, 250, 200, POPUP_HORIZONTAL);
+	_btnCancel = new TextButton(_base ? 142 : 288, 17, 416, 346);
+	_btnGotoBase = new TextButton(142, 17, 462, 346);
+	_txtTitle = new Text(300, 17, 310, 246);
+	_txtCraft = new Text(86, 9, 314, 270);
+	_txtStatus = new Text(70, 9, 400, 270);
+	_txtBase = new Text(80, 9, 470, 270);
+	_txtWeapons = new Text(80, 17, 538, 262);
+	_lstCrafts = new TextList(288, 64, 308, 278);
 
 	// Set palette
 	setInterface("geoCraftScreens");

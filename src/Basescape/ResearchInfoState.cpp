@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -32,7 +32,7 @@
 #include "../Interface/ArrowButton.h"
 #include "../Engine/Timer.h"
 #include "../Engine/RNG.h"
-#include <limits>
+#include <climits>
 
 namespace OpenXcom
 {
@@ -43,7 +43,7 @@ namespace OpenXcom
  * @param base Pointer to the base to get info from.
  * @param rule A RuleResearch which will be used to create a new ResearchProject
  */
-ResearchInfoState::ResearchInfoState(Base *base, RuleResearch * rule) : _base(base), _project(new ResearchProject(rule, int(rule->getCost() * OpenXcom::RNG::generate(50, 150)/100))), _rule(rule)
+ResearchInfoState::ResearchInfoState(Base *base, RuleResearch *rule) : _base(base), _project(new ResearchProject(rule, int(rule->getCost() * OpenXcom::RNG::generate(50, 150)/100))), _rule(rule)
 {
 	buildUi();
 }
@@ -54,7 +54,7 @@ ResearchInfoState::ResearchInfoState(Base *base, RuleResearch * rule) : _base(ba
  * @param base Pointer to the base to get info from.
  * @param project A ResearchProject to modify
  */
-ResearchInfoState::ResearchInfoState(Base *base, ResearchProject * project) : _base(base), _project(project), _rule(0)
+ResearchInfoState::ResearchInfoState(Base *base, ResearchProject *project) : _base(base), _project(project), _rule(0)
 {
 	buildUi();
 }
@@ -66,21 +66,21 @@ void ResearchInfoState::buildUi()
 {
 	_screen = false;
 
-	_window = new Window(this, 230, 140, 45, 30);
-	_txtTitle = new Text(210, 17, 61, 40);
+	_window = new Window(this, 550, 170, 700, 438); 
+	_txtTitle = new Text(545, 17, 705, 446);
 
-	_txtAvailableScientist = new Text(210, 9, 61, 60);
-	_txtAvailableSpace = new Text(210, 9, 61, 70);
-	_txtAllocatedScientist = new Text(210, 17, 61, 80);
-	_txtMore = new Text(110, 17, 85, 100);
-	_txtLess = new Text(110, 17, 85, 120);
-	_btnCancel = new TextButton(90, 16, 61, 145);
-	_btnOk = new TextButton(90, 16, 169, 145);
+	_txtAvailableScientist = new Text(210, 15, 705, 466);
+	_txtAvailableSpace = new Text(210, 15, 705, 486);
+	_txtAllocatedScientist = new Text(210, 19, 705, 506);
+	_txtMore = new Text(110, 19, 725, 531);
+	_txtLess = new Text(110, 19, 725, 556);
+	_btnCancel = new TextButton(150, 19, 705, 581);
+	_btnOk = new TextButton(150, 19, 860, 581);
 
-	_btnMore = new ArrowButton(ARROW_BIG_UP, 13, 14, 195, 100);
-	_btnLess = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 195, 120);
+	_btnMore = new ArrowButton(ARROW_BIG_UP, 13, 14, 895, 531);
+	_btnLess = new ArrowButton(ARROW_BIG_DOWN, 13, 14, 895, 556);
 
-	_surfaceScientists = new InteractiveSurface(230, 140, 45, 30);
+	_surfaceScientists = new InteractiveSurface(230, 140, 745, 506);
 	_surfaceScientists->onMouseClick((ActionHandler)&ResearchInfoState::handleWheel, 0);
 
 	// Set palette
@@ -99,11 +99,13 @@ void ResearchInfoState::buildUi()
 	add(_btnMore, "button1", "allocateResearch");
 	add(_btnLess, "button1", "allocateResearch");
 
-	centerAllSurfaces();
-
+	//centerAllSurfaces();
+	
 	// Set up objects
+	_window->setThinBorder();
 	_window->setBackground(_game->getMod()->getSurface("BACK05.SCR"));
 
+	_txtTitle->setAlign(ALIGN_CENTER);
 	_txtTitle->setBig();
 
 	_txtTitle->setText(_rule ? tr(_rule->getName()) : tr(_project->getRules()->getName()));
@@ -119,9 +121,7 @@ void ResearchInfoState::buildUi()
 	if (_rule)
 	{
 		_base->addResearch(_project);
-		if (_rule->needItem() &&
-				(_game->getMod()->getUnit(_rule->getName()) ||
-				 Options::spendResearchedItems))
+		if (_rule->needItem() && _rule->destroyItem())
 		{
 			_base->getStorageItems()->removeItem(_rule->getName(), 1);
 		}
@@ -182,9 +182,7 @@ void ResearchInfoState::btnOkClick(Action *)
 void ResearchInfoState::btnCancelClick(Action *)
 {
 	const RuleResearch *ruleResearch = _rule ? _rule : _project->getRules();
-	if (ruleResearch->needItem() &&
-			(_game->getMod()->getUnit(ruleResearch->getName()) ||
-			 Options::spendResearchedItems))
+	if (ruleResearch->needItem() && ruleResearch->destroyItem())
 	{
 		_base->getStorageItems()->addItem(ruleResearch->getName(), 1);
 	}
@@ -242,7 +240,7 @@ void ResearchInfoState::moreRelease(Action *action)
 void ResearchInfoState::moreClick(Action *action)
 {
 	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT)
-		moreByValue(std::numeric_limits<int>::max());
+		moreByValue(INT_MAX);
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 		moreByValue(1);
 }
@@ -277,7 +275,7 @@ void ResearchInfoState::lessRelease(Action *action)
 void ResearchInfoState::lessClick(Action *action)
 {
 	if (action->getDetails()->button.button == SDL_BUTTON_RIGHT)
-		lessByValue(std::numeric_limits<int>::max());
+		lessByValue(INT_MAX);
 	if (action->getDetails()->button.button == SDL_BUTTON_LEFT)
 		lessByValue(1);
 }
@@ -345,4 +343,5 @@ void ResearchInfoState::think()
 	_timerLess->think (this, 0);
 	_timerMore->think (this, 0);
 }
+
 }

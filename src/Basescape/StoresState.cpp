@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -41,22 +41,22 @@ namespace OpenXcom
 StoresState::StoresState(Base *base) : _base(base)
 {
 	// Create objects
-	_window = new Window(this, 450, 200, 700, 385, POPUP_BOTH);
-	_txtTitle = new Text(440, 17, 705, 395);
-	_txtItem = new Text(142, 11, 705, 412);
-	_txtQuantity = new Text(88, 11, 895, 412);
-	_txtSpaceUsed = new Text(74, 11, 1020, 412);
-	_lstStores = new TextList(420, 150, 705, 426);
+	_window = new Window(this, 550, 305, 700, 440, POPUP_BOTH);
+	_txtTitle = new Text(440, 17, 705, 443);
+	_txtItem = new Text(142, 11, 705, 462);
+	_txtQuantity = new Text(88, 11, 895, 462);
+	_txtSpaceUsed = new Text(74, 11, 1020, 462);
+	_lstStores = new TextList(508, 230, 705, 476);
 
 	// Set palette
-	setInterface("storesInfo");
+	setInterface("hdbaseInfo");
 
-	add(_window, "window", "storesInfo");
-	add(_txtTitle, "text", "storesInfo");
-	add(_txtItem, "text", "storesInfo");
-	add(_txtQuantity, "text", "storesInfo");
-	add(_txtSpaceUsed, "text", "storesInfo");
-	add(_lstStores, "list", "storesInfo");
+	add(_window, "window", "hdbaseInfo");
+	add(_txtTitle, "title", "hdbaseInfo");
+	add(_txtItem, "text1", "hdbaseInfo");
+	add(_txtQuantity, "text1", "hdbaseInfo");
+	add(_txtSpaceUsed, "text1", "hdbaseInfo");
+	add(_lstStores, "list", "hdbaseInfo");
 
 	//centerAllSurfaces();
 
@@ -65,7 +65,7 @@ StoresState::StoresState(Base *base) : _base(base)
 	_window->setThinBorder();
 
 	_txtTitle->setBig();
-	_txtTitle->setAlign(ALIGN_CENTER);
+	_txtTitle->setAlign(ALIGN_LEFT);
 	_txtTitle->setText(tr("STR_STORES"));
 
 	_txtItem->setText(tr("STR_ITEM"));
@@ -85,7 +85,7 @@ StoresState::StoresState(Base *base) : _base(base)
 		int qty = _base->getStorageItems()->getItem(*i);
 		if (qty > 0)
 		{
-			RuleItem *rule = _game->getMod()->getItem(*i);
+			RuleItem *rule = _game->getMod()->getItem(*i, true);
 			std::wostringstream ss, ss2;
 			ss << qty;
 			ss2 << qty * rule->getSize();

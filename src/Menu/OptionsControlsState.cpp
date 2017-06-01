@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -38,7 +38,7 @@ OptionsControlsState::OptionsControlsState(OptionsOrigin origin) : OptionsBaseSt
 	setCategory(_btnControls);
 
 	// Create objects
-	_lstControls = new TextList(200, 136, 94, 8);	
+	_lstControls = new TextList(250, 200, 388, 128);	
 	
 	if (origin != OPT_BATTLESCAPE)
 	{
@@ -52,7 +52,7 @@ OptionsControlsState::OptionsControlsState(OptionsOrigin origin) : OptionsBaseSt
 	centerAllSurfaces();
 
 	// Set up objects
-	_lstControls->setColumns(2, 152, 48);
+	_lstControls->setColumns(2, 255, 30);
 	_lstControls->setWordWrap(true);
 	_lstControls->setSelectable(true);
 	_lstControls->setBackground(_window);

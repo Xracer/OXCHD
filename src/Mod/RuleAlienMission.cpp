@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -82,11 +82,12 @@ void RuleAlienMission::load(const YAML::Node &node)
 	_spawnZone = node["spawnZone"].as<int>(_spawnZone);
 	_weights = node["missionWeights"].as< std::map<size_t, int> >(_weights);
 	_retaliationOdds = node["retaliationOdds"].as<int>(_retaliationOdds);
+	_siteType = node["siteType"].as<std::string>(_siteType);
 	//Only allow full replacement of mission racial distribution.
 	if (const YAML::Node &weights = node["raceWeights"])
 	{
 		typedef std::map<size_t, WeightedOptions*> Associative;
-		typedef std::vector<std::pair<size_t, WeightedOptions*> > Linear;
+		typedef std::vector< std::pair<size_t, WeightedOptions*> > Linear;
 
 		Associative assoc;
 		//Place in the associative container so we can index by month and keep entries sorted.
@@ -103,9 +104,9 @@ void RuleAlienMission::load(const YAML::Node &node)
 			if (assoc.end() == existing)
 			{
 				// New entry, load and add it.
-				std::auto_ptr<WeightedOptions> nw(new WeightedOptions);
+				WeightedOptions *nw = new WeightedOptions();
 				nw->load(nn->second);
-				assoc.insert(std::make_pair(month, nw.release()));
+				assoc.insert(std::make_pair(month, nw));
 			}
 			else
 			{
@@ -187,4 +188,5 @@ int RuleAlienMission::getRetaliationOdds() const
 {
 	return _retaliationOdds;
 }
+
 }

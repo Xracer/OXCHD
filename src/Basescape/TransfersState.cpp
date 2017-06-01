@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -40,24 +40,26 @@ namespace OpenXcom
 TransfersState::TransfersState(Base *base) : _base(base)
 {
 	_screen = false;
+	int xPos = 700;
+	int yPos = 3;
 
 	// Create objects
-	_window = new Window(this, 450, 150, 700, 588, POPUP_BOTH);
-	_txtTitle = new Text(440, 17, 705, 598);
-	_txtItem = new Text(114, 11, 710, 615);
-	_txtQuantity = new Text(65, 11, 895, 615);
-	_txtArrivalTime = new Text(118, 11, 1010, 615);
-	_lstTransfers = new TextList(273, 112, 714, 629);
+	_window = new Window(this, 570, 200, 0 + xPos, 0 + yPos, POPUP_BOTH);
+	_txtTitle = new Text(550, 17, 5 + xPos, 7 + yPos);
+	_txtItem = new Text(114, 11, 5 + xPos, 26 + yPos);
+	_txtQuantity = new Text(65, 11, 195 + xPos, 26 + yPos);
+	_txtArrivalTime = new Text(118, 11, 310 + xPos, 26 + yPos);
+	_lstTransfers = new TextList(550, 112, 5 + xPos, 40 + yPos);
 
 	// Set palette
-	setInterface("transferInfo");
+	setInterface("hdbaseInfo");
 
-	add(_window, "window", "transferInfo");
-	add(_txtTitle, "text", "transferInfo");
-	add(_txtItem, "text", "transferInfo");
-	add(_txtQuantity, "text", "transferInfo");
-	add(_txtArrivalTime, "text", "transferInfo");
-	add(_lstTransfers, "list", "transferInfo");
+	add(_window, "window", "hdbaseInfo");
+	add(_txtTitle, "title", "hdbaseInfo");
+	add(_txtItem, "text1", "hdbaseInfo");
+	add(_txtQuantity, "text1", "hdbaseInfo");
+	add(_txtArrivalTime, "text1", "hdbaseInfo");
+	add(_lstTransfers, "list", "hdbaseInfo");
 
 	//centerAllSurfaces();
 

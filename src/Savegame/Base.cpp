@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,10 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define _USE_MATH_DEFINES
 #include "Base.h"
 #include "../fmath.h"
-#include <cmath>
 #include <stack>
 #include <algorithm>
 #include "BaseFacility.h"
@@ -45,6 +43,7 @@
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
 #include "../Mod/RuleSoldier.h"
+#include "../Engine/Logger.h"
 
 namespace OpenXcom
 {
@@ -107,7 +106,6 @@ Base::~Base()
 void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newBattleGame)
 {
 	Target::load(node);
-	_name = Language::utf8ToWstr(node["name"].as<std::string>(""));
 
 	if (!newGame || !Options::customInitialBase || newBattleGame)
 	{
@@ -120,6 +118,10 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 				f->load(*i);
 				_facilities.push_back(f);
 			}
+			else
+			{
+				Log(LOG_ERROR) << "Failed to load facility " << type;
+			}
 		}
 	}
 
@@ -131,6 +133,10 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 			Craft *c = new Craft(_mod->getCraft(type), this);
 			c->load(*i, _mod, save);
 			_crafts.push_back(c);
+		}
+		else
+		{
+			Log(LOG_ERROR) << "Failed to load craft " << type;
 		}
 	}
 
@@ -156,14 +162,19 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 			}
 			_soldiers.push_back(s);
 		}
+		else
+		{
+			Log(LOG_ERROR) << "Failed to load soldier " << type;
+		}
 	}
 
 	_items->load(node["items"]);
 	// Some old saves have bad items, better get rid of them to avoid further bugs
 	for (std::map<std::string, int>::iterator i = _items->getContents()->begin(); i != _items->getContents()->end();)
 	{
-		if (std::find(_mod->getItemsList().begin(), _mod->getItemsList().end(), i->first) == _mod->getItemsList().end())
+		if (_mod->getItem(i->first) == 0)
 		{
+			Log(LOG_ERROR) << "Failed to load item " << i->first;
 			_items->getContents()->erase(i++);
 		}
 		else
@@ -198,6 +209,7 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 		else
 		{
 			_scientists += (*i)["assigned"].as<int>(0);
+			Log(LOG_ERROR) << "Failed to load research " << research;
 		}
 	}
 
@@ -213,6 +225,7 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 		else
 		{
 			_engineers += (*i)["assigned"].as<int>(0);
+			Log(LOG_ERROR) << "Failed to load manufacture " << item;
 		}
 	}
 
@@ -226,7 +239,6 @@ void Base::load(const YAML::Node &node, SavedGame *save, bool newGame, bool newB
 YAML::Node Base::save() const
 {
 	YAML::Node node = Target::save();
-	node["name"] = Language::wstrToUtf8(_name);
 	for (std::vector<BaseFacility*>::const_iterator i = _facilities.begin(); i != _facilities.end(); ++i)
 	{
 		node["facilities"].push_back((*i)->save());
@@ -242,7 +254,8 @@ YAML::Node Base::save() const
 	node["items"] = _items->save();
 	node["scientists"] = _scientists;
 	node["engineers"] = _engineers;
-	node["inBattlescape"] = _inBattlescape;
+	if (_inBattlescape)
+		node["inBattlescape"] = _inBattlescape;
 	for (std::vector<Transfer*>::const_iterator i = _transfers.begin(); i != _transfers.end(); ++i)
 	{
 		node["transfers"].push_back((*i)->save());
@@ -255,7 +268,8 @@ YAML::Node Base::save() const
 	{
 		node["productions"].push_back((*i)->save());
 	}
-	node["retaliationTarget"] = _retaliationTarget;
+	if (_retaliationTarget)
+		node["retaliationTarget"] = _retaliationTarget;
 	return node;
 }
 
@@ -279,15 +293,6 @@ YAML::Node Base::saveId() const
 std::wstring Base::getName(Language *) const
 {
 	return _name;
-}
-
-/**
- * Changes the custom name for the base.
- * @param name Name.
- */
-void Base::setName(const std::wstring &name)
-{
-	_name = name;
 }
 
 /**
@@ -606,7 +611,7 @@ double Base::getUsedStores()
 	{
 		if ((*i)->getType() == TRANSFER_ITEM)
 		{
-			total += (*i)->getQuantity() * _mod->getItem((*i)->getItems())->getSize();
+			total += (*i)->getQuantity() * _mod->getItem((*i)->getItems(), true)->getSize();
 		}
 		else if ((*i)->getType() == TRANSFER_CRAFT)
 		{
@@ -671,13 +676,13 @@ double Base::getIgnoredStores()
 					int available = getStorageItems()->getItem(clip);
 					if (!clip.empty() && available > 0)
 					{
-						int clipSize = _mod->getItem(clip)->getClipSize();
+						int clipSize = _mod->getItem(clip, true)->getClipSize();
 						int needed = 0;
 						if (clipSize > 0)
 						{
 							needed = ((*w)->getRules()->getAmmoMax() - (*w)->getAmmo()) / clipSize;
 						}
-						space += std::min(available, needed) * _mod->getItem(clip)->getSize();
+						space += std::min(available, needed) * _mod->getItem(clip, true)->getSize();
 					}
 				}
 			}
@@ -1180,7 +1185,7 @@ int Base::getUsedContainment() const
 	int total = 0;
 	for (std::map<std::string, int>::iterator i = _items->getContents()->begin(); i != _items->getContents()->end(); ++i)
 	{
-		if (_mod->getItem((i)->first)->isAlien())
+		if (_mod->getItem((i)->first, true)->isAlien())
 		{
 			total += (i)->second;
 		}
@@ -1189,7 +1194,7 @@ int Base::getUsedContainment() const
 	{
 		if ((*i)->getType() == TRANSFER_ITEM)
 		{
-			if (_mod->getItem((*i)->getItems())->isAlien())
+			if (_mod->getItem((*i)->getItems(), true)->isAlien())
 			{
 				total += (*i)->getQuantity();
 			}
@@ -1302,6 +1307,7 @@ bool isCompleted::operator()(const BaseFacility *facility) const
 {
 	return (facility->getBuildTime() == 0);
 }
+
 /**
  * Calculate the detection chance of this base.
  * Big bases without mindshields are easier to detect.
@@ -1311,7 +1317,14 @@ bool isCompleted::operator()(const BaseFacility *facility) const
 size_t Base::getDetectionChance() const
 {
 	size_t mindShields = std::count_if (_facilities.begin(), _facilities.end(), isMindShield());
-	size_t completedFacilities = std::count_if (_facilities.begin(), _facilities.end(), isCompleted());
+	size_t completedFacilities = 0;
+	for (std::vector<BaseFacility*>::const_iterator i = _facilities.begin(); i != _facilities.end(); ++i)
+	{
+		if ((*i)->getBuildTime() == 0)
+		{
+			completedFacilities += (*i)->getRules()->getSize() * (*i)->getRules()->getSize();
+		}
+	}
 	return ((completedFacilities / 6 + 15) / (mindShields + 1));
 }
 
@@ -1367,13 +1380,13 @@ void Base::setupDefenses()
 	{
 		std::string itemId = (i)->first;
 		int itemQty = (i)->second;
-		RuleItem *rule = _mod->getItem(itemId);
+		RuleItem *rule = _mod->getItem(itemId, true);
 		if (rule->isFixed())
 		{
 			int size = 4;
 			if (_mod->getUnit(itemId))
 			{
-				size = _mod->getArmor(_mod->getUnit(itemId)->getArmor())->getSize();
+				size = _mod->getArmor(_mod->getUnit(itemId)->getArmor(), true)->getSize();
 			}
 			if (rule->getCompatibleAmmo()->empty()) // so this vehicle does not need ammo
 			{
@@ -1385,8 +1398,18 @@ void Base::setupDefenses()
 			}
 			else // so this vehicle needs ammo
 			{
-				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front());
-				int ammoPerVehicle = ammo->getClipSize();
+				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front(), true);
+				int ammoPerVehicle, clipSize;
+				if (ammo->getClipSize() > 0 && rule->getClipSize() > 0)
+				{
+					clipSize = rule->getClipSize();
+					ammoPerVehicle = clipSize / ammo->getClipSize();
+				}
+				else
+				{
+					clipSize = ammo->getClipSize();
+					ammoPerVehicle = clipSize;
+				}
 				int baseQty = _items->getItem(ammo->getType()) / ammoPerVehicle;
 				if (!baseQty)
 				{
@@ -1396,7 +1419,7 @@ void Base::setupDefenses()
 				int canBeAdded = std::min(itemQty, baseQty);
 				for (int j=0; j<canBeAdded; ++j)
 				{
-					_vehicles.push_back(new Vehicle(rule, ammoPerVehicle, size));
+					_vehicles.push_back(new Vehicle(rule, clipSize, size));
 					_items->removeItem(ammo->getType(), ammoPerVehicle);
 				}
 				_items->removeItem(itemId, canBeAdded);
@@ -1569,7 +1592,7 @@ void Base::destroyFacility(std::vector<BaseFacility*>::iterator facility)
 		{
 			bool remove = true;
 			// no craft - check productions.
-			for (std::vector<Production*>::iterator i = _productions.begin(); i != _productions.end();)
+			for (std::vector<Production*>::iterator i = _productions.begin(); i != _productions.end(); ++i)
 			{
 				if (getAvailableHangars() - getUsedHangars() - (*facility)->getRules()->getCrafts() < 0 && (*i)->getRules()->getCategory() == "STR_CRAFT")
 				{
@@ -1579,14 +1602,10 @@ void Base::destroyFacility(std::vector<BaseFacility*>::iterator facility)
 					remove = false;
 					break;
 				}
-				else
-				{
-					++i;
-				}
 			}
 			if (remove && !_transfers.empty())
 			{
-				for (std::vector<Transfer*>::iterator i = _transfers.begin(); i != _transfers.end(); )
+				for (std::vector<Transfer*>::iterator i = _transfers.begin(); i != _transfers.end(); ++i)
 				{
 					if ((*i)->getType() == TRANSFER_CRAFT)
 					{
@@ -1722,8 +1741,16 @@ void Base::cleanupDefenses(bool reclaimItems)
 			_items->addItem(type);
 			if (!rule->getCompatibleAmmo()->empty())
 			{
-				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front());
-				int ammoPerVehicle = ammo->getClipSize();
+				RuleItem *ammo = _mod->getItem(rule->getCompatibleAmmo()->front(), true);
+				int ammoPerVehicle;
+				if (ammo->getClipSize() > 0 && rule->getClipSize() > 0)
+				{
+					ammoPerVehicle = rule->getClipSize() / ammo->getClipSize();
+				}
+				else
+				{
+					ammoPerVehicle = ammo->getClipSize();
+				}
 				_items->addItem(ammo->getType(), ammoPerVehicle);
 			}
 		}

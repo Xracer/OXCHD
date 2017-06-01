@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -17,8 +17,9 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "MapBlock.h"
-#include "../Battlescape/Position.h"
 #include <sstream>
+#include <algorithm>
+#include "../Battlescape/Position.h"
 #include "../Engine/Exception.h"
 
 namespace OpenXcom
@@ -51,7 +52,7 @@ void MapBlock::load(const YAML::Node &node)
 	_size_z = node["height"].as<int>(_size_z);
 	if ((_size_x % 10) != 0 || (_size_y % 10) != 0)
 	{
-		std::stringstream ss;
+		std::ostringstream ss;
 		ss << "Error: MapBlock " << _name << ": Size must be divisible by ten";
 		throw Exception(ss.str());
 	}
@@ -79,7 +80,7 @@ void MapBlock::load(const YAML::Node &node)
 			_revealedFloors.push_back(map.as<int>(0));
 		}
 	}
-	_items = node["items"].as<std::map<std::string, std::vector<Position> > >(_items);
+	_items = node["items"].as< std::map<std::string, std::vector<Position> > >(_items);
 }
 
 /**

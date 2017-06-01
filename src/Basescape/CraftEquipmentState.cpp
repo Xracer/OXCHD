@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -61,43 +61,46 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	bool isNewBattle = _game->getSavedGame()->getMonthsPassed() == -1;
 
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 164:16, 176);
-	_btnClear = new TextButton(148, 16, 8, 176);
-	_btnInventory = new TextButton(148, 16, 8, 176);
-	_txtTitle = new Text(300, 17, 16, 7);
-	_txtItem = new Text(144, 9, 16, 32);
-	_txtStores = new Text(150, 9, 160, 32);
-	_txtAvailable = new Text(110, 9, 16, 24);
-	_txtUsed = new Text(110, 9, 130, 24);
-	_txtCrew = new Text(71, 9, 244, 24);
-	_lstEquipment = new TextList(288, 128, 8, 40);
+	_window = new Window(this, 550, 183, 700, 563);
+	//_btnOk = new TextButton((craftHasACrew || isNewBattle)? 148:288, 16, (craftHasACrew || isNewBattle)? 864:716, 579);
+	_btnClear = new TextButton(148, 18, 708, 693);
+	_btnInventory = new TextButton(536, 18, 708, 721);
+	_txtTitle = new Text(300, 17, 716, 569);
+	_txtItem = new Text(200, 11, 716, 599);
+	_txtStores = new Text(150, 11, 900, 599);
+	_txtCraft = new Text(50, 11, 1040, 599);
+	_txtAvailable = new Text(130, 11, 716, 587);
+	_txtUsed = new Text(130, 11, 846, 587);
+	_txtCrew = new Text(80, 11, 976, 587);
+	_lstEquipment = new TextList(508, 108, 708, 610);
 
 	// Set palette
-	setInterface("craftEquipment");
+	setInterface("hdcraftInfo");
 
-	_ammoColor = _game->getMod()->getInterface("craftEquipment")->getElement("ammoColor")->color;
+	_ammoColor = _game->getMod()->getInterface("hdcraftInfo")->getElement("other")->color;
 
-	add(_window, "window", "craftEquipment");
-	add(_btnOk, "button", "craftEquipment");
-	add(_btnClear, "button", "craftEquipment");
-	add(_btnInventory, "button", "craftEquipment");
-	add(_txtTitle, "text", "craftEquipment");
-	add(_txtItem, "text", "craftEquipment");
-	add(_txtStores, "text", "craftEquipment");
-	add(_txtAvailable, "text", "craftEquipment");
-	add(_txtUsed, "text", "craftEquipment");
-	add(_txtCrew, "text", "craftEquipment");
-	add(_lstEquipment, "list", "craftEquipment");
+	add(_window, "window", "hdcraftInfo");
+	//add(_btnOk, "button", "hdcraftInfo");
+	add(_btnClear, "button", "hdcraftInfo");
+	add(_btnInventory, "button", "hdcraftInfo");
+	add(_txtTitle, "text1", "hdcraftInfo");
+	add(_txtItem, "text1", "hdcraftInfo");
+	add(_txtStores, "text1", "hdcraftInfo");
+	add(_txtCraft, "text1", "hdcraftInfo");
+	add(_txtAvailable, "text1", "hdcraftInfo");
+	add(_txtUsed, "text1", "hdcraftInfo");
+	add(_txtCrew, "text1", "hdcraftInfo");
+	add(_lstEquipment, "list", "hdcraftInfo");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK04.SCR"));
+	_window->setThinBorder();
 
-	_btnOk->setText(tr("STR_OK"));
-	_btnOk->onMouseClick((ActionHandler)&CraftEquipmentState::btnOkClick);
-	_btnOk->onKeyboardPress((ActionHandler)&CraftEquipmentState::btnOkClick, Options::keyCancel);
+	//_btnOk->setText(tr("STR_OK"));
+	//_btnOk->onMouseClick((ActionHandler)&CraftEquipmentState::btnOkClick);
+	//_btnOk->onKeyboardPress((ActionHandler)&CraftEquipmentState::btnOkClick, Options::keyCancel);
 
 	_btnClear->setText(tr("STR_UNLOAD_CRAFT"));
 	_btnClear->onMouseClick((ActionHandler)&CraftEquipmentState::btnClearClick);
@@ -114,6 +117,8 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 
 	_txtStores->setText(tr("STR_STORES"));
 
+	_txtCraft->setText(tr("STR_CRAFT_LC"));
+
 	_txtAvailable->setText(tr("STR_SPACE_AVAILABLE").arg(c->getSpaceAvailable()));
 
 	_txtUsed->setText(tr("STR_SPACE_USED").arg(c->getSpaceUsed()));
@@ -122,8 +127,8 @@ CraftEquipmentState::CraftEquipmentState(Base *base, size_t craft) : _sel(0), _c
 	ss3 << tr("STR_SOLDIERS_UC") << ">" << L'\x01'<< c->getNumSoldiers();
 	_txtCrew->setText(ss3.str());
 
-	_lstEquipment->setArrowColumn(203, ARROW_HORIZONTAL);
-	_lstEquipment->setColumns(3, 156, 83, 41);
+	_lstEquipment->setArrowColumn(250, ARROW_HORIZONTAL);
+	_lstEquipment->setColumns(3, 200, 100, 50);
 	_lstEquipment->setSelectable(true);
 	_lstEquipment->setBackground(_window);
 	_lstEquipment->setMargin(8);
@@ -238,11 +243,11 @@ void CraftEquipmentState::think()
 /**
  * Returns to the previous screen.
  * @param action Pointer to an action.
- */
+ 
 void CraftEquipmentState::btnOkClick(Action *)
 {
 	_game->popState();
-}
+}*/
 
 /**
  * Starts moving the item to the base.
@@ -354,7 +359,7 @@ void CraftEquipmentState::lstEquipmentMousePress(Action *action)
 void CraftEquipmentState::updateQuantity()
 {
 	Craft *c = _base->getCrafts()->at(_craft);
-	RuleItem *item = _game->getMod()->getItem(_items[_sel]);
+	RuleItem *item = _game->getMod()->getItem(_items[_sel], true);
 	int cQty = 0;
 	if (item->isFixed())
 	{
@@ -378,7 +383,7 @@ void CraftEquipmentState::updateQuantity()
 	Uint8 color;
 	if (cQty == 0)
 	{
-		RuleItem *rule = _game->getMod()->getItem(_items[_sel]);
+		RuleItem *rule = _game->getMod()->getItem(_items[_sel], true);
 		if (rule->getBattleType() == BT_AMMO)
 		{
 			color = _ammoColor;
@@ -417,7 +422,7 @@ void CraftEquipmentState::moveLeft()
 void CraftEquipmentState::moveLeftByValue(int change)
 {
 	Craft *c = _base->getCrafts()->at(_craft);
-	RuleItem *item = _game->getMod()->getItem(_items[_sel]);
+	RuleItem *item = _game->getMod()->getItem(_items[_sel], true);
 	int cQty = 0;
 	if (item->isFixed()) cQty = c->getVehicleCount(_items[_sel]);
 	else cQty = c->getItems()->getItem(_items[_sel]);
@@ -428,24 +433,34 @@ void CraftEquipmentState::moveLeftByValue(int change)
 	{
 		if (!item->getCompatibleAmmo()->empty())
 		{
-			// First we remove all vehicles because we want to redistribute the ammo
-			RuleItem *ammo = _game->getMod()->getItem(item->getCompatibleAmmo()->front());
-			for (std::vector<Vehicle*>::iterator i = c->getVehicles()->begin(); i != c->getVehicles()->end(); )
+			// Calculate how much ammo needs to be added to the base.
+			RuleItem *ammo = _game->getMod()->getItem(item->getCompatibleAmmo()->front(), true);
+			int ammoPerVehicle;
+			if (ammo->getClipSize() > 0 && item->getClipSize() > 0)
+			{
+				ammoPerVehicle = item->getClipSize() / ammo->getClipSize();
+			}
+			else
+			{
+				ammoPerVehicle = ammo->getClipSize();
+			}
+			// Put the vehicles and their ammo back as seperate items.
+			if (_game->getSavedGame()->getMonthsPassed() != -1)
+			{
+				_base->getStorageItems()->addItem(_items[_sel], change);
+				_base->getStorageItems()->addItem(ammo->getType(), ammoPerVehicle * change);
+			}
+			// now delete the vehicles from the craft.
+			for (std::vector<Vehicle*>::iterator i = c->getVehicles()->begin(); i != c->getVehicles()->end() && change > 0; )
 			{
 				if ((*i)->getRules() == item)
 				{
-					_base->getStorageItems()->addItem(ammo->getType(), (*i)->getAmmo());
 					delete (*i);
 					i = c->getVehicles()->erase(i);
+					--change;
 				}
 				else ++i;
 			}
-			if (_game->getSavedGame()->getMonthsPassed() != -1)
-			{
-				_base->getStorageItems()->addItem(_items[_sel], cQty);
-			}
-			// And now reAdd the count we want to keep in the craft (and redistribute the ammo among them)
-			if (cQty > change) moveRightByValue(cQty - change);
 		}
 		else
 		{
@@ -453,13 +468,13 @@ void CraftEquipmentState::moveLeftByValue(int change)
 			{
 				_base->getStorageItems()->addItem(_items[_sel], change);
 			}
-			for (std::vector<Vehicle*>::iterator i = c->getVehicles()->begin(); i != c->getVehicles()->end(); )
+			for (std::vector<Vehicle*>::iterator i = c->getVehicles()->begin(); i != c->getVehicles()->end() && change > 0; )
 			{
 				if ((*i)->getRules() == item)
 				{
 					delete (*i);
 					i = c->getVehicles()->erase(i);
-					if (0 >= --change) break;
+					--change;
 				}
 				else ++i;
 			}
@@ -494,7 +509,7 @@ void CraftEquipmentState::moveRight()
 void CraftEquipmentState::moveRightByValue(int change)
 {
 	Craft *c = _base->getCrafts()->at(_craft);
-	RuleItem *item = _game->getMod()->getItem(_items[_sel]);
+	RuleItem *item = _game->getMod()->getItem(_items[_sel], true);
 	int bqty = _base->getStorageItems()->getItem(_items[_sel]);
 	if (_game->getSavedGame()->getMonthsPassed() == -1)
 	{
@@ -512,7 +527,7 @@ void CraftEquipmentState::moveRightByValue(int change)
 		int size = 4;
 		if (_game->getMod()->getUnit(item->getType()))
 		{
-			size = _game->getMod()->getArmor(_game->getMod()->getUnit(item->getType())->getArmor())->getSize();
+			size = _game->getMod()->getArmor(_game->getMod()->getUnit(item->getType())->getArmor(), true)->getSize();
 			size *= size;
 		}
 		// Check if there's enough room
@@ -523,38 +538,45 @@ void CraftEquipmentState::moveRightByValue(int change)
 			if (!item->getCompatibleAmmo()->empty())
 			{
 				// And now let's see if we can add the total number of vehicles.
-				RuleItem *ammo = _game->getMod()->getItem(item->getCompatibleAmmo()->front());
-				int ammoPerVehicle = ammo->getClipSize();
-				if (ammoPerVehicle > 0 && item->getClipSize() > 0)
+				RuleItem *ammo = _game->getMod()->getItem(item->getCompatibleAmmo()->front(), true);
+				int ammoPerVehicle, clipSize;
+				if (ammo->getClipSize() > 0 && item->getClipSize() > 0)
 				{
-					ammoPerVehicle = item->getClipSize() / ammo->getClipSize();
+					clipSize = item->getClipSize();
+					ammoPerVehicle = clipSize / ammo->getClipSize();
 				}
+				else
+				{
+					clipSize = ammo->getClipSize();
+					ammoPerVehicle = clipSize;
+				}
+
 				int baseQty = _base->getStorageItems()->getItem(ammo->getType()) / ammoPerVehicle;
 				if (_game->getSavedGame()->getMonthsPassed() == -1)
-					baseQty = 1;
+					baseQty = change;
 				int canBeAdded = std::min(change, baseQty);
 				if (canBeAdded > 0)
 				{
-					for (int i=0; i < canBeAdded; ++i)
+					for (int i = 0; i < canBeAdded; ++i)
 					{
 						if (_game->getSavedGame()->getMonthsPassed() != -1)
 						{
 							_base->getStorageItems()->removeItem(ammo->getType(), ammoPerVehicle);
 							_base->getStorageItems()->removeItem(_items[_sel]);
 						}
-						c->getVehicles()->push_back(new Vehicle(item, ammoPerVehicle, size));
+						c->getVehicles()->push_back(new Vehicle(item, clipSize, size));
 					}
 				}
 				else
 				{
 					// So we haven't managed to increase the count of vehicles because of the ammo
 					_timerRight->stop();
-					LocalizedText msg(tr("STR_NOT_ENOUGH_AMMO_TO_ARM_HWP").arg(tr(ammo->getType())));
+					LocalizedText msg(tr("STR_NOT_ENOUGH_AMMO_TO_ARM_HWP").arg(ammoPerVehicle).arg(tr(ammo->getType())));
 					_game->pushState(new ErrorMessageState(msg, _palette, _game->getMod()->getInterface("craftEquipment")->getElement("errorMessage")->color, "BACK04.SCR", _game->getMod()->getInterface("craftEquipment")->getElement("errorPalette")->color));
 				}
 			}
 			else
-				for (int i=0; i < change; ++i)
+				for (int i = 0; i < change; ++i)
 				{
 					c->getVehicles()->push_back(new Vehicle(item, item->getClipSize(), size));
 					if (_game->getSavedGame()->getMonthsPassed() != -1)

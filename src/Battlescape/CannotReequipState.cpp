@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -38,13 +38,15 @@ namespace OpenXcom
 CannotReequipState::CannotReequipState(std::vector<ReequipStat> missingItems)
 {
 	// Create objects
-	_window = new Window(this, 320, 200, 0, 0);
-	_btnOk = new TextButton(120, 18, 100, 174);
-	_txtTitle = new Text(220, 32, 50, 8);
-	_txtItem = new Text(142, 9, 10, 50);
-	_txtQuantity = new Text(88, 9, 152, 50);
-	_txtCraft = new Text(74, 9, 218, 50);
-	_lstItems = new TextList(288, 112, 8, 58);
+	int yPos = 3;
+
+	_window = new Window(this, 570, 300, 0, 0 + yPos);
+	_btnOk = new TextButton(120, 18, 100, 174 + yPos);
+	_txtTitle = new Text(220, 32, 50, 8 + yPos);
+	_txtItem = new Text(142, 9, 10, 50 + yPos);
+	_txtQuantity = new Text(88, 9, 152, 50 + yPos);
+	_txtCraft = new Text(74, 9, 218, 50 + yPos);
+	_lstItems = new TextList(288, 112, 8, 58 + yPos);
 
 	// Set palette
 	setInterface("cannotReequip");

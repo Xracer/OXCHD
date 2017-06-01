@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -42,11 +42,11 @@ CraftPatrolState::CraftPatrolState(Craft *craft, Globe *globe) : _craft(craft), 
 	_screen = false;
 
 	// Create objects
-	_window = new Window(this, 224, 168, 16, 16, POPUP_BOTH);
-	_btnOk = new TextButton(140, 12, 58, 144);
-	_btnRedirect = new TextButton(140, 12, 58, 160);
-	_txtDestination = new Text(224, 64, 16, 48);
-	_txtPatrolling = new Text(224, 17, 16, 120);
+	_window = new Window(this, 300, 200, 300, 200, POPUP_BOTH);
+	_btnOk = new TextButton(140, 12, 358, 344);
+	_btnRedirect = new TextButton(140, 12, 358, 360);
+	_txtDestination = new Text(224, 64, 316, 248);
+	_txtPatrolling = new Text(224, 17, 316, 320);
 
 	// Set palette
 	setInterface("geoCraftScreens");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -31,7 +31,7 @@
 #include "../Menu/ErrorMessageState.h"
 #include "../Engine/Options.h"
 #include "../Mod/RuleInterface.h"
-#include <limits>
+#include <climits>
 
 namespace OpenXcom
 {
@@ -46,17 +46,20 @@ PlaceFacilityState::PlaceFacilityState(Base *base, RuleBaseFacility *rule) : _ba
 {
 	_screen = false;
 
+	int xPos = 700;
+	int yPos = 3;
+
 	// Create objects
-	_window = new Window(this, 128, 160, 192, 40);
-	_view = new BaseView(192, 192, 0, 8);
-	_btnCancel = new TextButton(112, 16, 200, 176);
-	_txtFacility = new Text(110, 9, 202, 50);
-	_txtCost = new Text(110, 9, 202, 62);
-	_numCost = new Text(110, 17, 202, 70);
-	_txtTime = new Text(110, 9, 202, 90);
-	_numTime = new Text(110, 17, 202, 98);
-	_txtMaintenance = new Text(110, 9, 202, 118);
-	_numMaintenance = new Text(110, 17, 202, 126);
+	_window = new Window(this, 550, 160, 0 + xPos, 0 + yPos);
+	_view = new BaseView(374, 374, 15, 150);
+	_btnCancel = new TextButton(112, 16, 8 + xPos, 140 + yPos);
+	_txtFacility = new Text(550, 11, 8 + xPos, 8 + yPos);
+	_txtCost = new Text(130, 11, 5 + xPos, 21 + yPos);
+	_numCost = new Text(130, 17, 5 + xPos, 34 + yPos);
+	_txtTime = new Text(130, 11, 140 + xPos, 21 + yPos);
+	_numTime = new Text(130, 17, 140 + xPos, 34 + yPos);
+	_txtMaintenance = new Text(130, 11, 300 + xPos, 21 + yPos);
+	_numMaintenance = new Text(130, 17, 300 + xPos, 34 + yPos);
 
 	// Set palette
 	setInterface("placeFacility");
@@ -72,7 +75,7 @@ PlaceFacilityState::PlaceFacilityState(Base *base, RuleBaseFacility *rule) : _ba
 	add(_txtMaintenance, "text", "placeFacility");
 	add(_numMaintenance, "numbers", "placeFacility");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK01.SCR"));
@@ -145,7 +148,7 @@ void PlaceFacilityState::viewClick(Action *)
 		_base->getFacilities()->push_back(fac);
 		if (Options::allowBuildingQueue)
 		{
-			if (_view->isQueuedBuilding(_rule)) fac->setBuildTime(std::numeric_limits<int>::max());
+			if (_view->isQueuedBuilding(_rule)) fac->setBuildTime(INT_MAX);
 			_view->reCalcQueuedBuildings();
 		}
 		_game->getSavedGame()->setFunds(_game->getSavedGame()->getFunds() - _rule->getBuildCost());

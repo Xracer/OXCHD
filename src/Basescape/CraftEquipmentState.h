@@ -1,5 +1,6 @@
+#pragma once
 /*
- * Copyright 2010-2015 OpenXcom Developers.
+ * Copyright 2010-2017 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -16,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPENXCOM_CRAFTEQUIPMENTSTATE_H
-#define OPENXCOM_CRAFTEQUIPMENTSTATE_H
-
 #include "../Engine/State.h"
 #include <vector>
 #include <string>
@@ -42,7 +40,7 @@ class CraftEquipmentState : public State
 private:
 	TextButton *_btnOk, *_btnClear, *_btnInventory;
 	Window *_window;
-	Text *_txtTitle, *_txtItem, *_txtStores, *_txtAvailable, *_txtUsed, *_txtCrew;
+	Text *_txtTitle, *_txtItem, *_txtStores, *_txtAvailable, *_txtUsed, *_txtCrew, *_txtCraft;
 	TextList *_lstEquipment;
 	Timer *_timerLeft, *_timerRight;
 	size_t _sel, _craft;
@@ -92,5 +90,3 @@ public:
 };
 
 }
-
-#endif
