@@ -44,24 +44,24 @@ namespace OpenXcom
 {
 	_screen = false;
 
-	int xPos = 700;
-	int yPos = 208;
+	int xPos = 850;
+	int yPos = 218;
 
 	// Create objects
-	_window = new Window(this, 350, 128, 10, 36, POPUP_HORIZONTAL);
-	_btnOk = new TextButton(240, 16, 40, 140);
-	_btnPrev = new TextButton(28, 14, 18, 44);
-	_btnNext = new TextButton(28, 14, 274, 44);
-	_txtTitle = new Text(262, 9, 29, 44);
-	_txtUFO = new Text(262, 9, 29, 52);
-	_txtScore = new Text(180, 9, 29, 68);
-	_txtKills = new Text(120, 9, 169, 68);
-	_txtLocation = new Text(180, 9, 29, 76);
-	_txtRace = new Text(120, 9, 169, 76);
-	_txtDaylight = new Text(120, 9, 169, 84);
-	_txtDaysWounded = new Text(180, 9, 29, 84);
-	_txtNoRecord = new Text(240, 9, 29, 100);
-	_lstKills = new TextList(270, 32, 20, 100);
+	_window = new Window(this, 350, 128, 10 + xPos, 36 + yPos, POPUP_HORIZONTAL);
+	_btnOk = new TextButton(240, 16, 40 + xPos, 140 + yPos);
+	_btnPrev = new TextButton(28, 14, 18 + xPos, 44 + yPos);
+	_btnNext = new TextButton(28, 14, 274 + xPos, 44 + yPos);
+	_txtTitle = new Text(262, 11, 29 + xPos, 44 + yPos);
+	_txtUFO = new Text(262, 11, 29 + xPos, 52 + yPos);
+	_txtScore = new Text(180, 11, 29 + xPos, 68 + yPos);
+	_txtKills = new Text(120, 11, 169 + xPos, 68 + yPos);
+	_txtLocation = new Text(180, 11, 29 + xPos, 76 + yPos);
+	_txtRace = new Text(120, 11, 169 + xPos, 76 + yPos);
+	_txtDaylight = new Text(120, 11, 169 + xPos, 84 + yPos);
+	_txtDaysWounded = new Text(180, 11, 29 + xPos, 84 + yPos);
+	_txtNoRecord = new Text(240, 11, 29 + xPos, 100 + yPos);
+	_lstKills = new TextList(270, 32, 20 + xPos, 100 + yPos);
 
 	// Set palette
 	setInterface("soldierMission");
@@ -81,7 +81,7 @@ namespace OpenXcom
 	add(_txtNoRecord, "text", "soldierMission");
 	add(_lstKills, "list", "soldierMission");
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK16.SCR"));

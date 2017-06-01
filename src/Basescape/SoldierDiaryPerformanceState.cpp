@@ -56,8 +56,8 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 	}
 
 	// Create objects
-	int xPos = 700;
-	int yPos = 3;
+	int xPos = 500;
+	int yPos = 425;
 
 	_window = new Window(this, 350, 200, 0 + xPos, 0 + yPos, POPUP_HORIZONTAL);
 	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
@@ -68,8 +68,8 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 	_btnOk = new TextButton(70, 16, 242 + xPos, 176 + yPos);
 	_txtTitle = new Text(310, 16, 5 + xPos, 8 + yPos);
 	_lstPerformance = new TextList(288, 128, 8 + xPos, 28 + yPos);
-	_lstKillTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
-	_lstMissionTotals = new TextList(302, 9, 8 + xPos, 164 + yPos);
+	_lstKillTotals = new TextList(302, 11, 8 + xPos, 164 + yPos);
+	_lstMissionTotals = new TextList(302, 11, 8 + xPos, 164 + yPos);
 	// Commendation stats
 	_txtMedalName = new Text(120, 18, 16 + xPos, 36 + yPos);
 	_txtMedalLevel = new Text(120, 18, 186 + xPos, 36 + yPos);
@@ -105,7 +105,7 @@ SoldierDiaryPerformanceState::SoldierDiaryPerformanceState(Base *base, size_t so
 		add(_commendationDecorations[i]);
 	}
 
-	centerAllSurfaces();
+	//centerAllSurfaces();
 
 	// Set up objects
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));

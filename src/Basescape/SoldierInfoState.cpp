@@ -88,9 +88,9 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	_grid = new Surface (570, 200, 700, 65);
 	*/
 	_rank = new Surface(26, 23, 4, 4);
-	_btnPrev = new TextButton(30, 20, 1100, 7);
-	_btnOk = new TextButton(50, 20, 1132, 7);
-	_btnNext = new TextButton(30, 20, 1186, 7);
+	_btnPrev = new TextButton(30, 20, 1120, 7);
+	_btnOk = new TextButton(50, 20, 1152, 7);
+	_btnNext = new TextButton(30, 20, 1206, 7);
 	_btnArmor = new TextButton(110, 14, 850, 43);
 	_edtSoldier = new TextEdit(this, 210, 16, 40, 9);
 	_btnSack = new TextButton(60, 14, 963, 43);
@@ -596,6 +596,7 @@ void SoldierInfoState::btnPrevClick(Action *)
 //	state->add(info);
 	state->add(new SoldierInfoState(_base, _soldierId)); //trying to reload all the states the awards screen
 	state->add(new SoldierDiaryOverviewState(_base, _soldierId, this)); 
+//	state->add(new SoldierDiaryPerformanceState(_base, _soldierId, this, DIARY_KILLS));
 //	state->add(new SoldierDiaryMissionState(_base, _soldierId));
 //	state->add(new SoldierDiaryPerformanceState(_base, _soldierId));
 	_game->pushState(state);

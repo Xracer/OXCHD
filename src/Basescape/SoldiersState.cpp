@@ -144,8 +144,8 @@ void SoldiersState::lstSoldiersClick(Action *)
 	SoldierInfoState *info = new SoldierInfoState(_base, _lstSoldiers->getSelectedRow());
 	state->add(info);
 	state->add(new SoldierInfoState(_base, _lstSoldiers->getSelectedRow()));
-	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow(), info)); //trying to add the awards screen
-//	state->add(new SoldierDiaryMissionState(_base, _lstSoldiers->getSelectedRow(), info));
+	state->add(new SoldierDiaryOverviewState(_base, _lstSoldiers->getSelectedRow(), info)); 
+//	state->add(new SoldierDiaryMissionState(_base, _lstSoldiers->getSelectedRow(), info)); //trying to add the mission screen
 //	state->add(new SoldierDiaryPerformanceState(_base, _lstSoldiers->getSelectedRow(), info));
 	_game->pushState(state);
 

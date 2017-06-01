@@ -57,11 +57,11 @@ namespace OpenXcom
 
 	// Create objects
 	int xPos = 500;
-	int yPos = 215;
+	int yPos = 218;
 
 	_window = new Window(this, 350, 200, 0 + xPos, 0 + yPos, POPUP_HORIZONTAL);
-	//_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
-	//_btnMissions = new TextButton(70, 16, 86 + xPos, 176 + yPos);
+	_btnKills = new TextButton(70, 16, 8 + xPos, 176 + yPos);
+	_btnMissions = new TextButton(70, 16, 86 + xPos, 176 + yPos);
 	_btnCommendations = new TextButton(70, 16, 164 + xPos, 176 + yPos);
 	_btnOk = new TextButton(70, 16, 242 + xPos, 176 + yPos);
 	_btnPrev = new TextButton(28, 14, 8 + xPos, 8 + yPos);
@@ -76,9 +76,9 @@ namespace OpenXcom
 	setInterface("soldierDiary");
 
 	add(_window, "window", "soldierDiary");
-	//add(_btnOk, "button", "soldierDiary");
-	//add(_btnKills, "button", "soldierDiary");
-	//add(_btnMissions, "button", "soldierDiary");
+	add(_btnOk, "button", "soldierDiary");
+	add(_btnKills, "button", "soldierDiary");
+	add(_btnMissions, "button", "soldierDiary");
 	add(_btnCommendations, "button", "soldierDiary");
 	//add(_btnPrev, "button", "soldierDiary");
 	//add(_btnNext, "button", "soldierDiary");
@@ -94,15 +94,15 @@ namespace OpenXcom
 	_window->setBackground(_game->getMod()->getSurface("BACK02.SCR"));
 	_window->setThinBorder();
 
-	//_btnOk->setText(tr("STR_OK"));
-	//_btnOk->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnOkClick);
-	//_btnOk->onKeyboardPress((ActionHandler)&SoldierDiaryOverviewState::btnOkClick, Options::keyCancel);
+	_btnOk->setText(tr("STR_OK"));
+	_btnOk->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnOkClick);
+	_btnOk->onKeyboardPress((ActionHandler)&SoldierDiaryOverviewState::btnOkClick, Options::keyCancel);
 
-	//_btnKills->setText(tr("STR_COMBAT"));
-	//_btnKills->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnKillsClick);
+	_btnKills->setText(tr("STR_COMBAT"));
+	_btnKills->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnKillsClick);
 	
-	//_btnMissions->setText(tr("STR_PERFORMANCE"));
-	//_btnMissions->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnMissionsClick);
+	_btnMissions->setText(tr("STR_PERFORMANCE"));
+	_btnMissions->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnMissionsClick);
 
 	_btnCommendations->setText(tr("STR_AWARDS"));
 	_btnCommendations->onMouseClick((ActionHandler)&SoldierDiaryOverviewState::btnCommendationsClick);
