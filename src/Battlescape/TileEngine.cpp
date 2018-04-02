@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 OpenXcom Developers.
+ * Copyright 2010-2016 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -53,8 +53,9 @@ const int TileEngine::heightFromCenter[11] = {0,-2,+2,-4,+4,-6,+6,-8,+8,-12,+12}
  * @param save Pointer to SavedBattleGame object.
  * @param voxelData List of voxel data.
  */
-TileEngine::TileEngine(SavedBattleGame *save, std::vector<Uint16> *voxelData) : _save(save), _voxelData(voxelData), _personalLighting(true)
+TileEngine::TileEngine(SavedBattleGame *save, std::vector<Uint16> *voxelData) : _save(save), _voxelData(voxelData), _personalLighting(true), _cacheTile(0), _cacheTileBelow(0)
 {
+	_cacheTilePos = Position(-1,-1,-1);
 }
 
 /**
@@ -677,7 +678,7 @@ bool TileEngine::canTargetTile(Position *originVoxel, Tile *tile, int part, Posi
 	{
 		return false;
 	}
-
+	voxelCheckFlush();
 // find out height range
 
 	if (!minZfound)
@@ -857,7 +858,24 @@ std::vector<std::pair<BattleUnit *, int> > TileEngine::getSpottingUnits(BattleUn
 				Position originVoxel = getOriginVoxel(falseAction, 0);
 				Position targetVoxel;
 				AIModule *ai = (*i)->getAIModule();
-				bool gotHit = (ai != 0 && ai->getWasHitBy(unit->getId()));
+
+				// Inquisitor's note regarding 'gotHit' variable
+				// in vanilla, the 'hitState' flag is the only part of this equation that comes into play.
+				// any time a unit takes damage, this flag is set, then it would be reset by a call to
+				// a function analogous to SavedBattleGame::resetUnitHitStates(), any time:
+				// 1: a unit was selected by being clicked on.
+				// 2: either "next unit" button was pressed.
+				// 3: the inventory screen was accessed. (i didn't look too far into this one, it's possible it's only called in the pre-mission equip screen)
+				// 4: the same place where we call it, immediately before every move the AI makes.
+				// this flag is responsible for units turning around to respond to hits, and is in keeping with the details listed on http://www.ufopaedia.org/index.php/Reaction_fire_triggers
+				// we've gone for a slightly different implementation: AI units keep a list of which units have hit them and don't forget until the end of the player's turn.
+				// this method is in keeping with the spirit of the original feature, but much less exploitable by players.
+				// the hitState flag in our implementation allows player units to turn and react as they did in the original, (which is far less cumbersome than giving them all an AI module)
+				// we don't extend the same "enhanced aggressor memory" courtesy to players, because in the original, they could only turn and react to damage immediately after it happened.
+				// this is because as much as we want the player's soldiers dead, we don't want them to feel like we're being unfair about it.
+
+				bool gotHit = (ai != 0 && ai->getWasHitBy(unit->getId())) || (ai == 0 && (*i)->getHitState());
+
 					// can actually see the target Tile, or we got hit
 				if (((*i)->checkViewSector(unit->getPosition()) || gotHit) &&
 					// can actually target the unit
@@ -936,7 +954,7 @@ int TileEngine::determineReactionType(BattleUnit *unit, BattleUnit *target)
 		unit->getTimeUnits() > unit->getActionTUs(BA_HIT, meleeWeapon) &&
 		(unit->getOriginalFaction() != FACTION_PLAYER ||
 		_save->getGeoscapeSave()->isResearched(meleeWeapon->getRules()->getRequirements())) &&
-		(_save->getDepth() != 0 || meleeWeapon->getRules()->isWaterOnly() == false))
+		_save->isItemUsable(meleeWeapon->getRules()))
 	{
 		return BA_HIT;
 	}
@@ -953,7 +971,7 @@ int TileEngine::determineReactionType(BattleUnit *unit, BattleUnit *target)
 		unit->getTimeUnits() > unit->getActionTUs(BA_SNAPSHOT, weapon)) &&
 		(unit->getOriginalFaction() != FACTION_PLAYER ||
 		_save->getGeoscapeSave()->isResearched(weapon->getRules()->getRequirements())) &&
-		(_save->getDepth() != 0 || weapon->getRules()->isWaterOnly() == false))
+		_save->isItemUsable(weapon->getRules()))
 	{
 		return BA_SNAPSHOT;
 	}
@@ -1048,6 +1066,7 @@ BattleUnit *TileEngine::hit(Position center, int power, ItemDamageType type, Bat
 
 	BattleUnit *bu = tile->getUnit();
 	int adjustedDamage = 0;
+	voxelCheckFlush();
 	const int part = voxelCheck(center, unit);
 	if (part >= V_FLOOR && part <= V_OBJECT)
 	{
@@ -1216,7 +1235,16 @@ void TileEngine::explode(Position center, int power, ItemDamageType type, int ma
 						int min = power_ * (100 - dmgRng) / 100;
 						int max = power_ * (100 + dmgRng) / 100;
 						BattleUnit *bu = dest->getUnit();
+						Tile *tileBelow = _save->getTile(dest->getPosition() - Position(0,0,1));
 						int wounds = 0;
+						if (!bu && dest->getPosition().z > 0 && dest->hasNoFloor(tileBelow))
+						{
+							bu = tileBelow->getUnit();
+							if (bu && bu->getHeight() + bu->getFloatHeight() - tileBelow->getTerrainLevel() <= 24)
+							{
+								bu = 0; // if the unit below has no voxels poking into the tile, don't damage it.
+							}
+						}
 						if (bu && unit)
 						{
 							wounds = bu->getFatalWounds();
@@ -1509,12 +1537,20 @@ bool TileEngine::detonate(Tile* tile)
 			}
 		}
 		// add some smoke if tile was destroyed and not set on fire
-		if (destroyed && !tiles[i]->getFire())
+		if (destroyed)
 		{
-			int smoke = RNG::generate(1, (volume / 2) + 3) + (volume / 2);
-			if (smoke > tiles[i]->getSmoke())
+			if (tiles[i]->getFire() && !tiles[i]->getMapData(O_FLOOR) && !tiles[i]->getMapData(O_OBJECT))
 			{
-				tiles[i]->setSmoke(std::max(0, std::min(smoke, 15)));
+				tiles[i]->setFire(0);// if the object set the floor on fire, and the floor was subsequently destroyed, the fire needs to go out
+			}
+
+			if (!tiles[i]->getFire())
+			{
+				int smoke = RNG::generate(1, (volume / 2) + 3) + (volume / 2);
+				if (smoke > tiles[i]->getSmoke())
+				{
+					tiles[i]->setSmoke(std::max(0, std::min(smoke, 15)));
+				}
 			}
 		}
 	}
@@ -2149,6 +2185,11 @@ int TileEngine::calculateLine(Position origin, Position target, bool storeTrajec
 	Position lastPoint(origin);
 	int result;
 	int steps = 0;
+	bool excludeAllUnits = false;
+	if (_save->isBeforeGame())
+	{
+		excludeAllUnits = true; // don't start unit spotting before pre-game inventory stuff (large units on the craftInventory tile will cause a crash if they're "spotted")
+	}
 
 	//start and end points
 	x0 = origin.x;	 x1 = target.x;
@@ -2190,8 +2231,10 @@ int TileEngine::calculateLine(Position origin, Position target, bool storeTrajec
 	y = y0;
 	z = z0;
 
+	if (doVoxelCheck) voxelCheckFlush();
+
 	//step through longest delta (which we have swapped to x)
-	for (x = x0; x != (x1+step_x); x += step_x)
+	for (x = x0;; x += step_x)
 	{
 		//copy position
 		cx = x;	cy = y;	cz = z;
@@ -2239,6 +2282,9 @@ int TileEngine::calculateLine(Position origin, Position target, bool storeTrajec
 
 			lastPoint = Position(cx, cy, cz);
 		}
+
+		if (x == x1) break;
+
 		//update progress in other planes
 		drift_xy = drift_xy - delta_y;
 		drift_xz = drift_xz - delta_z;
@@ -2255,7 +2301,7 @@ int TileEngine::calculateLine(Position origin, Position target, bool storeTrajec
 				cx = x;	cz = z; cy = y;
 				if (swap_xz) std::swap(cx, cz);
 				if (swap_xy) std::swap(cx, cy);
-				result = voxelCheck(Position(cx, cy, cz), excludeUnit, false, onlyVisible, excludeAllBut);
+				result = voxelCheck(Position(cx, cy, cz), excludeUnit, excludeAllUnits, onlyVisible, excludeAllBut);
 				if (result != V_EMPTY)
 				{
 					if (trajectory != 0)
@@ -2279,7 +2325,7 @@ int TileEngine::calculateLine(Position origin, Position target, bool storeTrajec
 				cx = x;	cz = z; cy = y;
 				if (swap_xz) std::swap(cx, cz);
 				if (swap_xy) std::swap(cx, cy);
-				result = voxelCheck(Position(cx, cy, cz), excludeUnit, false, onlyVisible,  excludeAllBut);
+				result = voxelCheck(Position(cx, cy, cz), excludeUnit, excludeAllUnits, onlyVisible,  excludeAllBut);
 				if (result != V_EMPTY)
 				{
 					if (trajectory != 0)
@@ -2325,39 +2371,37 @@ int TileEngine::calculateParabola(Position origin, Position target, bool storeTr
 	int y = origin.y;
 	int z = origin.z;
 	int i = 8;
+	int result = V_EMPTY;
+	std::vector<Position> _trajectory;
 	Position lastPosition = Position(x,y,z);
+	Position nextPosition = lastPosition;
 	while (z > 0)
 	{
 		x = (int)((double)origin.x + (double)i * cos(te) * sin(fi));
 		y = (int)((double)origin.y + (double)i * sin(te) * sin(fi));
 		z = (int)((double)origin.z + (double)i * cos(fi) - zK * ((double)i - ro / 2.0) * ((double)i - ro / 2.0) + zA);
-		if (storeTrajectory && trajectory)
-		{
-			trajectory->push_back(Position(x, y, z));
-		}
 		//passes through this point?
-		Position nextPosition = Position(x,y,z);
-		int result = calculateLine(lastPosition, nextPosition, false, 0, excludeUnit);
+		nextPosition = Position(x,y,z);
+		_trajectory.clear();
+		result = calculateLine(lastPosition, nextPosition, false, 0, excludeUnit);
 		if (result != V_EMPTY)
 		{
-			if (lastPosition.z < nextPosition.z)
-			{
-				result = V_OUTOFBOUNDS;
-			}
-			if (!storeTrajectory && trajectory != 0)
-			{ // store the position of impact
-				trajectory->push_back(nextPosition);
-			}
-			return result;
+			result = calculateLine(lastPosition, nextPosition, true, &_trajectory, excludeUnit);
+			nextPosition = _trajectory.back(); //pick the INSIDE position of impact
+			break;
 		}
-		lastPosition = Position(x,y,z);
+		if (storeTrajectory && trajectory)
+		{
+			trajectory->push_back(nextPosition);
+		}
+		lastPosition = nextPosition;
 		++i;
 	}
-	if (!storeTrajectory && trajectory != 0)
+	if (trajectory != 0)
 	{ // store the position of impact
-		trajectory->push_back(Position(x, y, z));
+		trajectory->push_back(nextPosition);
 	}
-	return V_EMPTY;
+	return result;
 }
 
 /**
@@ -2380,6 +2424,7 @@ int TileEngine::castedShade(Position voxel)
 	Position tmpVoxel = voxel;
 	int z;
 
+	voxelCheckFlush();
 	for (z = zstart; z>0; z--)
 	{
 		tmpVoxel.z = z;
@@ -2401,6 +2446,8 @@ bool TileEngine::isVoxelVisible(Position voxel)
 		return true; // visible!
 	Position tmpVoxel = voxel;
 	int zend = (zstart/24)*24 +24;
+
+	voxelCheckFlush();
 	for (int z = zstart; z<zend; z++)
 	{
 		tmpVoxel.z=z;
@@ -2425,33 +2472,48 @@ bool TileEngine::isVoxelVisible(Position voxel)
  */
 int TileEngine::voxelCheck(Position voxel, BattleUnit *excludeUnit, bool excludeAllUnits, bool onlyVisible, BattleUnit *excludeAllBut)
 {
-	if (_save->isBeforeGame())
-	{
-		excludeAllUnits = true; // don't start unit spotting before pre-game inventory stuff (large units on the craftInventory tile will cause a crash if they're "spotted")
-	}
-	Tile *tile = _save->getTile(voxel / Position(16, 16, 24));
-	// check if we are not out of the map
-	if (tile == 0 || voxel.x < 0 || voxel.y < 0 || voxel.z < 0)
+	if (voxel.x < 0 || voxel.y < 0 || voxel.z < 0) //preliminary out of map
 	{
 		return V_OUTOFBOUNDS;
 	}
-	Tile *tileBelow = _save->getTile(tile->getPosition() + Position(0,0,-1));
+	Position pos = voxel / Position(16, 16, 24);
+	Tile *tile, *tileBelow;
+	if (_cacheTilePos == pos)
+	{
+		tile = _cacheTile;
+		tileBelow = _cacheTileBelow;
+	}
+	else
+	{
+		tile = _save->getTile(pos);
+		if (!tile) // check if we are not out of the map
+		{
+			return V_OUTOFBOUNDS; //not even cache
+		}
+		tileBelow = _save->getTile(pos + Position(0,0,-1));
+		_cacheTilePos = pos;
+		_cacheTile = tile;
+		_cacheTileBelow = tileBelow;
+ 	}
+
 	if (tile->isVoid() && tile->getUnit() == 0 && (!tileBelow || tileBelow->getUnit() == 0))
 	{
 		return V_EMPTY;
 	}
 
-	if ((voxel.z % 24 == 0 || voxel.z % 24 == 1) && tile->getMapData(O_FLOOR) && tile->getMapData(O_FLOOR)->isGravLift())
+	if (tile->getMapData(O_FLOOR) && tile->getMapData(O_FLOOR)->isGravLift() && (voxel.z % 24 == 0 || voxel.z % 24 == 1))
 	{
 		if ((tile->getPosition().z == 0) || (tileBelow && tileBelow->getMapData(O_FLOOR) && !tileBelow->getMapData(O_FLOOR)->isGravLift()))
+		{
 			return V_FLOOR;
+		}
 	}
 
 	// first we check terrain voxel data, not to allow 2x2 units stick through walls
 	for (int i=0; i< 4; ++i)
 	{
 		MapData *mp = tile->getMapData(i);
-		if (tile->isUfoDoorOpen(i))
+		if (((i==1) || (i==2)) && tile->isUfoDoorOpen(i))
 			continue;
 		if (mp != 0)
 		{
@@ -2470,17 +2532,31 @@ int TileEngine::voxelCheck(Position voxel, BattleUnit *excludeUnit, bool exclude
 		BattleUnit *unit = tile->getUnit();
 		// sometimes there is unit on the tile below, but sticks up to this tile with his head,
 		// in this case we couldn't have unit standing at current tile.
-		if (unit == 0 && tile->hasNoFloor(0))
+		if (unit == 0 && tile->hasNoFloor(tileBelow))
 		{
-			tile = _save->getTile(Position(voxel.x/16, voxel.y/16, (voxel.z/24)-1)); //below
-			if (tile) unit = tile->getUnit();
+			if (tileBelow)
+			{
+				tile = tileBelow;
+				unit = tile->getUnit();
+			}
 		}
-
 		if (unit != 0 && unit != excludeUnit && (!excludeAllBut || unit == excludeAllBut) && (!onlyVisible || unit->getVisible() ) )
 		{
 			Position tilepos;
 			Position unitpos = unit->getPosition();
-			int tz = unitpos.z*24 + unit->getFloatHeight()+(-tile->getTerrainLevel());//bottom
+			int terrainHeight = 0;
+			for (int x = 0; x < unit->getArmor()->getSize(); ++x)
+			{
+				for (int y = 0; y < unit->getArmor()->getSize(); ++y)
+				{
+					Tile *tempTile = _save->getTile(unitpos + Position(x,y,0));
+					if (tempTile->getTerrainLevel() < terrainHeight)
+					{
+						terrainHeight = tempTile->getTerrainLevel();
+					}
+				}
+			}
+			int tz = unitpos.z*24 + unit->getFloatHeight() - terrainHeight; //bottom most voxel, terrain heights are negative, so we subtract.
 			if ((voxel.z > tz) && (voxel.z <= tz + unit->getHeight()) )
 			{
 				int x = voxel.x%16;
@@ -2500,6 +2576,13 @@ int TileEngine::voxelCheck(Position voxel, BattleUnit *excludeUnit, bool exclude
 		}
 	}
 	return V_EMPTY;
+}
+
+void TileEngine::voxelCheckFlush()
+{
+	_cacheTilePos = Position(-1,-1,-1);
+	_cacheTile = 0;
+	_cacheTileBelow = 0;
 }
 
 /**
@@ -2588,7 +2671,7 @@ Tile *TileEngine::applyGravity(Tile *t)
 				}
 				else
 				{
-					occupant->startWalking(Pathfinding::DIR_DOWN, occupant->getPosition() + Position(0,0,-1), _save->getTile(occupant->getPosition() + Position(0,0,-1)), true);
+					occupant->setPosition(occupant->getPosition()); // this is necessary to set the unit up for falling correctly, updating their "lastPos"
 					_save->addFallingUnit(occupant);
 				}
 			}
@@ -2773,7 +2856,7 @@ int TileEngine::faceWindow(Position position)
  * @param voxelType The type of voxel at which this parabola terminates.
  * @return Validity of action.
  */
-bool TileEngine::validateThrow(BattleAction &action, const Position& originVoxel, const Position& targetVoxel, double *curve, int *voxelType)
+bool TileEngine::validateThrow(BattleAction &action, Position originVoxel, Position targetVoxel, double *curve, int *voxelType, bool forced)
 {
 	bool foundCurve = false;
 	double curvature = 0.5;
@@ -2789,6 +2872,7 @@ bool TileEngine::validateThrow(BattleAction &action, const Position& originVoxel
 	}
 
 	Tile *targetTile = _save->getTile(action.target);
+	Position targetPos = (targetVoxel / Position(16, 16, 24));
 	// object blocking - can't throw here
 	if (action.type == BA_THROW
 		&& targetTile
@@ -2812,7 +2896,8 @@ bool TileEngine::validateThrow(BattleAction &action, const Position& originVoxel
 	{
 		std::vector<Position> trajectory;
 		test = calculateParabola(originVoxel, targetVoxel, false, &trajectory, action.actor, curvature, Position(0,0,0));
-		if (test != V_OUTOFBOUNDS && (trajectory.at(0) / Position(16, 16, 24)) == (targetVoxel / Position(16, 16, 24)))
+		Position tilePos = ((trajectory.at(0) + Position(0,0,1)) / Position(16, 16, 24));
+		if (forced || (test != V_OUTOFBOUNDS && tilePos == targetPos))
 		{
 			if (voxelType)
 			{
@@ -2980,7 +3065,7 @@ void TileEngine::setDangerZone(const Position& pos, int radius, BattleUnit *unit
 		return;
 	}
 	// set the epicenter as dangerous
-	tile->setDangerous();
+	tile->setDangerous(true);
 	Position originVoxel = (pos * Position(16,16,24)) + Position(8,8,12 + -tile->getTerrainLevel());
 	Position targetVoxel;
 	for (int x = -radius; x != radius; ++x)
@@ -3006,7 +3091,7 @@ void TileEngine::setDangerZone(const Position& pos, int radius, BattleUnit *unit
 						{
 							if (trajectory.size() && (trajectory.back() / Position(16,16,24)) == pos + Position(x,y,0))
 							{
-								tile->setDangerous();
+								tile->setDangerous(true);
 							}
 						}
 					}

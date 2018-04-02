@@ -39,6 +39,7 @@
 #include "../Engine/Options.h"
 #include "../Engine/Logger.h"
 #include "SerializationHelper.h"
+#include "../Mod/RuleItem.h"
 
 namespace OpenXcom
 {
@@ -1365,6 +1366,7 @@ void SavedBattleGame::prepareNewTurn()
 		{
 			tilesOnSmoke.push_back(getTiles()[i]);
 		}
+		getTiles()[i]->setDangerous(false);
 	}
 
 	// now make the smoke spread.
@@ -1425,7 +1427,7 @@ void SavedBattleGame::prepareNewTurn()
 		for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
 		{
 			if (getTiles()[i]->getSmoke() != 0)
-				getTiles()[i]->prepareNewTurn();
+				getTiles()[i]->prepareNewTurn(getDepth() == 0);
 		}
 		// fires could have been started, stopped or smoke could reveal/conceal units.
 		getTileEngine()->calculateTerrainLighting();
@@ -2041,6 +2043,31 @@ void SavedBattleGame::setCheatTurn(int turn)
 bool SavedBattleGame::isBeforeGame() const
 {
 	return _beforeGame;
+}
+
+/**
+ * Checks if an item can be used in the current battlescape conditions.
+ * @return True if it's usable, False otherwise.
+ */
+bool SavedBattleGame::isItemUsable(RuleItem *item) const
+{
+	if ((_depth == 0 && item->isWaterOnly()) ||
+		(_depth != 0 && item->isLandOnly()))
+	{
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Resets all unit hit state flags.
+ */
+void SavedBattleGame::resetUnitHitStates()
+{
+	for (std::vector<BattleUnit*>::iterator i = _units.begin(); i != _units.end(); ++i)
+	{
+		(*i)->resetHitState();
+	}
 }
 
 }

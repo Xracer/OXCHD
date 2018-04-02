@@ -1238,6 +1238,7 @@ alienDeployments:
     nextStage: STR_MARS_THE_FINAL_ASSAULT
     finalDestination: true
     loseCutscene: loseGame
+    abortCutscene: loseGame
     briefing:
       textOffset: -16
       palette: 6
@@ -1396,6 +1397,7 @@ alienDeployments:
     race: STR_MIXED
     winCutscene: winGame
     loseCutscene: loseGame
+    abortCutscene: loseGame
     briefing:
       textOffset: -16
       palette: 6

@@ -867,22 +867,25 @@ void Map::drawTerrain(Surface *surface)
 							int part = 0;
 							part += ttile->getPosition().x - tunit->getPosition().x;
 							part += (ttile->getPosition().y - tunit->getPosition().y)*2;
-							tmpSurface = tunit->getCache(&invalid, part);
-							if (tmpSurface)
+							if (part != 1 && part != 2)
 							{
-								Position offset;
-								calculateWalkingOffset(tunit, &offset);
-								offset.y += 24;
-								tmpSurface->blitNShade(surface, screenPosition.x + offset.x - _spriteWidth / 2, screenPosition.y + offset.y, ttile->getShade());
-								if (tunit->getArmor()->getSize() > 1)
+								tmpSurface = tunit->getCache(&invalid, part);
+								if (tmpSurface)
 								{
-									offset.y += 4;
-								}
-								if (tunit->getFire() > 0)
-								{
-									frameNumber = 4 + (_animFrame / 2);
-									tmpSurface = _game->getMod()->getSurfaceSet("SMOKE.PCK")->getFrame(frameNumber);
-									tmpSurface->blitNShade(surface, screenPosition.x + offset.x, screenPosition.y + offset.y, 0);
+									Position offset;
+									calculateWalkingOffset(tunit, &offset);
+									offset.y += 24;
+									tmpSurface->blitNShade(surface, screenPosition.x + offset.x - _spriteWidth / 2, screenPosition.y + offset.y, ttile->getShade());
+									if (tunit->getArmor()->getSize() > 1)
+									{
+										offset.y += 4;
+									}
+									if (tunit->getFire() > 0)
+									{
+										frameNumber = 4 + (_animFrame / 2);
+										tmpSurface = _game->getMod()->getSurfaceSet("SMOKE.PCK")->getFrame(frameNumber);
+										tmpSurface->blitNShade(surface, screenPosition.x + offset.x, screenPosition.y + offset.y, 0);
+									}
 								}
 							}
 						}
@@ -1561,22 +1564,6 @@ void Map::cacheUnit(BattleUnit *unit)
 			}
 			
 			unitSprite->setBattleUnit(unit, i);
-
-			BattleItem *rhandItem = unit->getItem("STR_RIGHT_HAND");
-			BattleItem *lhandItem = unit->getItem("STR_LEFT_HAND");
-			if (rhandItem && !rhandItem->getRules()->isFixed())
-			{
-				unitSprite->setBattleItem(rhandItem);
-			}
-			if (lhandItem && !lhandItem->getRules()->isFixed())
-			{
-				unitSprite->setBattleItem(lhandItem);
-			}
-
-			if (!lhandItem && !rhandItem)
-			{
-				unitSprite->setBattleItem(0);
-			}
 			unitSprite->setSurfaces(_game->getMod()->getSurfaceSet(unit->getArmor()->getSpriteSheet()),
 									_game->getMod()->getSurfaceSet("HANDOB.PCK"),
 									_game->getMod()->getSurfaceSet("HANDOB2.PCK"));

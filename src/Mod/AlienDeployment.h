@@ -49,6 +49,7 @@ struct BriefingData
 	BriefingData() : palette(0), textOffset(0), music("GMDEFEND"), background("HDBACK16.PNG"), showCraft(true), showTarget(true) { /*Empty by Design*/ };
 };
 enum ChronoTrigger { FORCE_LOSE, FORCE_ABORT, FORCE_WIN };
+enum EscapeType { ESCAPE_NONE, ESCAPE_EXIT, ESCAPE_ENTRY, ESCAPE_EITHER };
 /**
  * Represents a specific type of Alien Deployment.
  * Contains constant info about a Alien Deployment like
@@ -69,7 +70,7 @@ private:
 	int _shade;
 	std::string _nextStage, _race, _script;
 	bool _finalDestination, _isAlienBase;
-	std::string _winCutscene, _loseCutscene;
+	std::string _winCutscene, _loseCutscene, _abortCutscene;
 	std::string _alert, _alertBackground;
 	BriefingData _briefingData;
 	std::string _markerName, _objectivePopup, _objectiveCompleteText, _objectiveFailedText;
@@ -77,6 +78,7 @@ private:
 	int _markerIcon, _durationMin, _durationMax, _minDepth, _maxDepth, _minSiteDepth, _maxSiteDepth, _genMissionFrequency;
 	int _objectiveType, _objectivesRequired, _objectiveCompleteScore, _objectiveFailedScore, _despawnPenalty, _points, _turnLimit, _cheatTurn;
 	ChronoTrigger _chronoTrigger;
+	EscapeType _escapeType;
 public:
 	/// Creates a blank Alien Deployment ruleset.
 	AlienDeployment(const std::string &type);
@@ -108,6 +110,8 @@ public:
 	std::string getWinCutscene() const;
 	/// Gets the cutscene to play when this mission is lost.
 	std::string getLoseCutscene() const;
+	/// Gets the cutscene to play when this mission is aborted.
+	std::string getAbortCutscene() const;
 	/// Gets the alert message for this mission type.
 	std::string getAlertMessage() const;
 	/// Gets the alert background for this mission type.
@@ -158,6 +162,8 @@ public:
 	std::string getGenMissionType() const;
 
 	int getGenMissionFrequency() const;
+
+	EscapeType getEscapeType() const;
 
 };
 

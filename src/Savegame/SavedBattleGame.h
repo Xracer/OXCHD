@@ -37,6 +37,7 @@ class TileEngine;
 class BattleItem;
 class Mod;
 class State;
+class RuleItem;
 
 /**
  * The battlescape data that gets written to disk when the game is saved.
@@ -288,7 +289,12 @@ public:
 	void setChronoTrigger(ChronoTrigger trigger);
 	/// Sets the turn to start the aliens cheating.
 	void setCheatTurn(int turn);
+	/// Check whether the battle has actually commenced or not.
 	bool isBeforeGame() const;
+	/// Checks if an item is usable on this map.
+	bool isItemUsable(RuleItem *item) const;
+	/// Reset all the unit hit state flags.
+	void resetUnitHitStates();
 };
 
 }

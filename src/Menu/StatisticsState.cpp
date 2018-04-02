@@ -56,12 +56,12 @@ StatisticsState::StatisticsState()
 	_lstStats = new TextList(515, 162, 712, 567);
 
 	// Set palette
-	setInterface("newGameMenu");
+	setInterface("endGameStatistics");
 
-	add(_window, "window", "soldierList");
-	//add(_btnOk, "button", "saveMenus");
-	add(_txtTitle, "text", "saveMenus");
-	add(_lstStats, "list", "saveMenus");
+	add(_window, "window", "endGameStatistics");
+	//add(_btnOk, "button", "endGameStatistics");
+	add(_txtTitle, "text", "endGameStatistics");
+	add(_lstStats, "list", "endGameStatistics");
 
 	//centerAllSurfaces();
 
@@ -321,7 +321,7 @@ void StatisticsState::btnOkClick(Action *)
 	else
 	{
 		_game->setSavedGame(0);
-		_game->setState(new MainMenuState);
+		_game->setState(new GoToMainMenuState);
 	}
 }*/
 

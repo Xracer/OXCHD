@@ -179,7 +179,7 @@ void AIModule::think(BattleAction *action)
 	if (action->weapon)
 	{
 		RuleItem *rule = action->weapon->getRules();
-		if (!rule->isWaterOnly() || _save->getDepth() != 0)
+		if (_save->isItemUsable(rule))
 		{
 			if (rule->getBattleType() == BT_FIREARM)
 			{
@@ -1515,6 +1515,15 @@ bool AIModule::explosiveEfficacy(Position targetPos, BattleUnit *attackingUnit, 
 	{
 		return false;
 	}
+
+	Tile *targetTile = _save->getTile(targetPos);
+
+	// don't throw grenades at flying enemies.
+	if (grenade && targetPos.z > 0 && targetTile->hasNoFloor(_save->getTile(targetPos - Position(0,0,1))))
+	{
+		return false;
+	}
+
 	if (diff == -1)
 	{
 		diff = _save->getBattleState()->getGame()->getSavedGame()->getDifficultyCoefficient();
@@ -1539,8 +1548,8 @@ bool AIModule::explosiveEfficacy(Position targetPos, BattleUnit *attackingUnit, 
 	efficacy += diff/2;
 
 	// account for the unit we're targetting
-	BattleUnit *target = _save->getTile(targetPos)->getUnit();
-	if (target && !_save->getTile(targetPos)->getDangerous())
+	BattleUnit *target = targetTile->getUnit();
+	if (target && !targetTile->getDangerous())
 	{
 		++enemiesAffected;
 		++efficacy;

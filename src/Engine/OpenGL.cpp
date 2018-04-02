@@ -153,7 +153,7 @@ void OpenGL::refresh(bool smooth, unsigned inwidth, unsigned inheight, unsigned 
 {
 	while (glGetError() != GL_NO_ERROR); // clear possible error from who knows where
 	clear();
-	if (shader_support && (fragmentshader || vertexshader))
+	if (shader_support && glprogram)
 	{
 		glUseProgram(glprogram);
 		glErrorCheck();
@@ -203,19 +203,37 @@ void OpenGL::refresh(bool smooth, unsigned inwidth, unsigned inheight, unsigned 
 	//therefore, below vertices flip image to support top-left source.
 	//texture range = x1:0.0, y1:0.0, x2:1.0, y2:1.0
 	//vertex range = x1:0, y1:0, x2:width, y2:height
-	double w = double(inwidth)  / double(iwidth);
-	double h = double(inheight) / double(iheight);
-	int u1 = leftBlackBand;
-	int u2 = outwidth - rightBlackBand;
-	int v1 = outheight - topBlackBand;
-	int v2 = bottomBlackBand;
+	if (leftBlackBand + rightBlackBand + topBlackBand + bottomBlackBand == 0)
+	{
+		double w = double(inwidth)  / double(iwidth)  * 2;
+		double h = double(inheight) / double(iheight) * 2;
+		int u1 = 0;
+		int u2 = outwidth * 2;
+		int v1 = outheight;
+		int v2 = - outheight;
 
-	glBegin(GL_TRIANGLE_STRIP);
-	glTexCoord2f(0, 0); glVertex3i(u1, v1, 0);
-	glTexCoord2f(w, 0); glVertex3i(u2, v1, 0);
-	glTexCoord2f(0, h); glVertex3i(u1, v2, 0);
-	glTexCoord2f(w, h); glVertex3i(u2, v2, 0);
-	glEnd();
+		glBegin(GL_TRIANGLES);
+		glTexCoord2f(0, 0); glVertex3i(u1, v1, 0);
+		glTexCoord2f(w, 0); glVertex3i(u2, v1, 0);
+		glTexCoord2f(0, h); glVertex3i(u1, v2, 0);
+		glEnd();
+	}
+	else
+	{
+		double w = double(inwidth)  / double(iwidth);
+		double h = double(inheight) / double(iheight);
+		int u1 = leftBlackBand;
+		int u2 = outwidth - rightBlackBand;
+		int v1 = outheight - topBlackBand;
+		int v2 = bottomBlackBand;
+
+		glBegin(GL_TRIANGLE_STRIP);
+		glTexCoord2f(0, 0); glVertex3i(u1, v1, 0);
+		glTexCoord2f(w, 0); glVertex3i(u2, v1, 0);
+		glTexCoord2f(0, h); glVertex3i(u1, v2, 0);
+		glTexCoord2f(w, h); glVertex3i(u2, v2, 0);
+		glEnd();
+	}
 	glErrorCheck();
 
     if (shader_support)
@@ -231,43 +249,18 @@ bool OpenGL::set_shader(const char *source_yaml_filename)
 
 	if (glprogram)
 	{
-		GLsizei tCount;
-		GLuint tShader[2];
-		glGetAttachedShaders(glprogram, 2, &tCount, tShader);
-		glErrorCheck();
-		if (fragmentshader)
-		{
-			if ((tCount > 0 && tShader[0] == fragmentshader) || (tCount > 1 && tShader[1] == fragmentshader)) //necessary check
-			{
-				glDetachShader(glprogram, fragmentshader);
-				glErrorCheck();
-			}
-			if (glIsShader(fragmentshader))
-			{
-				glDeleteShader(fragmentshader);
-				glErrorCheck();
-				fragmentshader = 0;
-			}
-		}
-
-		if (vertexshader)
-		{
-			if ((tCount>0 && tShader[0] == vertexshader) || (tCount>1 && tShader[1] == vertexshader)) //necessary check
-			{
-				glDetachShader(glprogram, vertexshader);
-				glErrorCheck();
-			}
-			if (glIsShader(vertexshader))
-			{
-				glDeleteShader(vertexshader);
-				glErrorCheck();
-				vertexshader = 0;
-			}
-		}
+		glDeleteProgram(glprogram);
+		glprogram = 0;
 	}
 
 	if (source_yaml_filename && strlen(source_yaml_filename))
 	{
+		glprogram = glCreateProgram();
+		if (glprogram == 0)
+		{
+			Log(LOG_ERROR) << "Failed to create GLSL shader program";
+			return false;
+		}
 		try
 		{
 			YAML::Node document = YAML::LoadFile(source_yaml_filename);
@@ -286,36 +279,50 @@ bool OpenGL::set_shader(const char *source_yaml_filename)
 				if (!fragment_source.empty()) set_fragment_shader(fragment_source.c_str());
 				if (!vertex_source.empty()) set_vertex_shader(vertex_source.c_str());
 			}
+			else
+			{
+				Log(LOG_ERROR) << "Unexpected shader language \"" <<
+					document["language"].as<std::string>() << "\"";
+			}
 		}
 		catch (YAML::Exception &e)
 		{
 			Log(LOG_ERROR) << source_yaml_filename << ": " << e.what();
+			glDeleteProgram(glprogram);
+			glprogram = 0;
+			return false;
+		}
+
+		glLinkProgram(glprogram);
+		glErrorCheck();
+		GLint linkStatus;
+		glGetProgramiv(glprogram, GL_LINK_STATUS, &linkStatus);
+		glErrorCheck();
+		if (linkStatus != GL_TRUE)
+		{
+			GLint infoLogLength;
+			glGetProgramiv(glprogram, GL_INFO_LOG_LENGTH, &infoLogLength);
+			glErrorCheck();
+			if (infoLogLength == 0)
+			{
+				Log(LOG_ERROR) << "OpenGL shader link failed: No log returned from driver";
+			}
+			else
+			{
+				GLchar *infoLog = new GLchar[infoLogLength];
+				glGetProgramInfoLog(glprogram, infoLogLength, NULL, infoLog);
+				glErrorCheck();
+
+				Log(LOG_ERROR) << "OpenGL shader link failed \"" << infoLog << "\"";
+
+				delete[] infoLog;
+			}
+			glDeleteProgram(glprogram);
+			glErrorCheck();
+			glprogram = 0;
 		}
 	}
-
-	glLinkProgram(glprogram);
-	glErrorCheck();
-	GLint linkStatus;
-	glGetProgramiv(glprogram, GL_LINK_STATUS, &linkStatus);
-	glErrorCheck();
-	if (linkStatus != GL_TRUE)
-	{
-		GLint infoLogLength;
-		glGetProgramiv(glprogram, GL_INFO_LOG_LENGTH, &infoLogLength);
-		glErrorCheck();
-		GLchar *infoLog = new GLchar[infoLogLength];
-		glGetProgramInfoLog(glprogram, infoLogLength, NULL, infoLog);
-		glErrorCheck();
-
-		Log(LOG_ERROR) << "OpenGL shader link failed \"" << infoLog << "\"\n";
-
-		delete[] infoLog;
-		glDeleteProgram(glprogram);
-		glErrorCheck();
-		glprogram = 0;
-	}
-
-	return !(glprogram == 0 || vertexshader == 0 || fragmentshader == 0);
+	return glprogram != 0;
 }
 
 static GLuint createShader(GLenum type, const char *source)
@@ -335,13 +342,20 @@ static GLuint createShader(GLenum type, const char *source)
 		GLint infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 		glErrorCheck();
-		GLchar *infoLog = new GLchar[infoLogLength];
-		glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-		glErrorCheck();
+		if (infoLogLength == 0)
+		{
+			Log(LOG_ERROR) << "OpenGL shader compilation failed: No log returned from driver";
+		}
+		else
+		{
+			GLchar *infoLog = new GLchar[infoLogLength];
+			glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
+			glErrorCheck();
 
-		Log(LOG_ERROR) << "OpenGL shader compilation failed: \"" << infoLog << "\"\n";
+			Log(LOG_ERROR) << "OpenGL shader compilation failed: \"" << infoLog << "\"";
 
-		delete[] infoLog;
+			delete[] infoLog;
+		}
 		glDeleteShader(shader);
 		glErrorCheck();
 		shader = 0;
@@ -352,21 +366,23 @@ static GLuint createShader(GLenum type, const char *source)
 
 void OpenGL::set_fragment_shader(const char *source)
 {
-	fragmentshader = createShader(GL_FRAGMENT_SHADER, source);
+	GLint fragmentshader = createShader(GL_FRAGMENT_SHADER, source);
 	if (fragmentshader)
 	{
 		glAttachShader(glprogram, fragmentshader);
 		glErrorCheck();
+		glDeleteShader(fragmentshader);
 	}
 }
 
 void OpenGL::set_vertex_shader(const char *source)
 {
-	vertexshader = createShader(GL_VERTEX_SHADER, source);
+	GLint vertexshader = createShader(GL_VERTEX_SHADER, source);
 	if (vertexshader)
 	{
 		glAttachShader(glprogram, vertexshader);
 		glErrorCheck();
+		glDeleteShader(vertexshader);
 	}
 }
 
@@ -485,7 +501,7 @@ void OpenGL::term()
 	delete buffer_surface;
 }
 
-  OpenGL::OpenGL() : gltexture(0), glprogram(0), fragmentshader(0), linear(false), vertexshader(0),
+  OpenGL::OpenGL() : gltexture(0), glprogram(0), linear(false),
                      buffer(NULL), buffer_surface(NULL), iwidth(0), iheight(0),
                      iformat(GL_UNSIGNED_INT_8_8_8_8_REV), // this didn't seem to be set anywhere before...
                      ibpp(32)                              // ...nor this

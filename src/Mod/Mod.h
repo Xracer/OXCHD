@@ -1,6 +1,6 @@
 #pragma once
 /*
- * Copyright 2010-2017 OpenXcom Developers.
+ * Copyright 2010-2016 OpenXcom Developers.
  *
  * This file is part of OpenXcom.
  *
@@ -141,6 +141,7 @@ private:
 	GameTime _startingTime;
 	StatAdjustment _statAdjustment[5];
 
+	std::map<std::string, int> _ufopaediaSections;
 	std::vector<std::string> _countriesIndex, _regionsIndex, _facilitiesIndex, _craftsIndex, _craftWeaponsIndex, _itemsIndex, _invsIndex, _ufosIndex;
 	std::vector<std::string> _soldiersIndex, _aliensIndex, _deploymentsIndex, _armorsIndex, _ufopaediaIndex, _ufopaediaCatIndex, _researchIndex, _manufactureIndex, _MCDPatchesIndex;
 	std::vector<std::string> _alienMissionsIndex, _terrainIndex, _extraSpritesIndex, _extraSoundsIndex, _extraStringsIndex, _missionScriptIndex;
@@ -219,6 +220,9 @@ public:
 	Mod();
 	/// Cleans up the mod.
 	~Mod();
+
+	/// For internal use only
+	const std::map<std::string, int> &getUfopaediaSections() const { return _ufopaediaSections; }
 
 	/// Gets a particular font.
 	Font *getFont(const std::string &name, bool error = true) const;
@@ -348,17 +352,17 @@ public:
 	/// Gets the game starting time.
 	const GameTime &getStartingTime() const;
 	/// Gets an MCDPatch.
-	MCDPatch *getMCDPatch(const std::string &name) const;
+	MCDPatch *getMCDPatch(const std::string &id) const;
 	/// Gets the list of external Sprites.
-	std::vector<std::pair<std::string, ExtraSprites *> > getExtraSprites() const;
+	const std::vector<std::pair<std::string, ExtraSprites *> > &getExtraSprites() const;
 	/// Gets the list of external Sounds.
-	std::vector<std::pair<std::string, ExtraSounds *> > getExtraSounds() const;
+	const std::vector<std::pair<std::string, ExtraSounds *> > &getExtraSounds() const;
 	/// Gets the list of external Strings.
-	std::map<std::string, ExtraStrings *> getExtraStrings() const;
+	const std::map<std::string, ExtraStrings *> &getExtraStrings() const;
 	/// Gets the list of StatStrings.
-	std::vector<StatString *> getStatStrings() const;
+	const std::vector<StatString *> &getStatStrings() const;
 	/// Gets the research-requirements for Psi-Lab (it's a cache for psiStrengthEval)
-	std::vector<std::string> getPsiRequirements() const;
+	const std::vector<std::string> &getPsiRequirements() const;
 	/// Returns the sorted list of inventories.
 	const std::vector<std::string> &getInvsList() const;
 	/// Generates a new soldier.
